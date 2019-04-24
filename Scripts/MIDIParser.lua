@@ -9,6 +9,13 @@ class "MIDIParser" {
 	
 	private {
 		static {
+			
+			
+		},
+	},
+	
+	public {
+		static {
 			-- Convert a string which contains bytes in ASCII encoding to a number
 			-- e.g. bytes2number("MThd", 1,4) => 4D546864 = 1297377380
 			bytes2number = function (self, str, i, j)
@@ -19,12 +26,8 @@ class "MIDIParser" {
 				end
 				
 				return tonumber(hexStr, 16)
-			end
-		},
-	},
-	
-	public {
-		static {
+			end,
+			
 			parse = function (self, dataStr)
 				local smf = {}
 				
@@ -180,32 +183,32 @@ class "MIDIParser" {
 				assert(trackAmount == #midiSong:getTracks(), "Track amount not match with the .mid file header")
 				
 				-- Debug
-				print("Header Size: " .. headerSize)
-				print("Format Type: " .. formatType)
-				print("Track Number: " .. trackAmount)
-				print("Time Division: " .. timeDivision)
+				-- print("Header Size: " .. headerSize)
+				-- print("Format Type: " .. formatType)
+				-- print("Track Number: " .. trackAmount)
+				-- print("Time Division: " .. timeDivision)
 				
-				for i = 1, #midiSong:getTracks() do
-					local track = midiSong:getTrack(i)
+				-- for i = 1, #midiSong:getTracks() do
+					-- local track = midiSong:getTrack(i)
 					
-					io.write("Track " .. i .. " (")
-					io.write(#track:getEvents() .. " Event, ")
-					io.write("Position " .. track:getBinPos() .. ", ")
-					print(track:getBinSize() .. " Bytes): ")
+					-- io.write("Track " .. i .. " (")
+					-- io.write(#track:getEvents() .. " Event, ")
+					-- io.write("Position " .. track:getBinPos() .. ", ")
+					-- print(track:getBinSize() .. " Bytes): ")
 					
-					print("\tTime\tType\tMsg1\tMsg2")
+					-- print("\tTime\tType\tMsg1\tMsg2")
 					
-					for j = 1, #track:getEvents() do
-						local event = track:getEvent(j)
-						io.write("\t")
-						print(string.format("%d\t0x%02X\t%s\t%s",
-							event:getTime(),
-							event:getType(),
-							event:getMsg1() or "",
-							event:getMsg2() or ""
-						))
-					end
-				end
+					-- for j = 1, #track:getEvents() do
+						-- local event = track:getEvent(j)
+						-- io.write("\t")
+						-- print(string.format("%d\t0x%02X\t%s\t%s",
+							-- event:getTime(),
+							-- event:getType(),
+							-- event:getMsg1() or "",
+							-- event:getMsg2() or ""
+						-- ))
+					-- end
+				-- end
 				
 				return midiSong
 			end

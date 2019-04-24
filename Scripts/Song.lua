@@ -51,6 +51,19 @@ class "Song" {
 								break
 							end
 						end
+					
+					elseif typeFirstByte == 0xE then
+						-- Pitch Bending
+						-- The format of pitch bend event is tricky
+						-- Let first and second parameters be x1x2x3x4x5x6x7x8 and y1y2y3y4y5y6y7y8
+						-- The actual value is y2y3y4y5y6y7y8x2x3x4x5x6x7x8
+						local MSByte = bit.rshift(bit.band(msg2, 0x7F), 1)
+						local LSByte = bit.lshift(bit.band(msg2, 0x01), 7) + bit.band(msg1, 0x7F)
+						local value = bit.lshift(MSByte, 8) + LSByte
+						local signedValue = value - 8192
+						
+						local pb = PitchBend.new(time, signedValue)
+						self.tracks[i]:addPitchBend(pb)
 						
 					elseif type == 0xF0 then
 						-- System Exclusive Event
