@@ -6,10 +6,12 @@ class "Song" {
 			tempoChanges = {},
 			timeSignatures = {},
 		},
-	},
-	
-	public {
-		__construct = function (self, midiSong)
+		
+		timeDivision = NULL,
+		initialTime = NULL,
+		endTime = NULL,
+		
+		parse = function (self, midiSong)
 			for i = 1, #midiSong:getTracks() do
 				local midiTrack = midiSong:getTrack(i)
 				local consumedNoteOffEvent = {}
@@ -68,12 +70,13 @@ class "Song" {
 					elseif type == 0xF0 then
 						-- System Exclusive Event
 					elseif type == 0xFF then	-- Meta Event
-						local event = Event.new(time, type, msg1, msg2)
 						
-						if msg2 == 0x51 then	-- Set Tempo
+						if msg1 == 0x51 then	-- Set Tempo
+							local event = TempoChange.new(time, type, msg1, msg2)
 							self:addTempoChange(event)
 							
-						elseif msg2 == 0x58 then	-- Time Signature
+						elseif msg1 == 0x58 then	-- Time Signature
+							local event = TimeSignature.new(time, type, msg1, msg2)
 							self:addTimeSignature(event)
 						end
 						
@@ -81,6 +84,25 @@ class "Song" {
 						print(string.format("Unsupported event type: 0x%.2X.", type))
 					end
 					
+				end
+			end
+		end,
+	},
+	
+	public {
+		__construct = function (self, midiSong)
+			self:parse(midiSong)
+			
+			self.timeDivision = midiSong:getTimeDivision()
+			
+			self.initialTime = 0
+			self.endTime = 0
+			
+			-- Search for the last event and set it as the end time of the song
+			for i = 1, #midiSong:getTracks() do
+				local lastEventTime = midiSong:getTrack(i):getEvent(#midiSong:getTrack(i):getEvents()):getTime()
+				if  lastEventTime > self.endTime then
+					self.endTime = lastEventTime
 				end
 			end
 		end,
@@ -101,6 +123,10 @@ class "Song" {
 			return self.tracks[trackID]
 		end,
 		
+		getTimeDivision = function (self)
+			return self.timeDivision
+		end,
+		
 		getTempoChanges = function (self)
 			return self.metaEvents.tempoChanges
 		end,
@@ -109,16 +135,24 @@ class "Song" {
 			return self.metaEvents.timeSignatures
 		end,
 		
+		getTempoChange = function (self, eventID)
+			return self.metaEvents.tempoChanges[eventID]
+		end,
+		
+		getTimeSignature = function (self, eventID)
+			return self.metaEvents.timeSignatures[eventID]
+		end,
+		
 		addTrack = function (self, track)
 			self.tracks[#self.tracks+1] = track
 		end,
 		
 		addTempoChange = function (self, tempoChange)
-			self.tempoChangs[#self.tempoChanges+1] = tempoChange
+			self.metaEvents.tempoChanges[#self.metaEvents.tempoChanges+1] = tempoChange
 		end,
 		
 		addTimeSignature = function (self, timeSignature)
-			self.timeSignatures[#self.timeSignatures+1] = timeSignature
+			self.metaEvents.timeSignatures[#self.metaEvents.timeSignatures+1] = timeSignature
 		end,
 	},
 }
