@@ -3,12 +3,14 @@ class "MIDITrack" {
 		binPos = NULL,
 		binSize = NULL,
 		events = {},
+		lastPlayedEventID = NULL,
 	},
 	
 	public {
 		__construct = function (self, binPos, binSize)
 			self.binPos = binPos
 			self.binSize = binSize
+			self.lastPlayedEventID = 0
 		end,
 		
 		getBinPos = function (self)
@@ -23,8 +25,16 @@ class "MIDITrack" {
 			return self.events
 		end,
 		
+		getLastPlayedEventID = function (self)
+			return self.lastPlayedEventID
+		end,
+		
 		getEvent = function (self, eventID)
 			return self.events[eventID]
+		end,
+		
+		setLastPlayedEventID = function (self, eventID)
+			self.lastPlayedEventID = eventID
 		end,
 		
 		addEvent = function (self, event)

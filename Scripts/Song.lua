@@ -7,6 +7,7 @@ class "Song" {
 			timeSignatures = {},
 		},
 		
+		
 		timeDivision = NULL,
 		initialTime = NULL,
 		endTime = NULL,
@@ -46,13 +47,21 @@ class "Song" {
 						
 							if noteOffTypeFirstByte == 0x8 or (noteOffTypeFirstByte == 0x9 and msg2 == 0) and not consumedNoteOffEvent[k] and msg1 == noteOffMsg1 and typeSecondByte == noteOffTypeSecondByte then
 							
-								local note = Note.new(time, noteOffTime, msg1, msg2)
+								local note = Note.new(time, noteOffTime, msg1, msg2, typeSecondByte)
 								self.tracks[i]:addNote(note)
 								
 								consumedNoteOffEvent[k] = true
 								break
 							end
 						end
+						
+					elseif typeFirstByte == 0xA then
+					
+					elseif typeFirstByte == 0xB then
+					
+					elseif typeFirstByte == 0xC then
+					
+					elseif typeFirstByte == 0xD then
 					
 					elseif typeFirstByte == 0xE then
 						-- Pitch Bending
@@ -66,7 +75,7 @@ class "Song" {
 						
 						local pb = PitchBend.new(time, signedValue)
 						self.tracks[i]:addPitchBend(pb)
-						
+					
 					elseif type == 0xF0 then
 						-- System Exclusive Event
 					elseif type == 0xFF then	-- Meta Event

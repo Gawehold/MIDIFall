@@ -1,6 +1,8 @@
 -- Load global libraries
 bit = require "bit"
 require "Libraries/SIMPLOO/dist/simploo"
+-- simploo.config["production"] = true
+midi = require "luamidi"
 
 -- Define global variables
 NULL = {}
@@ -28,17 +30,23 @@ require "Scripts/TimeManager"
 require "Scripts/DisplayComponent"
 require "Scripts/NotesComponent"
 
-local midiSong = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
+local midiSong = MIDIParser:parse(love.filesystem.read("Assets/debug.mid"))
 local song = Song.new(midiSong)
-local player = Player.new(song)
+local player = Player.new(song, midiSong)
 
-local notesComponents = {}
-for i = 1, #song:getTracks() do
-	notesComponents[i] = NotesComponent.new()
-	notesComponents[i]:setNotes(song:getTrack(i):getNotes())
-end
+-- local notesComponents = {}
+-- for i = 1, #song:getTracks() do
+	-- notesComponents[i] = NotesComponent.new()
+	-- notesComponents[i]:setNotes(song:getTrack(i):getNotes())
+-- end
 
 function love.load()
+	-- table.foreach(midi.enumerateinports(), print)
+	-- print( 'Receiving on device: ', luamidi.getInPortName(0))
+	-- local port = midi.openout(0)
+	-- port:sendMessage(0x90, 52, 127)
+	-- port:noteOn(60,127, 0)
+	-- port:noteOff(60,5, 0)
 end
 
 function love.update(dt)
@@ -47,5 +55,9 @@ end
 
 function love.draw()
 	love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
-	love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
+	-- love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
+end
+
+function love.quit()
+	midi.gc()
 end

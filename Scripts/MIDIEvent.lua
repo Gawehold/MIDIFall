@@ -4,6 +4,7 @@ class "MIDIEvent" {
 		type = NULL,
 		msg1 = NULL,
 		msg2 = NULL,
+		played = NULL,
 	},
 	
 	public {
@@ -12,6 +13,8 @@ class "MIDIEvent" {
 			self.type = type
 			self.msg1 = msg1
 			self.msg2 = msg2
+			
+			self.played = false
 			-- print(self.time,self.type,self.msg1,self.msg2)
 		end,
 		
@@ -29,6 +32,14 @@ class "MIDIEvent" {
 		
 		getMsg2 = function (self)
 			return self.msg2
+		end,
+		
+		getPlayed = function (self)
+			return self.played
+		end,
+		
+		setPlayed = function (self, played)
+			self.played = played
 		end,
 	},
 }

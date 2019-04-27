@@ -1,7 +1,3 @@
--- Createdd by Gawehold
--- Event table: {delta-time(number), type(number), msg1(number), msg2(string)}
-
-
 -- TODO:	Convert the dt to actual time
 --			Seperate the MIDI CC (e.g. tempo change)
 
@@ -209,7 +205,7 @@ class "MIDIParser" {
 						-- ))
 					-- end
 				-- end
-				
+				-- love.event.quit()
 				return midiSong
 			end
 		},

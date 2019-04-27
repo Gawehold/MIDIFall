@@ -1,6 +1,7 @@
 class "Track" {
 	private {
 		notes = {},
+		
 		pitchBends = {},
 	},
 	
