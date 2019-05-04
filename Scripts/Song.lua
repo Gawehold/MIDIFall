@@ -37,6 +37,7 @@ class "Song" {
 						-- TODO: Change the implementation of matching note on and note off by using Queue
 						for k = j+1, #midiTrack:getEvents() do
 							local noteOffEvent = midiTrack:getEvent(k)
+							local noteOffEvent = midiTrack:getEvent(k)
 							local noteOffTime = noteOffEvent:getTime()
 							local noteOffType = noteOffEvent:getType()
 							local noteOffMsg1 = noteOffEvent:getMsg1()
@@ -79,13 +80,13 @@ class "Song" {
 					elseif type == 0xF0 then
 						-- System Exclusive Event
 					elseif type == 0xFF then	-- Meta Event
-						
 						if msg1 == 0x51 then	-- Set Tempo
 							local event = TempoChange.new(time, type, msg1, msg2)
 							self:addTempoChange(event)
 							
 						elseif msg1 == 0x58 then	-- Time Signature
 							local event = TimeSignature.new(time, type, msg1, msg2)
+							
 							self:addTimeSignature(event)
 						end
 						

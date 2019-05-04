@@ -30,7 +30,7 @@ require "Scripts/TimeManager"
 require "Scripts/DisplayComponent"
 require "Scripts/NotesComponent"
 
-local midiSong = MIDIParser:parse(love.filesystem.read("Assets/debug.mid"))
+local midiSong = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 local song = Song.new(midiSong)
 local player = Player.new(song, midiSong)
 

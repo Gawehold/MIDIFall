@@ -1,22 +1,23 @@
--- TODO:	Convert the dt to actual time
---			Seperate the MIDI CC (e.g. tempo change)
-
 local ffi = require("ffi")
 
-class "MIDIParser" {
-	
-	private {
-		static {
-			
-			
-		},
-	},
-	
-	public {
-		static {
+ffi.cdef[[
+void *malloc(size_t size);
+void free(void *ptr);
+]]
+
+bit = require "bit"
+NULL = {}
+
+require "Libraries/SIMPLOO/dist/simploo"
+require "Scripts/Queue"
+require "Scripts/Stack"
+require "Scripts/MIDIEvent"
+require "Scripts/MIDITrack"
+require "Scripts/MIDISong"
+
 			-- Convert a string which contains bytes in ASCII encoding to a number
 			-- e.g. bytes2number("MThd", 1,4) => 4D546864 = 1297377380
-			bytes2number = function (self, str, i, j)
+			bytes2number = function (str, i, j)
 				local hexStr = ""
 				
 				for u = i, j do
@@ -24,9 +25,9 @@ class "MIDIParser" {
 				end
 				
 				return tonumber(hexStr, 16)
-			end,
+			end
 			
-			parse = function (self, dataStr)
+			parse = function (dataStr)
 				local smf = {}
 				
 				-- Check if it is a proper MIDI file
@@ -35,10 +36,10 @@ class "MIDIParser" {
 				end
 				
 				-- Save the header information 
-				local headerSize = self:bytes2number(dataStr, 5, 8)
-				local formatType = self:bytes2number(dataStr, 9, 10)
-				local trackAmount = self:bytes2number(dataStr, 11, 12)
-				local timeDivision = self:bytes2number(dataStr, 13, 14)	-- ticks per quarter note OR called Pulses Per Quarter Note (PPQN)
+				local headerSize = bytes2number(dataStr, 5, 8)
+				local formatType = bytes2number(dataStr, 9, 10)
+				local trackAmount = bytes2number(dataStr, 11, 12)
+				local timeDivision = bytes2number(dataStr, 13, 14)	-- ticks per quarter note OR called Pulses Per Quarter Note (PPQN)
 				
 				-- Check if the format type is 2
 				if formatType == 2 then
@@ -59,7 +60,7 @@ class "MIDIParser" {
 						local id = #midiSong:getTracks() + 1	-- the number of the track
 						
 						-- Save the header information of the track
-						midiSong:addTrack(MIDITrack.new(i, self:bytes2number(dataStr, i+4, i+7)))
+						midiSong:addTrack(MIDITrack.new(i, bytes2number(dataStr, i+4, i+7)))
 						
 						-- Variable for checking the bytes of each event AND what last event is
 						local timeByte = 1
@@ -73,7 +74,7 @@ class "MIDIParser" {
 							-- Pass if still scanning the previous event
 							if j >= skipTo then
 								-- HEX number of current MIDI event type
-								local hex = self:bytes2number(dataStr, j, j)
+								local hex = bytes2number(dataStr, j, j)
 								
 								-- Check if 1 byte for time stamp
 								if not timeComfirmed then
@@ -84,14 +85,14 @@ class "MIDIParser" {
 									end
 								else	-- Scanning the byte after the time stamp
 									-- Define the event id of the current track
-									local message1 = self:bytes2number(dataStr, j+1, j+1)
+									local message1 = bytes2number(dataStr, j+1, j+1)
 									local message2 = nil
 									
 									-- Find the (delta-)time
-									local t = self:bytes2number(dataStr, j-1, j-1)
+									local t = bytes2number(dataStr, j-1, j-1)
 									if timeByte > 1 then
 										for k = 1, timeByte-1 do
-											local v = self:bytes2number(dataStr, j - (k+1), j - (k+1))
+											local v = bytes2number(dataStr, j - (k+1), j - (k+1))
 											v = (v - 128) * math.pow(128, k)
 											t = t + v
 										end
@@ -106,7 +107,7 @@ class "MIDIParser" {
 											u = j		-- Meta event: 0xFF ID SIZE CONTENT
 										end
 
-										local size = self:bytes2number(dataStr, u+2, u+2)
+										local size = bytes2number(dataStr, u+2, u+2)
 										
 										-- Find and save the message 2 if it has
 										if size > 0 then
@@ -123,6 +124,9 @@ class "MIDIParser" {
 										
 										local event = MIDIEvent(time, hex, message1, message2)
 										midiSong:getTrack(id):addEvent(event)
+										if midiSong:getTrack(1):getEvent(2) ~= nil then
+											print(id, #midiSong:getTrack(id):getEvents(), midiSong:getTrack(1):getEvent(2).msg2[0], midiSong:getTrack(1):getEvent(2):getMsg2())
+										end
 										
 										-- Tell the program to jump to the next event but not next bytes
 										skipTo = u+3 + size
@@ -138,12 +142,12 @@ class "MIDIParser" {
 											u = j - 1	-- Current byte is the first parameter instead of type
 											hex = lastMidiEvent	-- Follow the last event
 											
-											message1 = self:bytes2number(dataStr, u+1, u+1)	-- Update the message 1 to the next byte (the original message 1 is actually the message 2 since the even type byte is missed)
+											message1 = bytes2number(dataStr, u+1, u+1)	-- Update the message 1 to the next byte (the original message 1 is actually the message 2 since the even type byte is missed)
 										end
 										
 										-- Check if second parameter needed
 										if (hex >= 0x80 and hex <= 0xBF) or (hex >= 0xE0 and hex <= 0xEF) then
-											message2 = self:bytes2number(dataStr, u+2, u+2)	-- save the message 2
+											message2 = bytes2number(dataStr, u+2, u+2)	-- save the message 2
 										end
 										
 										-- Save the event
@@ -154,8 +158,12 @@ class "MIDIParser" {
 											time = time + midiSong:getTrack(id):getEvent(numOfEvent):getTime()
 										end
 										
-										local event = MIDIEvent(time, hex, message1, message2)
-										midiSong:getTrack(id):addEvent(event)
+										local cmsg2 = nil
+										if message2 ~= nil then
+											cmsg2 = ffi.new("unsigned char[1]", message2)
+										end
+										-- local event = MIDIEvent(time, hex, message1, cmsg2)
+										-- midiSong:getTrack(id):addEvent(event)
 										
 										-- Tell the program to jump to the next event but not next bytes
 										if message2 then
@@ -178,38 +186,20 @@ class "MIDIParser" {
 				end
 				
 				-- Check if the track amount announced in the header chunk match with the actual tracks found
-				assert(trackAmount == #midiSong:getTracks(), "Track amount not match with the .mid file header")
+				-- assert(trackAmount == #midiSong:getTracks(), "Track amount not match with the .mid file header")
 				
 				-- Debug
-				-- print("Header Size: " .. headerSize)
-				-- print("Format Type: " .. formatType)
-				-- print("Track Number: " .. trackAmount)
-				-- print("Time Division: " .. timeDivision)
-				
-				-- for i = 1, #midiSong:getTracks() do
-					-- local track = midiSong:getTrack(i)
-					
-					-- io.write("Track " .. i .. " (")
-					-- io.write(#track:getEvents() .. " Event, ")
-					-- io.write("Position " .. track:getBinPos() .. ", ")
-					-- print(track:getBinSize() .. " Bytes): ")
-					
-					-- print("\tTime\tType\tMsg1\tMsg2")
-					
-					-- for j = 1, #track:getEvents() do
-						-- local event = track:getEvent(j)
-						-- io.write("\t")
-						-- print(string.format("%d\t0x%02X\t%s\t%s",
-							-- event:getTime(),
-							-- event:getType(),
-							-- event:getMsg1() or "",
-							-- event:getMsg2() or ""
-						-- ))
-					-- end
-				-- end
-				-- love.event.quit()
 				return midiSong
 			end
-		},
-	},
-}
+
+local file = io.open("Assets/ll.mid", "rb")
+local midiSong = parse(file:read("*a"))
+file:close()
+print(midiSong:getTrack(1):getEvent(2).msg2[0], midiSong:getTrack(1):getEvent(2):getMsg2())
+-- local events = {}
+-- for i = 1, 100 do
+	-- events[i] = MIDIEvent(i, 0xFF, 0x52, tostring(i))
+	-- local a
+-- end
+
+-- print(events[50]:getMsg2())
