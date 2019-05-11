@@ -10,7 +10,7 @@ local ObjectMetaTable = {
 	__index = function(self, key)
 		if self.__public[key] == nil then
 			if self.__private[key] ~= nil then
-				error("You are not allowed to access private field.")
+				error("You are not allowed to access private fields.")
 			else
 				error("Doesn't have this field.")
 			end
@@ -22,7 +22,7 @@ local ObjectMetaTable = {
 	__newindex = function(self, key, value)
 		if self.__public[key] == nil then
 			if self.__private[key] ~= nil then
-				error("You are not allowed to access private field.")
+				error("You are not allowed to access private fields.")
 			else
 				error("Doesn't have this field.")
 			end
@@ -36,7 +36,6 @@ local function Foo()
 	local obj = {
 		__private = {},
 		__public = {x=0, bar = barF},
-		__protected = {},
 	}
 	return setmetatable(obj, ObjectMetaTable)
 end

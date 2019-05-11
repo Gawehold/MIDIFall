@@ -18,7 +18,7 @@ class "TimeManager" {
 			local timeDivision = song:getTimeDivision()
 			
 			local newTime = self.time + (self.player:getPlaybackSpeed() * dt * tempoChanges[self.currentTempoChangeID]:getTempo() * timeDivision / 60)	-- 60 means 60 seconds
-
+			
 			-- The time between the original time and new time may be passed some tempo change events
 			for i = self.currentTempoChangeID+1, #tempoChanges do
 				local nextTempoChangeTime = tempoChanges[i]:getTime()

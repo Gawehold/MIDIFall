@@ -1,24 +1,5 @@
-class "Note" extends "Event" {
-	private {
-		time = NULL,
-		length = NULL,
-		pitch = NULL,
-		velocity = NULL,
-		played = NULL,
-		channel = NULL,
-	},
-	
-	public {
-		__construct = function (self, time, endTime, pitch, velocity, channel)
-			self.time = time
-			self.length = endTime - time
-			self.pitch = pitch
-			self.velocity = velocity
-			self.channel = channel
-			
-			self.played = false
-		end,
-		
+local metaTable = {
+	__index = {
 		getTime = function (self)
 			return self.time
 		end,
@@ -46,5 +27,19 @@ class "Note" extends "Event" {
 		setPlayed = function (self, played)
 			self.played = played
 		end,
-	},
+	}
 }
+
+Note = function (time, endTime, pitch, velocity, channel)
+	local obj = {}
+	
+	obj.time = time
+	obj.length = endTime - time
+	obj.pitch = pitch
+	obj.velocity = velocity
+	obj.channel = channel
+	
+	obj.played = false
+			
+	return setmetatable(obj, metaTable)
+end

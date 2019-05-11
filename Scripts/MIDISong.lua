@@ -2,8 +2,8 @@ class "MIDISong" {
 	private {
 		formatType = NULL,
 		timeDivision = NULL,
-		
 		tracks = {},
+		
 	},
 	
 	public {

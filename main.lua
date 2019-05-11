@@ -1,8 +1,14 @@
 -- Load global libraries
 bit = require "bit"
+ffi = require "ffi"
 require "Libraries/SIMPLOO/dist/simploo"
 -- simploo.config["production"] = true
 midi = require "luamidi"
+
+ffi.cdef[[
+char *malloc(size_t size);
+void free(void *ptr);
+]]
 
 -- Define global variables
 NULL = {}
@@ -55,7 +61,7 @@ end
 
 function love.draw()
 	love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
-	-- love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
+	love.graphics.print(tonumber(player:getTimeManager():getTime()), 0,20, 0, 2)
 end
 
 function love.quit()
