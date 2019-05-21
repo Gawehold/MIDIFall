@@ -79,17 +79,17 @@ Foo3 = ffi.metatype("Foo3", mt)
 local events = {}
 
 
-
+local x = os.clock()
 for i = 1, 5e5 do
 	-- events[i] = Foo2()
-	events[i] = Foo1()
-	-- events[i] = Foo3(0)
+	-- events[i] = Foo1()
+	events[i] = Foo3(0)
 	-- events[1]:bar()
 	
 	-- events[i] = {x=0, new = function(self) self.x=0 end, bar = function (self) print(self.x) end}
 end
 
-local x = os.clock()
+
 for i = 1, 5e5 do
 	events[i]:bar()
 end

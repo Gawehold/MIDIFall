@@ -1,1 +1,1 @@
-Use Classic instead of SIMPLOO
+自己寫個類似CLASSIC既CLASS LIB

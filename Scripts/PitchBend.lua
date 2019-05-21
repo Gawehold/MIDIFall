@@ -1,21 +1,14 @@
 class "PitchBend" {
-	private {
-		time = NULL,
-		signedValue = NULL,
-	},
+	new = function (self, time, signedValue)
+		self.time = time
+		self.signedValue = signedValue
+	end,
 	
-	public {
-		__construct = function (self, time, signedValue)
-			self.time = time
-			self.signedValue = signedValue
-		end,
-		
-		getTime = function (self)
-			return self.time
-		end,
-		
-		getSignedValue = function (self)
-			return self.signedValue
-		end,
-	},
+	getTime = function (self)
+		return self.time
+	end,
+	
+	getSignedValue = function (self)
+		return self.signedValue
+	end,
 }

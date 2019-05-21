@@ -1,8 +1,6 @@
 -- Load global libraries
 bit = require "bit"
 ffi = require "ffi"
-require "Libraries/SIMPLOO/dist/simploo"
-Object = require "Libraries/classic/classic"
 -- simploo.config["production"] = true
 midi = require "luamidi"
 
@@ -15,19 +13,18 @@ void free(void *ptr);
 NULL = {}
 
 -- Load scripts
+require "Scripts/Class"
 -- require "Scripts/Queue"
 -- require "Scripts/Stack"
 
 require "Scripts/MIDIEvent"
-require "Scripts/MIDITrack"
-require "Scripts/MIDISong"
-require "Scripts/MIDIParser"
-
-require "Scripts/Event"
 require "Scripts/TempoChange"
 require "Scripts/TimeSignature"
 require "Scripts/Note"
 require "Scripts/PitchBend"
+require "Scripts/MIDITrack"
+require "Scripts/MIDISong"
+require "Scripts/MIDIParser"
 
 require "Scripts/Player"
 require "Scripts/TimeManager"
@@ -38,7 +35,7 @@ require "Scripts/TimeManager"
 local x = os.clock()
 local song = MIDIParser:parse(love.filesystem.read("Assets/U2.mid"))
 local player = Player(song)
-print(string.format("Elapsed time: %.2fs\n", os.clock() - x))
+print(string.format("Elapsed time: %.2fs", os.clock() - x))
 -- love.event.quit()
 
 -- Simploo -> Classic
