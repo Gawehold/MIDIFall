@@ -20,8 +20,8 @@ class "Song" {
 				local track = Track.new()
 				self:addTrack(track)
 				
-				for j = 1, #midiTrack:getEvents() do
-					local midiEvent = midiTrack:getEvent(j)
+				for j = 1, #midiTrack:getRawEvents() do
+					local midiEvent = midiTrack:getRawEvent(j)
 					local time = midiEvent:getTime()
 					local type = midiEvent:getType()
 					local msg1 = midiEvent:getMsg1()
@@ -35,9 +35,9 @@ class "Song" {
 						
 						-- Search for the first note off event (which has not been used) of the note after the note on event
 						-- TODO: Change the implementation of matching note on and note off by using Queue
-						for k = j+1, #midiTrack:getEvents() do
-							local noteOffEvent = midiTrack:getEvent(k)
-							local noteOffEvent = midiTrack:getEvent(k)
+						for k = j+1, #midiTrack:getRawEvents() do
+							local noteOffEvent = midiTrack:getRawEvent(k)
+							local noteOffEvent = midiTrack:getRawEvent(k)
 							local noteOffTime = noteOffEvent:getTime()
 							local noteOffType = noteOffEvent:getType()
 							local noteOffMsg1 = noteOffEvent:getMsg1()
@@ -110,7 +110,7 @@ class "Song" {
 			
 			-- Search for the last event and set it as the end time of the song
 			for i = 1, #midiSong:getTracks() do
-				local lastEventTime = midiSong:getTrack(i):getEvent(#midiSong:getTrack(i):getEvents()):getTime()
+				local lastEventTime = midiSong:getTrack(i):getRawEvent(#midiSong:getTrack(i):getRawEvents()):getTime()
 				if  lastEventTime > self.endTime then
 					self.endTime = lastEventTime
 				end

@@ -1,44 +1,107 @@
-class "MIDITrack" {
-	private {
-		binPos = NULL,
-		binSize = NULL,
-		events = {},
-		lastPlayedEventID = NULL,
-	},
+MIDITrack = Object:extend()
+
+function MIDITrack:new()
+	self.rawEvents = {}
+	self.notes = {}
+	self.pitchBends = {}
+end
+
+function MIDITrack:getRawEvents()
+	return self.rawEvents
+end
+
+function MIDITrack:getRawEvent(eventID)
+	return self.rawEvents[eventID]
+end
+
+function MIDITrack:addRawEvent(event)
+	table.insert(self.rawEvents, event)
+end
+
+function MIDITrack:getNotes()
+	return self.notes
+end
+
+function MIDITrack:getPitchBends()
+	return self.pitchBends
+end
+
+function MIDITrack:getNote(noteID)
+	return self.notes[noteID]
+end
+
+function MIDITrack:getPitchBend(pbID)
+	return self.pitchBends[pbID]
+end
+
+function MIDITrack:addNote(note)
+	self.notes[#self.notes+1] = note
+end
+
+function MIDITrack:addPitchBend(pb)
+	self.pitchBends[#self.pitchBends+1] = pb
+end
+
+function MIDITrack:processRawEvents()
+	local consumedNoteOffEvent = {}
 	
-	public {
-		__construct = function (self, binPos, binSize)
-			self.binPos = binPos
-			self.binSize = binSize
-			self.lastPlayedEventID = 0
-		end,
+	for j = 1, #self:getRawEvents() do
+		local midiEvent = self:getRawEvent(j)
+		local time = midiEvent:getTime()
+		local type = midiEvent:getType()
+		local msg1 = midiEvent:getMsg1()
+		local msg2 = midiEvent:getMsg2()
 		
-		getBinPos = function (self)
-			return self.binPos
-		end,
+		local typeFirstByte = math.floor(type/16)
+		local typeSecondByte = type - typeFirstByte
 		
-		getBinSize = function (self)
-			return self.binSize
-		end,
+		if typeFirstByte == 0x9 and msg2 > 0 then
+			-- Note on
+			
+			-- Search for the first note off event (which has not been used) of the note after the note on event
+			-- TODO: Change the implementation of matching note on and note off by using Queue
+			for k = j+1, #self:getRawEvents() do
+				local noteOffEvent = self:getRawEvent(k)
+				local noteOffEvent = self:getRawEvent(k)
+				local noteOffTime = noteOffEvent:getTime()
+				local noteOffType = noteOffEvent:getType()
+				local noteOffMsg1 = noteOffEvent:getMsg1()
+				local noteOffMsg2 = noteOffEvent:getMsg2()
 		
-		getEvents = function (self)
-			return self.events
-		end,
+				local noteOffTypeFirstByte = math.floor(noteOffType/16)
+				local noteOffTypeSecondByte = noteOffType - noteOffTypeFirstByte
+			
+				if noteOffTypeFirstByte == 0x8 or (noteOffTypeFirstByte == 0x9 and msg2 == 0) and not consumedNoteOffEvent[k] and msg1 == noteOffMsg1 and typeSecondByte == noteOffTypeSecondByte then
+				
+					local note = Note(time, noteOffTime, msg1, msg2, typeSecondByte)
+					self:addNote(note)
+					
+					consumedNoteOffEvent[k] = true
+					break
+				end
+			end
+			
+		elseif typeFirstByte == 0xA then
 		
-		getLastPlayedEventID = function (self)
-			return self.lastPlayedEventID
-		end,
+		elseif typeFirstByte == 0xB then
 		
-		getEvent = function (self, eventID)
-			return self.events[eventID]
-		end,
+		elseif typeFirstByte == 0xC then
 		
-		setLastPlayedEventID = function (self, eventID)
-			self.lastPlayedEventID = eventID
-		end,
+		elseif typeFirstByte == 0xD then
 		
-		addEvent = function (self, event)
-			table.insert(self.events, event)
-		end,
-	},
-}
+		elseif typeFirstByte == 0xE then
+			-- Pitch Bending
+			-- The format of pitch bend event is tricky
+			-- Let first and second parameters be x1x2x3x4x5x6x7x8 and y1y2y3y4y5y6y7y8
+			-- The actual value is y2y3y4y5y6y7y8x2x3x4x5x6x7x8
+			local MSByte = bit.rshift(bit.band(msg2, 0x7F), 1)
+			local LSByte = bit.lshift(bit.band(msg2, 0x01), 7) + bit.band(msg1, 0x7F)
+			local value = bit.lshift(MSByte, 8) + LSByte
+			local signedValue = value - 8192
+			
+			local pb = PitchBend.new(time, signedValue)
+			self:addPitchBend(pb)
+		end
+		
+	end
+end

@@ -1,6 +1,6 @@
 -- require "Libraries/SIMPLOO/dist/simploo"
--- simploo.config["production"] = true
--- simploo.config["exposeSyntax"] = false
+-- -- simploo.config["production"] = true
+-- -- simploo.config["exposeSyntax"] = false
 
 -- class "Foo1" {
 	-- public {

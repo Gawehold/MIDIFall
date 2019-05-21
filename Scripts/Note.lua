@@ -1,4 +1,17 @@
-local metaTable = {
+local ffi = require "ffi"
+
+ffi.cdef[[
+typedef struct {
+	const uint64_t time;
+	const uint64_t length;
+	const uint8_t pitch;
+	const uint8_t velocity;
+	const uint8_t channel;
+	bool played;
+} Note;
+]]
+
+Note = ffi.metatype("Note", {
 	__index = {
 		getTime = function (self)
 			return self.time
@@ -28,18 +41,4 @@ local metaTable = {
 			self.played = played
 		end,
 	}
-}
-
-Note = function (time, endTime, pitch, velocity, channel)
-	local obj = {}
-	
-	obj.time = time
-	obj.length = endTime - time
-	obj.pitch = pitch
-	obj.velocity = velocity
-	obj.channel = channel
-	
-	obj.played = false
-			
-	return setmetatable(obj, metaTable)
-end
+})

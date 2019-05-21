@@ -1,11 +1,9 @@
-local ffi = require("ffi")
 ffi.cdef[[
 typedef struct {
 	const uint64_t time;
 	const uint8_t type;
 	const uint8_t msg1;
-	bool played;
-	uint8_t msg2[?];
+	const uint8_t *msg2;
 } MIDIEvent;
 ]]
 
@@ -33,14 +31,6 @@ MIDIEvent = ffi.metatype("MIDIEvent", {
 			else
 				return self.msg2[0]
 			end
-		end,
-		
-		getPlayed = function (self)
-			return self.played
-		end,
-		
-		setPlayed = function (self, played)
-			self.played = played
 		end,
 	}
 })

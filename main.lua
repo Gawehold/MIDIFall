@@ -2,6 +2,7 @@
 bit = require "bit"
 ffi = require "ffi"
 require "Libraries/SIMPLOO/dist/simploo"
+Object = require "Libraries/classic/classic"
 -- simploo.config["production"] = true
 midi = require "luamidi"
 
@@ -14,8 +15,8 @@ void free(void *ptr);
 NULL = {}
 
 -- Load scripts
-require "Scripts/Queue"
-require "Scripts/Stack"
+-- require "Scripts/Queue"
+-- require "Scripts/Stack"
 
 require "Scripts/MIDIEvent"
 require "Scripts/MIDITrack"
@@ -27,24 +28,27 @@ require "Scripts/TempoChange"
 require "Scripts/TimeSignature"
 require "Scripts/Note"
 require "Scripts/PitchBend"
-require "Scripts/Track"
-require "Scripts/Song"
 
 require "Scripts/Player"
 require "Scripts/TimeManager"
 
-require "Scripts/DisplayComponent"
-require "Scripts/NotesComponent"
+-- require "Scripts/DisplayComponent"
+-- require "Scripts/NotesComponent"
 
-local midiSong = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
-local song = Song.new(midiSong)
-local player = Player.new(song, midiSong)
+local x = os.clock()
+local song = MIDIParser:parse(love.filesystem.read("Assets/U2.mid"))
+local player = Player(song)
+print(string.format("Elapsed time: %.2fs\n", os.clock() - x))
+-- love.event.quit()
 
--- local notesComponents = {}
--- for i = 1, #song:getTracks() do
-	-- notesComponents[i] = NotesComponent.new()
-	-- notesComponents[i]:setNotes(song:getTrack(i):getNotes())
--- end
+-- Simploo -> Classic
+-- All Simploo, No Classic: 44.67s
+-- | MIDITrack: 23.88s
+-- | MIDIParser: 19.93s
+-- | MIDISong: 0.75s
+-- | Player: 0.75s
+-- | TimeManager: 0.74s
+
 
 function love.load()
 	-- table.foreach(midi.enumerateinports(), print)
@@ -61,9 +65,11 @@ end
 
 function love.draw()
 	love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
-	love.graphics.print(tonumber(player:getTimeManager():getTime()), 0,20, 0, 2)
+	love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
 end
 
 function love.quit()
 	midi.gc()
+	
+	-- TODO: free memory allocated by ffi.C.malloc()
 end
