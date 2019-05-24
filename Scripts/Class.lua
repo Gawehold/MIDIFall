@@ -22,7 +22,7 @@ local objectMetaTable = {
 	
 	__newindex = function (self, key, value)
 		local field = self.fields[key]
-		local method = self.method[key]
+		local method = self.methods[key]
 		
 		if type(value) == "function" then
 			error("You cannot define a new method.")
@@ -32,17 +32,17 @@ local objectMetaTable = {
 			error("You cannot modify a method.")
 		end
 		
-		if field == nil then
-			error("You cannot define a new member.")
-		end
-		
-		self.field[key] = value
+		self.fields[key] = value
 	end,
 	
 	-- __tostring = function (self)
 		-- return string.format("%s: %s", self.class, (self.__rawtostring:match("%d.+")))
 	-- end,
 }
+
+function abstract()
+	error("Calling abstract method is not allowed. You should implement the method first.")
+end
 
 function extends(parentName)
 	return {"extends", namespace[parentName]}
@@ -142,9 +142,8 @@ function buildClass(className, classDefinition)
 					fields = {},
 					methods = self.instanceMethods,
 				}
-				instanceMethods.new(obj, ...)
-				
 				setmetatable(obj, objectMetaTable)
+				obj:new(...)
 				
 				return obj
 			end

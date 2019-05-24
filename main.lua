@@ -29,13 +29,13 @@ require "Scripts/MIDIParser"
 require "Scripts/Player"
 require "Scripts/TimeManager"
 
--- require "Scripts/DisplayComponent"
--- require "Scripts/NotesComponent"
+require "Scripts/DisplayComponent"
+require "Scripts/NotesComponent"
 
-local x = os.clock()
-local song = MIDIParser:parse(love.filesystem.read("Assets/U2.mid"))
+-- local x = os.clock()
+local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 player = Player(song)
-print(string.format("Elapsed time: %.2fs", os.clock() - x))
+-- print(string.format("Elapsed time: %.2fs", os.clock() - x))
 -- love.event.quit()
 
 -- Simploo -> Classic

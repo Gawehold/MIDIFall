@@ -1,37 +1,28 @@
 class "DisplayComponent" {
-	private {
-		x = NULL,
-		y = NULL,
-		width = NULL,
-		height = NULL,
-	},
+	new = function (self, x,y, width,height)
+		self.x = x
+		self.y = y
+		self.width = width
+		self.height = height
+	end,
 	
-	public {
-		__construct = function (self)
-		end,
-		
-		abstract {
-			update = function (self, dt)
-			end,
-			
-			draw = function (self)
-			end,
-		},
-		
-		getX = function (self)
-			return self.x
-		end,
-		
-		getY = function (self)
-			return self.y
-		end,
-		
-		getWidth = function (self)
-			return self.width
-		end,
-		
-		getHeight = function (self)
-			return self.height
-		end,
-	},
+	update = abstract,
+	
+	draw = abstract,
+	
+	getX = function (self)
+		return self.x
+	end,
+	
+	getY = function (self)
+		return self.y
+	end,
+	
+	getWidth = function (self)
+		return self.width
+	end,
+	
+	getHeight = function (self)
+		return self.height
+	end,
 }
