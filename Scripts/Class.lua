@@ -1,26 +1,42 @@
-local metaTable = {
+local namespace = _G
+
+local objectMetaTable = {
 	__index = function (self, key)
-		if self.members[key] == nil then
+		local field = self.fields[key]
+		local method = self.methods[key]
+		
+		if method == nil then
 			if key == "new" then
-				error(string.format("Class %s do not has a constructor.", self.class))
+				error(string.format("Class %s do not has a constructor.", self.class.name))
+			end
+			
+			if field == nil then
+				error(string.format("Non-static member \"%s\" does not exist in class \"%s\".", key, self.class.name))
 			else
-				error(string.format("Member \"%s\" does not exist in class \"%s\".", key, self.class))
+				return field
 			end
 		else
-			return self.members[key]
+			return method
 		end
 	end,
 	
 	__newindex = function (self, key, value)
+		local field = self.fields[key]
+		local method = self.method[key]
+		
 		if type(value) == "function" then
 			error("You cannot define a new method.")
 		end
 		
-		if type(self.members[key]) == "function" then
+		if method ~= nil then
 			error("You cannot modify a method.")
 		end
 		
-		self.members[key] = value
+		if field == nil then
+			error("You cannot define a new member.")
+		end
+		
+		self.field[key] = value
 	end,
 	
 	-- __tostring = function (self)
@@ -28,62 +44,133 @@ local metaTable = {
 	-- end,
 }
 
+function extends(parentName)
+	return {"extends", namespace[parentName]}
+end
+
+function static(t)
+	return {"static", t}
+end
+
+function buildClass(className, classDefinition)
+	for k, v in pairs(classDefinition) do
+		if type(v) == "table" then
+			if v[1] ~= "extends" and v[1] ~= "static" then
+				error("You can only define functions in a class definition.")
+			end
+		elseif type(v) ~= "function" then
+			error("You can only define functions in a class definition.")
+		end
+	end
+	
+	classDefinition.parent = namespace["Object"]
+	classDefinition.static = {}
+	
+	for k, v in ipairs(classDefinition) do
+		if type(v) == "table" and v[1] == "extends" then
+			classDefinition.parent = v[2]
+			classDefinition[k] = nil
+			break
+		end
+		
+		if type(v) == "table" and v[1] == "static" then
+			classDefinition.static = v[2]
+			classDefinition[k] = nil
+			break
+		end
+	end
+	
+	local instanceMethods = {}
+	if classDefinition.parent then
+		for k, v in pairs(classDefinition.parent.classDefinition) do
+			if k ~= "static" then
+				if k == "new" then
+					instanceMethods.super = v
+				else
+					instanceMethods[k] = v
+				end
+			end
+		end
+	end
+	
+	for k, v in pairs(classDefinition) do
+		instanceMethods[k] = v
+	end
+	
+	namespace[className] = setmetatable(
+		{
+			name = className,
+			-- __rawtostring = tostring(self),
+			classDefinition = classDefinition,
+			instanceMethods = instanceMethods,
+		},
+		{
+			__index = function (self, key)
+				if key == "parent" then
+					return self.classDefinition.parent or self
+				elseif key == "static" then
+					return self.classDefinition.static
+				else
+					return self.static[key] or self.parent.static[key] or error(string.format("Static member \"%s\" does not exist in class \"%s\".", key, self.name))
+				end
+			end,
+			
+			__newindex = function (self, key, value)
+				if type(value) == "function" then
+					error("You cannot define a new method.")
+				end
+				
+				if self.static[key] ~= nil then
+					if type(self.static[key]) == "function" then
+						error("You cannot modify a method.")
+					else
+						self.static[key] = value
+					end
+				elseif self.parent.static[key] ~= nil then
+					if type(self.parent.static[key]) == "function" then
+						error("You cannot modify a method.")
+					else
+						self.parent.static[key] = value
+					end
+				end
+			end,
+			
+			__call = function(self, ...)
+				local obj = {
+					class = self,
+					-- __rawtostring = tostring(self),
+					fields = {},
+					methods = self.instanceMethods,
+				}
+				instanceMethods.new(obj, ...)
+				
+				setmetatable(obj, objectMetaTable)
+				
+				return obj
+			end
+		}
+	)
+end
+
 function class(className)
 	return function (classDefinition)
-		_G[className] = setmetatable(
-			{
-				class = className,
-				-- __rawtostring = tostring(self),
-				static = classDefinition.static,
-			},
-			{
-				__index = function (self, key)
-					if self.static[key] == nil then
-						error(string.format("Static member \"%s\" does not exist in class \"%s\".", key, self.class))
-					else
-						return self.static[key]
-					end
-				end,
-				
-				__newindex = function (self, key, value)
-					if self.static[key] == nil then
-						-- error("You cannot define new object members.")
-						self.static[key] = value
-					else
-						-- error("You cannot modify a object member directly.")
-					end
-				end,
-				
-				__call = function(self, ...)
-					local obj = setmetatable(
-						{
-							class = className,
-							-- __rawtostring = tostring(self),
-							members = {},
-						},
-						metaTable
-					)
-					
-					for k, v in pairs(classDefinition) do
-						obj.members[k] = v
-					end
-					
-					obj:new(...)
-					
-					return obj
-				end
-			}
-		)
+		buildClass(className, classDefinition)
 	end
 end
 
+class "Object" {
+	new = function (self)
+	end,
+}
+
 -- class "Foo" {
-	-- static = {
+	-- static {
+		-- y = 123,
 		-- hahaha = function (self)
 			-- print("hahaha")
 		-- end,
 	-- },
-
+	
 	-- new = function (self)
 		-- self.x = 0
 	-- end,
@@ -98,15 +185,15 @@ end
 -- }
 
 -- class "Qoo" {
+	-- extends "Foo",
+	
 	-- new = function (self)
+		-- self:super()
 	-- end,
 -- }
 
 -- local q = Qoo()
--- q.x = 19
--- print(q.x)
--- q.x = 15
--- print(q.x)
+-- Qoo:hahaha()
 
 -- local f1 = Foo()
 -- f1.x = 1
@@ -122,7 +209,9 @@ end
 	-- events[i] = Foo()
 -- end
 
+-- print(events[1].x)
+
 -- for i = 1, 5e5 do
-	-- Foo:hahaha()
+	-- events[i]:bar()
 -- end
 -- print(string.format("elapsed time: %.2f", os.clock() - x))

@@ -3,7 +3,7 @@
 class "MIDIParser" {
 	-- Convert a string which contains bytes in ASCII encoding to a number
 	-- e.g. bytes2number("MThd", 1,4) => 4D546864 = 1297377380
-	static = {
+	static {
 		bytes2number = function (self, str, i, j)
 			local num = 0
 			

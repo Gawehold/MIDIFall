@@ -34,7 +34,7 @@ require "Scripts/TimeManager"
 
 local x = os.clock()
 local song = MIDIParser:parse(love.filesystem.read("Assets/U2.mid"))
-local player = Player(song)
+player = Player(song)
 print(string.format("Elapsed time: %.2fs", os.clock() - x))
 -- love.event.quit()
 
