@@ -72,7 +72,7 @@ class "MIDITrack" {
 				
 					if noteOffTypeFirstByte == 0x8 or (noteOffTypeFirstByte == 0x9 and msg2 == 0) and not consumedNoteOffEvent[k] and msg1 == noteOffMsg1 and typeSecondByte == noteOffTypeSecondByte then
 					
-						local note = Note(time, noteOffTime, msg1, msg2, typeSecondByte)
+						local note = Note(time, noteOffTime-time, msg1, msg2, typeSecondByte)
 						self:addNote(note)
 						
 						consumedNoteOffEvent[k] = true

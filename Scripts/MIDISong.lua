@@ -55,6 +55,14 @@ class "MIDISong" {
 		self.timeSignatures[#self.timeSignatures+1] = timeSignature
 	end,
 	
+	getInitialTime = function (self)
+		return self.initialTime
+	end,
+	
+	getEndTime = function (self)
+		return self.endTime
+	end,
+	
 	intialize = function (self)
 		-- Search for the last event and set it as the end time of the song
 		for i = 1, #self:getTracks() do

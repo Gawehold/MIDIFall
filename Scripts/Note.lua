@@ -7,38 +7,29 @@ typedef struct {
 	const uint8_t pitch;
 	const uint8_t velocity;
 	const uint8_t channel;
-	bool played;
 } Note;
 ]]
 
 Note = ffi.metatype("Note", {
 	__index = {
 		getTime = function (self)
-			return self.time
+			return tonumber(self.time)
 		end,
 		
 		getLength = function (self)
-			return self.length
+			return tonumber(self.length)
 		end,
 		
 		getPitch = function (self)
-			return self.pitch
+			return tonumber(self.pitch)
 		end,
 		
 		getVelocity = function (self)
-			return self.velocity
+			return tonumber(self.velocity)
 		end,
 		
 		getChannel = function (self)
-			return self.channel
-		end,
-		
-		getPlayed = function (self)
-			return self.played
-		end,
-		
-		setPlayed = function (self, played)
-			self.played = played
+			return tonumber(self.channel)
 		end,
 	}
 })

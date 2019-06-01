@@ -1,6 +1,7 @@
 -- Load global libraries
 bit = require "bit"
 ffi = require "ffi"
+vivid = require "Libraries/vivid/vivid"
 -- simploo.config["production"] = true
 midi = require "luamidi"
 
@@ -31,9 +32,11 @@ require "Scripts/TimeManager"
 
 require "Scripts/DisplayComponent"
 require "Scripts/NotesComponent"
+require "Scripts/DefaultTheme"
 
 -- local x = os.clock()
 local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/stair2.mid"))
 player = Player(song)
 -- print(string.format("Elapsed time: %.2fs", os.clock() - x))
 -- love.event.quit()
@@ -46,6 +49,7 @@ player = Player(song)
 -- | Player: 0.75s
 -- | TimeManager: 0.74s
 
+local defaultTheme = DefaultTheme(0,0,0,0)
 
 function love.load()
 	-- table.foreach(midi.enumerateinports(), print)
@@ -57,10 +61,15 @@ function love.load()
 end
 
 function love.update(dt)
+	defaultTheme:update(dt)
+	
 	player:update(dt)
 end
 
 function love.draw()
+	defaultTheme:draw()
+	
+	love.graphics.setColor(1,1,1,1)
 	love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
 	love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
 end
