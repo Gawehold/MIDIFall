@@ -31,23 +31,15 @@ require "Scripts/Player"
 require "Scripts/TimeManager"
 
 require "Scripts/DisplayComponent"
+require "Scripts/BackgroundComponent"
 require "Scripts/NotesComponent"
+require "Scripts/KeyboardComponent"
 require "Scripts/DefaultTheme"
 
--- local x = os.clock()
 local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
--- local song = MIDIParser:parse(love.filesystem.read("Assets/stair2.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
 player = Player(song)
--- print(string.format("Elapsed time: %.2fs", os.clock() - x))
--- love.event.quit()
 
--- Simploo -> Classic
--- All Simploo, No Classic: 44.67s
--- | MIDITrack: 23.88s
--- | MIDIParser: 19.93s
--- | MIDISong: 0.75s
--- | Player: 0.75s
--- | TimeManager: 0.74s
 
 local defaultTheme = DefaultTheme(0,0,0,0)
 
