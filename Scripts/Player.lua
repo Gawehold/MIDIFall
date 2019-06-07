@@ -12,9 +12,9 @@ class "Player" {
 			self.lastPlayedEventIDs[i] = 0
 		end
 		
-		self.firstNonFinishedNoteIdInTracks = {}
+		self.firstNonFinishedNoteIDInTracks = {}
 		for i = 1, #tracks do
-			self.firstNonFinishedNoteIdInTracks[i] = 1
+			self.firstNonFinishedNoteIDInTracks[i] = 1
 		end
 		
 		self.lastPitchBendIDInTracks = {}
@@ -32,17 +32,19 @@ class "Player" {
 		for i = 1, #self.song:getTracks() do
 			local track = self.song:getTrack(i)
 			
-			for j = self.lastPlayedEventIDs[i]+1, #track:getRawEvents() do
-				local event = track:getRawEvent(j)
-				
-				if time >= event:getTime() then
-					if event:getType() < 0xF0 then
-						midi.sendMessage(0, event:getType(), event:getMsg1(), event:getMsg2() or 0)
-						
-						self.lastPlayedEventIDs[i] = j
+			if track:getEnabled() then			
+				for j = self.lastPlayedEventIDs[i]+1, #track:getRawEvents() do
+					local event = track:getRawEvent(j)
+					
+					if time >= event:getTime() then
+						if event:getType() < 0xF0 then
+							midi.sendMessage(0, event:getType(), event:getMsg1(), event:getMsg2() or 0)
+							
+							self.lastPlayedEventIDs[i] = j
+						end
+					else
+						break
 					end
-				else
-					break
 				end
 			end
 		end
@@ -84,14 +86,14 @@ class "Player" {
 		------------- Update first non-finished note ID of each track
 		for trackID = 1, #tracks do
 			local notes = tracks[trackID]:getNotes()
-			for noteID = self.firstNonFinishedNoteIdInTracks[trackID], #notes do
+			for noteID = self.firstNonFinishedNoteIDInTracks[trackID], #notes do
 				local note = notes[noteID]
 					
 				local noteTime = note:getTime()
 				local noteLength = note:getLength() or 0
 				
 				if noteTime + noteLength < time then
-					self.firstNonFinishedNoteIdInTracks[trackID] = math.max(noteID+1, self.firstNonFinishedNoteIdInTracks[trackID])
+					self.firstNonFinishedNoteIDInTracks[trackID] = math.max(noteID+1, self.firstNonFinishedNoteIDInTracks[trackID])
 					break
 				end
 			end
@@ -117,8 +119,8 @@ class "Player" {
 		return self.playbackSpeed
 	end,
 	
-	getFirstNonFinishedNoteIdInTracks = function (self)
-		return self.firstNonFinishedNoteIdInTracks
+	getfirstNonFinishedNoteIDInTracks = function (self)
+		return self.firstNonFinishedNoteIDInTracks
 	end,
 	
 	getCurrentPitchBendValueInTracks = function (self)

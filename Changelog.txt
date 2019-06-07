@@ -1,0 +1,13 @@
+Added:
+- Resize window
+
+Changed:
+- Almost completely rewritten code
+- Diamond won't overlap with keyboard anymore
+
+Improved:
+- Framerate and memory usage
+- Performance mainly depends on the current screen
+
+Removed:
+- Rounding mode (always use ceilling)

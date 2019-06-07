@@ -8,22 +8,17 @@ class "NotesComponent" {
 		self.noteScale = 1
 		self.noteLengthOffset = 0
 		self.noteLengthFlooring = true
-		self.brightNote = true
-		self.noteAlpha = 0.9
-		self.rainbow = true
+		
+		self.colourAlpha = 0.9
 		self.colourSaturation = 0.5
 		self.colourValue = 0.5
+		
+		self.brightNote = true
 		self.brightNoteSaturation = 0.4
 		self.brightNodeValue = 1
-		self.rainbowHueShift = 0.5
 		
-		local song = player:getSong()
-		local tracks = song:getTracks()
-		
-		self.isDiamondTracks = {}
-		for trackID = 1, #tracks do
-			self.isDiamondTracks[trackID] = false
-		end
+		self.useRainbowColour = true
+		self.rainbowColourHueShift = 0.5
 	end,
 
 	-- Implement
@@ -32,7 +27,8 @@ class "NotesComponent" {
 	end,
 	
 	-- Implement
-	draw = function (self, lowestKey, highestKey, keyGap, trackIsVisible)
+	draw = function (self, lowestKey, highestKey, keyGap)
+		-- Caching -------------------
 		local song = player:getSong()
 		
 		local tracks = song:getTracks()
@@ -50,106 +46,83 @@ class "NotesComponent" {
 		local noteScale = self.noteScale*128/song:getTimeDivision()
 		local pixelMoved = math.floor(noteScale*(time-song:getInitialTime()))
 		
-		local firstNonFinishedNoteIdInTracks = player:getFirstNonFinishedNoteIdInTracks()
+		local leftBoundary = math.floor(self.x * screenWidth)
+		
+		local firstNonFinishedNoteIDInTracks = player:getfirstNonFinishedNoteIDInTracks()
 		local currentPitchBendValueInTracks = player:getCurrentPitchBendValueInTracks()
 		
+		-- Drawing -------------------
 		for trackID = 1, #tracks do
-			if trackIsVisible[trackID] then
-				local notes = tracks[trackID]:getNotes()
-				local pitchBends = tracks[trackID]:getPitchBends()
+			local track = tracks[trackID]
+			
+			if track:getEnabled() then
+				local notes = track:getNotes()
+				local pitchBends = track:getPitchBends()
 				
-				for noteID = firstNonFinishedNoteIdInTracks[trackID], #notes do
+				for noteID = firstNonFinishedNoteIDInTracks[trackID], #notes do
 					local note = notes[noteID]
-					
 					local noteTime = note:getTime()
 					local noteLength = note:getLength() or 0
+					local notePitch = note:getPitch()
 					
-					if noteTime + noteLength >= time then
-						local pitch = note:getPitch()
-						local velocity = note:getVelocity()
+					if notePitch >= lowestKey and notePitch <= highestKey then
+						local noteX = math.floor(screenWidth*self.x + noteScale * (noteTime-song:getInitialTime()) - pixelMoved)
+						local noteY = (highestKey-notePitch) * heightForEachKey
+						local noteCulledWidth = math.max(leftBoundary - noteX, 0)
 						
-						local noteX = noteScale * (noteTime-song:getInitialTime()) - pixelMoved
-						
-						-- If the current event is outside the screen, then so to the later events
-						if screenWidth*self.x + noteX >= screenWidth then
+						-- If the current note is outside the right boundary, then so to the later notes
+						if noteX >= screenWidth then
 							break
 						end
 						
-						noteLength = noteScale*noteLength + math.min(noteX,0) - self.noteLengthOffset
 						
-						if velocity > 0 and math.max(noteX,0)+noteLength >= 0 then
-							local h,s,v
+						local h,s,v
+						if self.useRainbowColour then
+							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowColourHueShift) % 1, self.colourSaturation, self.colourValue
+						else
+							local chColourPtr = tracks.colour[trackID]
+							h,s,v = chColourPtr[1], chColourPtr[2], chColourPtr[3]
+						end
+						
+						-- Brighten up the key while playing
+						if self.brightNote and noteTime <= time then
+							s = self.brightNoteSaturation
+							v = self.brightNodeValue
+						end
+						
+						love.graphics.setColor(vivid.HSVtoRGB(h,s,v,self.colourAlpha))
+						
+						if track:getIsDiamond() then
+							local size = math.max(12/7*(screenHeight / (highestKey-lowestKey+1))*keyHeightRatio, 0)
+							local halfSize = size / 2
 							
-							if self.rainbow then
-								h, s, v = ((pitch-lowestKey) / highestKey + self.rainbowHueShift) % 1, self.colourSaturation, self.colourValue
+							love.graphics.polygon("fill",
+								noteX+noteCulledWidth, noteY,
+								math.max(noteX+noteCulledWidth-halfSize, leftBoundary), noteY+halfSize,
+								noteX+noteCulledWidth, noteY+size,
+								noteX+noteCulledWidth+halfSize, noteY+halfSize
+							)
+						else
+							-- Here math.max seems to be unnecessary since it would be culled out before.
+							-- However, the precision problem may cause a very small negative number.
+							-- Hence, to prevent a note being shown outside the boundary, using a math.max is better.
+							local noteWidth = math.ceil(math.max(noteScale*noteLength - self.noteLengthOffset, 0))
+							local noteHeight = math.max((screenHeight / (highestKey-lowestKey+1))*keyHeightRatio, 0)
+							
+							-- if noteX <= 0 then
+							if false then
+								local pbV = currentPitchBendValueInTracks[trackID]
+								local ky = pbV / 8192
+								love.graphics.push()
+								love.graphics.shear(0, -ky)
+								love.graphics.rectangle("fill", noteX,noteY-(noteX)*ky, noteWidth,noteHeight)
+								love.graphics.pop()
 							else
-								local chColourPtr = tracks.colour[trackID]
-								h, s, v = chColourPtr[1], chColourPtr[2], chColourPtr[3]
-							end
-							
-							-- Brighter when hitting
-							if self.brightNote and noteX <= 0 then
-								s = self.brightNoteSaturation
-								v = self.brightNodeValue
-							end
-							
-							local r,g,b = vivid.HSVtoRGB(h,s,v)
-							
-							local px = math.max(math.floor(noteX), 0) + screenWidth*self.x
-							local py = (highestKey-pitch) * heightForEachKey
-							
-							if self.isDiamondTracks[trackID] then
-								local size = screenHeight / (highestKey-lowestKey+1)
-								
-								py = py + size / 2
-								
-								if py+size >= 0 and py-size < screenHeight then
-									love.graphics.setColor(r, g, b, self.noteAlpha)
-									love.graphics.polygon("fill",
-										px,			py-size,
-										px-size, 	py,
-										px,			py+size,
-										px+size, 	py
-									)
-								end
-							else
-								local pw = noteLength
-								if self.noteLengthFlooring then
-									pw = math.floor(pw, 0)
-								else
-									pw = math.ceil(pw, 0)
-								end
-								pw = math.min(math.max(pw, 0), screenWidth-noteX-screenWidth*self.x)
-								
-								local ph = (screenHeight / (highestKey-lowestKey+1))*keyHeightRatio
-								
-								if py+ph >= 0 and py < screenHeight and pw > 0 and ph > 0 then
-									love.graphics.setColor(r, g, b, self.noteAlpha)
-									
-									
-									-- if noteX <= 0 then
-									if false then
-										local pbV = currentPitchBendValueInTracks[trackID]
-										local ky = pbV / 8192
-										love.graphics.push()
-										love.graphics.shear(0, -ky)
-										love.graphics.rectangle("fill", px,py-(px)*ky, pw,ph)
-										love.graphics.pop()
-									else
-										love.graphics.rectangle("fill", px,py, pw,ph)
-									end
-									
-									
-								end
-								
+								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight)
 							end
 						end
 					end
 				end
-				
-				love.graphics.setColor(1,1,1,1)
-				-- love.graphics.print(self.firstNonFinishedNoteIdInTracks[trackID], 0, 200+20*trackID)
-				-- love.graphics.print(self.currentPitchBendValueInTracks[trackID], 0, 200+20*trackID)
 			end
 		end
 	end,

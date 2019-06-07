@@ -1,3 +1,8 @@
+-- Heper functions
+math.clamp = function (x,a,b)
+	return math.max(math.min(x,b),a)
+end
+
 -- Load global libraries
 bit = require "bit"
 ffi = require "ffi"

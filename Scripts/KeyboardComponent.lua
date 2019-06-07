@@ -6,9 +6,10 @@ class "KeyboardComponent" {
 		self:super(x,y, width,height)
 		
 		self.rainbow = true
-		self.keyboardBrightAlpha = 0.8
-		self.keyboardBlackAlpha = 0.8
-		self.keyboardWhiteAlpha = 0.8
+		self.rainbowHueShift = 0.5
+		self.blackKeyColour = {0,0,0.2,0.5}
+		self.whiteKeyColour = {0,0,0.9,0.5}
+		self.brightKeyColour = {0,1,1,0.5}
 		
 		-- TODO: adjust these values
 		self.whiteHeadsUpperPartRatio = {
@@ -25,12 +26,12 @@ class "KeyboardComponent" {
 	end,
 	
 	-- Implement
-	draw = function (self, lowestKey, highestKey, keyGap, trackIsVisible)
+	draw = function (self, lowestKey, highestKey, keyGap)
 		local screenWidth = love.graphics.getWidth()
 		local screenHeight = love.graphics.getHeight()
 		local resolutionRatio = screenWidth / screenHeight
-		local keyboardX = screenWidth * self.x
-		local keyboardWidth = screenWidth * self.width
+		local keyboardX = math.floor(screenWidth * self.x)
+		local keyboardWidth = math.floor(screenWidth * self.width)
 		local spaceForEachKey = screenHeight / (highestKey-lowestKey+1)
 		
 		local keyHeightRatio = 1 - keyGap
@@ -40,15 +41,17 @@ class "KeyboardComponent" {
 			isPlayingKeys[i] = false
 		end
 		
-		local firstNonFinishedNoteIdInTracks = player:getFirstNonFinishedNoteIdInTracks()
+		local firstNonFinishedNoteIDInTracks = player:getfirstNonFinishedNoteIDInTracks()
 		local song = player:getSong()
 		local tracks = song:getTracks()
 		local time = player:getTimeManager():getTime()
 		
 		for trackID = 1, #tracks do
-			if trackIsVisible[trackID] then
+			local track = tracks[trackID]
+			
+			if track:getEnabled() then
 				local notes = tracks[trackID]:getNotes()
-				for noteID = firstNonFinishedNoteIdInTracks[trackID], #notes do
+				for noteID = firstNonFinishedNoteIDInTracks[trackID], #notes do
 					local note = notes[noteID]
 					local noteTime = note:getTime()
 					local noteLength = note:getLength()
@@ -70,47 +73,47 @@ class "KeyboardComponent" {
 			if semitoneInOctave == 1 or semitoneInOctave == 3 or semitoneInOctave == 6 or semitoneInOctave == 8 or semitoneInOctave == 10 then
 				-- Black Key
 				if isPlayingKeys[i] == true then
-					love.graphics.setColor(0,0,1,self.keyboardWhiteAlpha)
+					love.graphics.setColor(vivid.HSVtoRGB(((i-lowestKey) / highestKey + self.rainbowHueShift) % 1, self.brightKeyColour[2], self.brightKeyColour[3], self.brightKeyColour[4]))
 				else
-					love.graphics.setColor(1,1,1,self.keyboardWhiteAlpha)
+					love.graphics.setColor(vivid.HSVtoRGB(unpack(self.blackKeyColour)))
 				end
-				love.graphics.rectangle("fill", self.x,keyY, screenWidth*self.width*0.65,keyHeight)
+				love.graphics.rectangle("fill", self.x,keyY, keyboardWidth*0.65,keyHeight)
 				
 				-- White Key Heads
 				if isPlayingKeys[i+1] == true then
-					love.graphics.setColor(0,0,1,self.keyboardWhiteAlpha)
+					love.graphics.setColor(vivid.HSVtoRGB(((i-lowestKey) / highestKey + self.rainbowHueShift) % 1, self.brightKeyColour[2], self.brightKeyColour[3], self.brightKeyColour[4]))
 				else
-					love.graphics.setColor(1,1,1,self.keyboardWhiteAlpha)
+					love.graphics.setColor(vivid.HSVtoRGB(unpack(self.whiteKeyColour)))
 				end
 				love.graphics.rectangle(
 					"fill",
-					self.x+screenWidth*self.width*0.65+keyGap*spaceForEachKey,
+					self.x+keyboardWidth*0.65+keyGap*spaceForEachKey,
 					keyY-keyGap*spaceForEachKey,
-					screenWidth*self.width*0.35-keyGap*spaceForEachKey,
+					keyboardWidth*0.35-keyGap*spaceForEachKey,
 					(keyHeight+2*keyGap*spaceForEachKey)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - keyGap*spaceForEachKey/2
 				)
 				
 				if isPlayingKeys[i-1] == true then
-					love.graphics.setColor(0,0,1,self.keyboardWhiteAlpha)
+					love.graphics.setColor(vivid.HSVtoRGB(((i-lowestKey) / highestKey + self.rainbowHueShift) % 1, self.brightKeyColour[2], self.brightKeyColour[3], self.brightKeyColour[4]))
 				else
-					love.graphics.setColor(1,1,1,self.keyboardWhiteAlpha)
+					love.graphics.setColor(vivid.HSVtoRGB(unpack(self.whiteKeyColour)))
 				end
 				love.graphics.rectangle(
 					"fill",
-					self.x+screenWidth*self.width*0.65+keyGap*spaceForEachKey,
+					self.x+keyboardWidth*0.65+keyGap*spaceForEachKey,
 					keyY-keyGap*spaceForEachKey+(keyHeight+2*keyGap*spaceForEachKey)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - keyGap*spaceForEachKey/2+keyGap*spaceForEachKey,
-					screenWidth*self.width*0.35-keyGap*spaceForEachKey,
+					keyboardWidth*0.35-keyGap*spaceForEachKey,
 					(keyHeight+2*keyGap*spaceForEachKey)*(1-self.whiteHeadsUpperPartRatio[semitoneInOctave]) - keyGap*spaceForEachKey/2
 				)
 			else
 				
 				-- White Key
 				if isPlayingKeys[i] == true then
-					love.graphics.setColor(0,0,1,self.keyboardWhiteAlpha)
+					love.graphics.setColor(vivid.HSVtoRGB(((i-lowestKey) / highestKey + self.rainbowHueShift) % 1, self.brightKeyColour[2], self.brightKeyColour[3], self.brightKeyColour[4]))
 				else
-					love.graphics.setColor(1,1,1,self.keyboardWhiteAlpha)
+					love.graphics.setColor(vivid.HSVtoRGB(unpack(self.whiteKeyColour)))
 				end
-				love.graphics.rectangle("fill", self.x,keyY, screenWidth*self.width,keyHeight)
+				love.graphics.rectangle("fill", self.x,keyY, keyboardWidth,keyHeight)
 			end
 		end
 	end,

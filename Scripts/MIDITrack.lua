@@ -3,6 +3,34 @@ class "MIDITrack" {
 		self.rawEvents = {}
 		self.notes = {}
 		self.pitchBends = {}
+		
+		self.enabled = true
+		self.customColourHue = 0
+		self.isDiamond = true
+	end,
+	
+	getEnabled = function (self)
+		return self.enabled
+	end,
+	
+	setEnabled = function (self, enabled)
+		self.enabled = enabled
+	end,
+	
+	getCustomColourHue = function (self)
+		return self.enabled
+	end,
+	
+	setCustomColourHue = function (self, customColourHue)
+		self.customColourHue = customColourHue
+	end,
+	
+	getIsDiamond = function (self)
+		return self.isDiamond
+	end,
+	
+	setIsDiamond = function (self, isDiamond)
+		self.isDiamond = isDiamond
 	end,
 
 	getRawEvents = function (self)
