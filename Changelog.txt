@@ -1,5 +1,6 @@
 Added:
 - Resize window
+- Pitch Bend visualization
 
 Changed:
 - Almost completely rewritten code
@@ -8,6 +9,11 @@ Changed:
 Improved:
 - Framerate and memory usage
 - Performance mainly depends on the current screen
+- Can use black key as boundaries
 
 Removed:
 - Rounding mode (always use ceilling)
+
+--TODO:
+rounded rectangles
+keyboard animation

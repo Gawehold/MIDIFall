@@ -3,7 +3,7 @@ class "Player" {
 		self.song = song
 		self.timeManager = TimeManager(self)
 		
-		self.playbackSpeed = 1.0
+		self.playbackSpeed = 1
 		
 		local tracks = self.song:getTracks()
 		
@@ -17,11 +17,15 @@ class "Player" {
 			self.firstNonFinishedNoteIDInTracks[i] = 1
 		end
 		
-		self.lastPitchBendIDInTracks = {}
+		self.currentPitchBendIDInTracks = {}
+		self.previousPitchBendValueInTracks = {}
 		self.currentPitchBendValueInTracks = {}
+		self.isPitchBendValueInTracksIncreasing = {}
 		for i = 1, #tracks do
-			self.lastPitchBendIDInTracks[i] = 1
+			self.currentPitchBendIDInTracks[i] = 1
+			self.previousPitchBendValueInTracks[i] = 0
 			self.currentPitchBendValueInTracks[i] = 0
+			self.isPitchBendValueInTracksIncreasing[i] = 0
 		end
 	end,
 
@@ -56,23 +60,23 @@ class "Player" {
 		for trackID = 1, #tracks do
 			local pitchBends = tracks[trackID]:getPitchBends()
 			
-			for pbID = self.lastPitchBendIDInTracks[trackID], #pitchBends do
+			for pbID = self.currentPitchBendIDInTracks[trackID], #pitchBends do
 				local pitchBend = pitchBends[pbID]
 				
 				local pbTime = pitchBend:getTime()
 				
 				if time >= pbTime then
-					self.lastPitchBendIDInTracks[trackID] = pbID
+					self.currentPitchBendIDInTracks[trackID] = pbID
 				else
 					break
 				end
 			end
 			
 			if #pitchBends > 0 then
-				local curPBID = self.lastPitchBendIDInTracks[trackID]
+				local curPBID = self.currentPitchBendIDInTracks[trackID]
 				local curPB = pitchBends[curPBID]
 				
-				if #pitchBends >= self.lastPitchBendIDInTracks[trackID] + 1 then	
+				if #pitchBends >= self.currentPitchBendIDInTracks[trackID] + 1 then	
 					local nextPB = pitchBends[curPBID+1]
 					
 					-- Linear Interpolation
@@ -81,6 +85,21 @@ class "Player" {
 					self.currentPitchBendValueInTracks[trackID] = curPB:getSignedValue()
 				end
 			end
+			
+			-- Check whether the pitchbend value is increasing or decreasing
+			-- local difference = self.currentPitchBendValueInTracks[trackID] - self.previousPitchBendValueInTracks[trackID]
+			-- if math.abs(difference) > 0.1 then
+				-- if difference > 0 then
+					-- self.isPitchBendValueInTracksIncreasing[trackID] = 1
+				-- else
+					-- self.isPitchBendValueInTracksIncreasing[trackID] = -1
+				-- end
+			-- else
+				-- self.isPitchBendValueInTracksIncreasing[trackID] = 0
+			-- end
+			-- -- print(self.previousPitchBendValueInTracks[trackID],self.currentPitchBendValueInTracks[trackID],self.currentPitchBendValueInTracks[trackID] > self.previousPitchBendValueInTracks[trackID])
+			
+			-- self.previousPitchBendValueInTracks[trackID] = self.currentPitchBendValueInTracks[trackID]
 		end
 		
 		------------- Update first non-finished note ID of each track
@@ -125,5 +144,9 @@ class "Player" {
 	
 	getCurrentPitchBendValueInTracks = function (self)
 		return self.currentPitchBendValueInTracks
+	end,
+	
+	getIsPitchBendValueInTracksIncreasing = function (self)
+		return self.isPitchBendValueInTracksIncreasing
 	end,
 }

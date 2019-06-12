@@ -5,8 +5,8 @@ class "MIDITrack" {
 		self.pitchBends = {}
 		
 		self.enabled = true
-		self.customColourHue = 0
-		self.isDiamond = true
+		self.customColourHSV = {0,0,1}
+		self.isDiamond = false
 	end,
 	
 	getEnabled = function (self)
@@ -17,12 +17,12 @@ class "MIDITrack" {
 		self.enabled = enabled
 	end,
 	
-	getCustomColourHue = function (self)
-		return self.enabled
+	getCustomColourHSV = function (self)
+		return self.customColourHSV
 	end,
 	
-	setCustomColourHue = function (self, customColourHue)
-		self.customColourHue = customColourHue
+	setCustomColourHSV = function (self, customColourHSV)
+		self.customColourHSV = customColourHSV
 	end,
 	
 	getIsDiamond = function (self)
