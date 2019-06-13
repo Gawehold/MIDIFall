@@ -13,8 +13,8 @@ class "NotesComponent" {
 		
 		self.useRainbowColour = true
 		self.rainbowColourHueShift = 0.5
-		self.rainbowColourSaturation = 0.5
-		self.rainbowColourValue = 0.5
+		self.rainbowColourSaturation = 0.8
+		self.rainbowColourValue = 0.8
 		
 		self.brightNote = true
 		self.brightNoteSaturation = 0.4

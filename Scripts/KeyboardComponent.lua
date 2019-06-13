@@ -9,13 +9,13 @@ class "KeyboardComponent" {
 		self.rainbowHueShift = 0.5
 		
 		self.blackKeyColourHSV = {0, 0, 0.2}
-		self.blackKeyAlpha = 0.6
+		self.blackKeyAlpha = 0.0
 		
 		self.whiteKeyColourHSV = {0, 0, 0.9}
-		self.whiteKeyAlpha = 0.6
+		self.whiteKeyAlpha = 0.9
 		
-		self.brightKeyColourHSV = {0,1,1,0.5}
-		self.brightKeyAlpha = 0.8
+		self.brightKeyColourHSV = {0,1,1}
+		self.brightKeyAlpha = 0.9
 		
 		-- TODO: adjust these values
 		self.whiteHeadsUpperPartRatio = {

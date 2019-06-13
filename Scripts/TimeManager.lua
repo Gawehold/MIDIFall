@@ -36,6 +36,7 @@ class "TimeManager" {
 		return self.time
 	end,
 	
+	-- TODO: remove this method later, it is for debug only
 	setTime = function (self, time)
 		self.time = time
 	end,

@@ -5,30 +5,15 @@ class "Player" {
 		
 		self.playbackSpeed = 1
 		
-		local tracks = self.song:getTracks()
-		
 		self.lastPlayedEventIDs = {}
-		for i = 1, #tracks do
-			self.lastPlayedEventIDs[i] = 0
-		end
-		
 		self.firstNonPlayedNoteIDInTracks = {}
 		self.firstNonFinishedNoteIDInTracks = {}
-		for i = 1, #tracks do
-			self.firstNonPlayedNoteIDInTracks[i] = 1
-			self.firstNonFinishedNoteIDInTracks[i] = 1
-		end
-		
 		self.currentPitchBendIDInTracks = {}
 		self.previousPitchBendValueInTracks = {}
 		self.currentPitchBendValueInTracks = {}
 		self.isPitchBendValueInTracksIncreasing = {}
-		for i = 1, #tracks do
-			self.currentPitchBendIDInTracks[i] = 1
-			self.previousPitchBendValueInTracks[i] = 0
-			self.currentPitchBendValueInTracks[i] = 0
-			self.isPitchBendValueInTracksIncreasing[i] = 0
-		end
+		
+		self:initiailzeStates()
 	end,
 
 	update = function (self, dt)
@@ -168,5 +153,25 @@ class "Player" {
 	
 	getIsPitchBendValueInTracksIncreasing = function (self)
 		return self.isPitchBendValueInTracksIncreasing
+	end,
+	
+	initiailzeStates = function (self)
+		local tracks = self.song:getTracks()
+		
+		for i = 1, #tracks do
+			self.lastPlayedEventIDs[i] = 0
+			self.firstNonPlayedNoteIDInTracks[i] = 1
+			self.firstNonFinishedNoteIDInTracks[i] = 1
+			self.currentPitchBendIDInTracks[i] = 1
+			self.previousPitchBendValueInTracks[i] = 0
+			self.currentPitchBendValueInTracks[i] = 0
+			self.isPitchBendValueInTracksIncreasing[i] = 0
+		end
+	end,
+	
+	pause = function (self)
+	end,
+	
+	resume = function (self)
 	end,
 }

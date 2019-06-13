@@ -42,9 +42,9 @@ require "Scripts/KeyboardComponent"
 require "Scripts/FallsComponent"
 require "Scripts/DefaultTheme"
 
--- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Pitch_Bend_4.mid"))
-local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
 player = Player(song)
 
@@ -82,6 +82,10 @@ end
 
 function love.mousemoved( x, y, dx, dy, istouch )
 	if love.mouse.isDown(1) then
+		if dx > 0 then
+			player:initiailzeStates()
+		end
+		
 		local speed = 1
 		if love.keyboard.isDown("lctrl") then speed = 1/4 end
 		

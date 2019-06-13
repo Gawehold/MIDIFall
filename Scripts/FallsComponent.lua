@@ -13,8 +13,8 @@ class "FallsComponent" {
 		
 		self.useRainbowColour = true
 		self.rainbowColourHueShift = 0.5
-		self.rainbowColourSaturation = 0.5
-		self.rainbowColourValue = 0.5
+		self.rainbowColourSaturation = 0.8
+		self.rainbowColourValue = 0.8
 	end,
 
 	-- Implement
