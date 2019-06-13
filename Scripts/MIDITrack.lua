@@ -5,7 +5,7 @@ class "MIDITrack" {
 		self.pitchBends = {}
 		
 		self.enabled = true
-		self.customColourHSV = {0,0,1}
+		self.customColourHSV = {0,1,1}
 		self.isDiamond = false
 	end,
 	

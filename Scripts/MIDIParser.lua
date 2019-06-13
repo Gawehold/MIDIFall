@@ -196,7 +196,6 @@ class "MIDIParser" {
 				
 				-- for j = 1, #track:getRawEvents() do
 					-- local event = track:getRawEvent(j)
-					-- if event:getType() ~= 0xFF then break end
 					-- io.write("\t")
 					-- print(string.format("%d\t0x%02X\t%s\t%s",
 						-- tonumber(event:getTime()),

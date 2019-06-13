@@ -12,8 +12,10 @@ class "Player" {
 			self.lastPlayedEventIDs[i] = 0
 		end
 		
+		self.firstNonPlayedNoteIDInTracks = {}
 		self.firstNonFinishedNoteIDInTracks = {}
 		for i = 1, #tracks do
+			self.firstNonPlayedNoteIDInTracks[i] = 1
 			self.firstNonFinishedNoteIDInTracks[i] = 1
 		end
 		
@@ -102,6 +104,20 @@ class "Player" {
 			-- self.previousPitchBendValueInTracks[trackID] = self.currentPitchBendValueInTracks[trackID]
 		end
 		
+		------------- Update first non-played note ID of each track
+		for trackID = 1, #tracks do
+			local notes = tracks[trackID]:getNotes()
+			for noteID = self.firstNonPlayedNoteIDInTracks[trackID], #notes do
+				local note = notes[noteID]
+				local noteTime = note:getTime()
+				
+				if noteTime <= time then
+					self.firstNonPlayedNoteIDInTracks[trackID] = math.max(noteID+1, self.firstNonPlayedNoteIDInTracks[trackID])
+					break
+				end
+			end
+		end
+		
 		------------- Update first non-finished note ID of each track
 		for trackID = 1, #tracks do
 			local notes = tracks[trackID]:getNotes()
@@ -111,7 +127,7 @@ class "Player" {
 				local noteTime = note:getTime()
 				local noteLength = note:getLength() or 0
 				
-				if noteTime + noteLength < time then
+				if noteTime + noteLength <= time then
 					self.firstNonFinishedNoteIDInTracks[trackID] = math.max(noteID+1, self.firstNonFinishedNoteIDInTracks[trackID])
 					break
 				end
@@ -138,7 +154,11 @@ class "Player" {
 		return self.playbackSpeed
 	end,
 	
-	getfirstNonFinishedNoteIDInTracks = function (self)
+	getFirstNonPlayedNoteIDInTracks = function (self)
+		return self.firstNonPlayedNoteIDInTracks
+	end,
+	
+	getFirstNonFinishedNoteIDInTracks = function (self)
 		return self.firstNonFinishedNoteIDInTracks
 	end,
 	

@@ -9,7 +9,7 @@ class "NotesComponent" {
 		self.noteLengthOffset = 0
 		self.noteLengthFlooring = true
 		
-		self.colourAlpha = 0.9
+		self.colourAlpha = 1.0
 		
 		self.useRainbowColour = true
 		self.rainbowColourHueShift = 0.5
@@ -98,7 +98,7 @@ class "NotesComponent" {
 		
 		local leftBoundary = math.floor(self.x * screenWidth)
 		
-		local firstNonFinishedNoteIDInTracks = player:getfirstNonFinishedNoteIDInTracks()
+		local firstNonFinishedNoteIDInTracks = player:getFirstNonFinishedNoteIDInTracks()
 		local currentPitchBendValueInTracks = player:getCurrentPitchBendValueInTracks()
 		
 		--//////// Main Section ////////
@@ -161,17 +161,17 @@ class "NotesComponent" {
 							local noteWidth = math.ceil(math.max(noteScale*noteLength - self.noteLengthOffset, 0))
 							local noteHeight = math.max((screenHeight / (highestKey-lowestKey+1))*keyHeightRatio, 0)
 							
-							if noteX <= 0 then
+							if noteTime <= time then
 							-- if true then
 							-- if false then
 								local pbV = currentPitchBendValueInTracks[trackID]
-								local ky = pbV / 8192
-								
+								local pbShift = -self.pitchBendSemitone*spaceForEachKey * pbV/8192
 								love.graphics.push()
 								-- love.graphics.setShader(self.noteShader)
 								-- self.noteShader:send("noteX", noteX+noteCulledWidth)
 								-- self.noteShader:send("noteWidth", noteWidth-noteCulledWidth)
-								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY+self.pitchBendSemitone*spaceForEachKey*ky, noteWidth-noteCulledWidth,noteHeight)
+								-- love.graphics.shear(0,pbShift)
+								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY+pbShift, noteWidth-noteCulledWidth,noteHeight)
 								-- love.graphics.setShader()
 								love.graphics.pop()
 								
@@ -179,6 +179,8 @@ class "NotesComponent" {
 								-- love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight, noteHeight/2,noteHeight/2)
 								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight)
 							end
+							-- love.graphics.print(noteTime, 0,50,0,2)
+							-- love.graphics.print(currentPitchBendValueInTracks[trackID], 0,70,0,2)
 						end
 					end
 				end

@@ -39,9 +39,11 @@ require "Scripts/DisplayComponent"
 require "Scripts/BackgroundComponent"
 require "Scripts/NotesComponent"
 require "Scripts/KeyboardComponent"
+require "Scripts/FallsComponent"
 require "Scripts/DefaultTheme"
 
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/Pitch_Bend_4.mid"))
 local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
 player = Player(song)
@@ -76,4 +78,13 @@ function love.quit()
 	midi.gc()
 	
 	-- TODO: free memory allocated by ffi.C.malloc()
+end
+
+function love.mousemoved( x, y, dx, dy, istouch )
+	if love.mouse.isDown(1) then
+		local speed = 1
+		if love.keyboard.isDown("lctrl") then speed = 1/4 end
+		
+		player:getTimeManager():setTime(player:getTimeManager():getTime()-dx)
+	end
 end

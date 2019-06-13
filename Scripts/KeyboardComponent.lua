@@ -36,7 +36,7 @@ class "KeyboardComponent" {
 	update = function (self, dt)
 		------------------------------------------------------------------------
 		-- Check which keys are being played
-		local firstNonFinishedNoteIDInTracks = player:getfirstNonFinishedNoteIDInTracks()
+		local firstNonFinishedNoteIDInTracks = player:getFirstNonFinishedNoteIDInTracks()
 		local song = player:getSong()
 		local tracks = song:getTracks()
 		local time = player:getTimeManager():getTime()
@@ -58,7 +58,7 @@ class "KeyboardComponent" {
 					if noteTime > time then
 						break
 					else
-						self.isPlayingKeys[note:getPitch()] = true
+						self.isPlayingKeys[note:getPitch()] = trackID
 					end
 				end
 			end
@@ -83,12 +83,12 @@ class "KeyboardComponent" {
 			
 			if self:checkIsBlackKey(i) then
 				self:setKeyColour(i, lowestKey, highestKey, true)
-				love.graphics.rectangle("fill", self.x,keyY, keyboardWidth*0.65,keyHeight)
+				love.graphics.rectangle("fill", keyboardX,keyY, keyboardWidth*0.65,keyHeight)
 				
 				self:setKeyColour(i+1, lowestKey, highestKey, false)
 				love.graphics.rectangle(
 					"fill",
-					self.x+keyboardWidth*0.65+keyGap*spaceForEachKey,
+					keyboardX+keyboardWidth*0.65+keyGap*spaceForEachKey,
 					keyY-keyGap*spaceForEachKey,
 					keyboardWidth*0.35-keyGap*spaceForEachKey,
 					(keyHeight+2*keyGap*spaceForEachKey)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - keyGap*spaceForEachKey/2
@@ -97,14 +97,14 @@ class "KeyboardComponent" {
 				self:setKeyColour(i-1, lowestKey, highestKey, false)
 				love.graphics.rectangle(
 					"fill",
-					self.x+keyboardWidth*0.65+keyGap*spaceForEachKey,
+					keyboardX+keyboardWidth*0.65+keyGap*spaceForEachKey,
 					keyY-keyGap*spaceForEachKey+(keyHeight+2*keyGap*spaceForEachKey)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - keyGap*spaceForEachKey/2+keyGap*spaceForEachKey,
 					keyboardWidth*0.35-keyGap*spaceForEachKey,
 					(keyHeight+2*keyGap*spaceForEachKey)*(1-self.whiteHeadsUpperPartRatio[semitoneInOctave]) - keyGap*spaceForEachKey/2
 				)
 			else
 				self:setKeyColour(i, lowestKey, highestKey, false)
-				love.graphics.rectangle("fill", self.x,keyY, keyboardWidth,keyHeight)
+				love.graphics.rectangle("fill", keyboardX,keyY, keyboardWidth,keyHeight)
 			end
 		end
 	end,
@@ -120,17 +120,24 @@ class "KeyboardComponent" {
 	end,
 	
 	setKeyColour = function (self, i, lowestKey, highestKey, isBlackKey)
+		local h
+		if self.rainbow then
+			h = ((i-lowestKey) / highestKey + self.rainbowHueShift) % 1
+		elseif self.isPlayingKeys[i] then
+			h = player:getSong():getTracks()[self.isPlayingKeys[i]]:getCustomColourHSV()
+		end
+				
 		if isBlackKey then
-			if self.isPlayingKeys[i] == true then
-				love.graphics.setColor(vivid.HSVtoRGB(((i-lowestKey) / highestKey + self.rainbowHueShift) % 1, self.brightKeyColourHSV[2], self.brightKeyColourHSV[3], self.brightKeyAlpha))
+			if self.isPlayingKeys[i] then
+				love.graphics.setColor(vivid.HSVtoRGB(h, self.brightKeyColourHSV[2], self.brightKeyColourHSV[3], self.brightKeyAlpha))
 			else
 				local r,g,b,a = self.blackKeyColourHSV[1], self.blackKeyColourHSV[2], self.blackKeyColourHSV[3], self.blackKeyAlpha
 				love.graphics.setColor(vivid.HSVtoRGB(r,g,b,a))
 			end
 			
 		else
-			if self.isPlayingKeys[i] == true then
-				love.graphics.setColor(vivid.HSVtoRGB(((i-lowestKey) / highestKey + self.rainbowHueShift) % 1, self.brightKeyColourHSV[2], self.brightKeyColourHSV[3], self.brightKeyAlpha))
+			if self.isPlayingKeys[i] then
+				love.graphics.setColor(vivid.HSVtoRGB(h, self.brightKeyColourHSV[2], self.brightKeyColourHSV[3], self.brightKeyAlpha))
 			else
 				local r,g,b,a = self.whiteKeyColourHSV[1], self.whiteKeyColourHSV[2], self.whiteKeyColourHSV[3], self.whiteKeyAlpha
 				love.graphics.setColor(vivid.HSVtoRGB(r,g,b,a))

@@ -35,4 +35,8 @@ class "TimeManager" {
 	getTime = function (self)
 		return self.time
 	end,
+	
+	setTime = function (self, time)
+		self.time = time
+	end,
 }
