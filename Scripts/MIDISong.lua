@@ -6,6 +6,7 @@ class "MIDISong" {
 		self.tracks = {}
 		self.tempoChanges = {}
 		self.timeSignatures = {}
+		self.measures = {}
 		
 		self.initialTime = 0
 		self.endTime = 0
@@ -55,6 +56,14 @@ class "MIDISong" {
 		self.timeSignatures[#self.timeSignatures+1] = timeSignature
 	end,
 	
+	addMeasure = function (self, measure)
+		self.measures[#self.measures+1] = measure
+	end,
+	
+	getMeasures = function (self)
+		return self.measures
+	end,
+	
 	getInitialTime = function (self)
 		return self.initialTime
 	end,
@@ -99,6 +108,32 @@ class "MIDISong" {
 						self:addTimeSignature(event)
 					end
 				end
+			end
+		end
+		
+		-- Initialize the measures
+		local currentMeasureTime = 0
+		local currentMeasureLength = 0
+		local currentTimeSignature = nil
+		
+		for measureID = 1, math.huge do
+			for tsID, ts in ipairs(self.timeSignatures) do
+				local tsTime = ts:getTime()
+				
+				if currentMeasureTime >= tsTime then
+					currentTimeSignature = ts
+				else
+					break
+				end
+			end
+			
+			currentMeasureLength = currentTimeSignature:getNumerator() * (self.timeDivision * currentTimeSignature:getDenominator() / 4)
+			self:addMeasure(Measure(currentMeasureTime))
+			
+			currentMeasureTime = currentMeasureTime + currentMeasureLength
+			
+			if currentMeasureTime > self.endTime then
+				break
 			end
 		end
 		

@@ -27,6 +27,7 @@ require "Scripts/MIDIEvent"
 require "Scripts/TempoChange"
 require "Scripts/TimeSignature"
 require "Scripts/Note"
+require "Scripts/Measure"
 require "Scripts/PitchBend"
 require "Scripts/MIDITrack"
 require "Scripts/MIDISong"
@@ -40,11 +41,13 @@ require "Scripts/BackgroundComponent"
 require "Scripts/NotesComponent"
 require "Scripts/KeyboardComponent"
 require "Scripts/FallsComponent"
+require "Scripts/HitAnimationComponent"
+require "Scripts/MeasuresComponent"
 require "Scripts/DefaultTheme"
 
-local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
--- local song = MIDIParser:parse(love.filesystem.read("Assets/Pitch_Bend_4.mid"))
--- local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
 player = Player(song)
 
@@ -58,6 +61,8 @@ function love.load()
 	-- port:sendMessage(0x90, 52, 127)
 	-- port:noteOn(60,127, 0)
 	-- port:noteOff(60,5, 0)
+	
+	midi.sendMessage(0,0,0,0)	-- for active the midi device, it takes a little bit time, if we don't do this, the playback of first MIDI event will be flicked
 end
 
 function love.update(dt)
@@ -72,6 +77,7 @@ function love.draw()
 	love.graphics.setColor(1,1,1,1)
 	love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
 	love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
+	love.graphics.print(player:getSong():getTempoChanges()[player:getTimeManager().currentTempoChangeID]:getTempo(), 0,40, 0, 2)
 end
 
 function love.quit()

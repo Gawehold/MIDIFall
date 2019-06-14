@@ -12,6 +12,7 @@ class "Player" {
 		self.previousPitchBendValueInTracks = {}
 		self.currentPitchBendValueInTracks = {}
 		self.isPitchBendValueInTracksIncreasing = {}
+		self.firstNonStartedMeasureID = nil
 		
 		self:initiailzeStates()
 	end,
@@ -119,6 +120,16 @@ class "Player" {
 			end
 		end
 		
+		---------- Update lastStartedMeasure
+		local measures = song:getMeasures()
+		
+		for measureID = self.firstNonStartedMeasureID, #measures do
+			if time < measures[measureID]:getTime() then
+				self.firstNonStartedMeasureID = measureID
+				break
+			end
+		end
+		
 		------------ Update the time --------
 		self.timeManager:update(dt)
 	end,
@@ -155,6 +166,10 @@ class "Player" {
 		return self.isPitchBendValueInTracksIncreasing
 	end,
 	
+	getFirstNonStartedMeasureID = function (self)
+		return self.firstNonStartedMeasureID
+	end,
+	
 	initiailzeStates = function (self)
 		local tracks = self.song:getTracks()
 		
@@ -166,6 +181,7 @@ class "Player" {
 			self.previousPitchBendValueInTracks[i] = 0
 			self.currentPitchBendValueInTracks[i] = 0
 			self.isPitchBendValueInTracksIncreasing[i] = 0
+			self.firstNonStartedMeasureID = 1
 		end
 	end,
 	

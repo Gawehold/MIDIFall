@@ -5,8 +5,8 @@ class "NotesComponent" {
 	new = function (self, x,y, width,height)
 		self:super(x,y, width,height)
 		
-		self.noteScale = 1
-		self.noteLengthOffset = 0
+		self.noteScale = 1.0
+		self.noteLengthOffset = 0		-- TODO: offset not yet done!
 		self.noteLengthFlooring = true
 		
 		self.colourAlpha = 1.0
@@ -103,6 +103,7 @@ class "NotesComponent" {
 		
 		--//////// Main Section ////////
 		for trackID = 1, #tracks do
+		-- for trackID = 3,3 do
 			local track = tracks[trackID]
 			
 			if track:getEnabled() then
@@ -178,7 +179,13 @@ class "NotesComponent" {
 							else
 								-- love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight, noteHeight/2,noteHeight/2)
 								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight)
+								
+								-- love.graphics.setColor(0,0,0)
+								-- love.graphics.setLineWidth(4)
+								-- love.graphics.rectangle("line", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight)
 							end
+							-- love.graphics.setColor(1,1,1)
+							-- love.graphics.print(noteID, noteX+noteCulledWidth,noteY)
 							-- love.graphics.print(noteTime, 0,50,0,2)
 							-- love.graphics.print(currentPitchBendValueInTracks[trackID], 0,70,0,2)
 						end
@@ -186,5 +193,9 @@ class "NotesComponent" {
 				end
 			end
 		end
+	end,
+	
+	getNotesScale = function (self)
+		return self.noteScale
 	end,
 }

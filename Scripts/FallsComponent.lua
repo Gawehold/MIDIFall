@@ -53,10 +53,7 @@ class "FallsComponent" {
 			if track:getEnabled() then
 				local notes = track:getNotes()
 				
-				for noteID = firstNonPlayedNoteIDInTracks[trackID], 1, -1 do
-					if noteID > #notes then
-						break
-					end
+				for noteID = firstNonPlayedNoteIDInTracks[trackID]-1, 1, -1 do
 					
 					local note = notes[noteID]
 					local noteTime = note:getTime()
@@ -90,6 +87,8 @@ class "FallsComponent" {
 						
 						love.graphics.setColor(vivid.HSVtoRGB(h,s,v,a))
 						love.graphics.rectangle("fill", noteX,noteY, noteWidth,noteHeight)
+						
+						
 					end
 				end
 			end
