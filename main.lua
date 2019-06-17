@@ -46,6 +46,7 @@ require "Scripts/MeasuresComponent"
 require "Scripts/DefaultTheme"
 
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/debug.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
 local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
@@ -86,10 +87,22 @@ function love.quit()
 	-- TODO: free memory allocated by ffi.C.malloc()
 end
 
+function love.mousepressed(mouseX, mouseY, button, istouch, presses)
+	
+end
+
+function love.mousereleased(mouseX, mouseY, istouch, presses)
+	player:resume()
+end
+
 function love.mousemoved( x, y, dx, dy, istouch )
 	if love.mouse.isDown(1) then
+		if math.abs(dx) > 0 then
+			player:pause()
+		end
+	
 		if dx > 0 then
-			player:initiailzeStates()
+			-- player:initiailzeStates()
 		end
 		
 		local speed = 1

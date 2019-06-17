@@ -13,11 +13,11 @@ class "DefaultTheme" {
 		local tracks = song:getTracks()
 		
 		self.backgroundComponent = BackgroundComponent(0,0,0,0)
-		self.notesComponent = NotesComponent(0.28,0,0,0)
-		self.keyboardComponent = KeyboardComponent(0.2,0,0.08,1)
+		self.notesComponent = NotesComponent(0.25,0,0,0)
+		self.keyboardComponent = KeyboardComponent(0.2,0,0.05,1)
 		self.fallsComponent = FallsComponent(0,0,0.2,1)
 		
-		self.hitAnimationComponent = HitAnimationComponent(0,0,1,1)
+		self.hitAnimationComponent = HitAnimationComponent(0.2,0,1,1)
 		self.measuresComponent = MeasuresComponent(0.28,0,1,1)
 	end,
 	
@@ -43,7 +43,7 @@ class "DefaultTheme" {
 		self.notesComponent:draw(self.lowestKey,self.highestKey,self.keyGap)
 		self.keyboardComponent:draw(self.lowestKey,self.highestKey,self.keyGap)
 		self.fallsComponent:draw(self.lowestKey,self.highestKey,self.keyGap)
-		self.hitAnimationComponent:draw()
+		self.hitAnimationComponent:draw(self.lowestKey,self.highestKey,self.keyGap)
 		
 		-- love.graphics.pop()
 	end,

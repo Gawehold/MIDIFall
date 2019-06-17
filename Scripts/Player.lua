@@ -3,6 +3,8 @@ class "Player" {
 		self.song = song
 		self.timeManager = TimeManager(self)
 		
+		self.paused = false
+		
 		self.playbackSpeed = 1
 		
 		self.lastPlayedEventIDs = {}
@@ -21,21 +23,24 @@ class "Player" {
 		---------- Playback the MIDI song and update the last played event ID of each track
 		local time = self.timeManager:getTime()
 		-- TODO: Set the intial index of the searching (i.e. j = ?) as the next one of the last played event
-		for i = 1, #self.song:getTracks() do
-			local track = self.song:getTrack(i)
-			
-			if track:getEnabled() then			
-				for j = self.lastPlayedEventIDs[i]+1, #track:getRawEvents() do
-					local event = track:getRawEvent(j)
-					
-					if time >= event:getTime() then
-						if event:getType() < 0xF0 then
-							midi.sendMessage(0, event:getType(), event:getMsg1(), event:getMsg2() or 0)
-							
-							self.lastPlayedEventIDs[i] = j
+		
+		if not self.paused then	-- TODO: should not bypass the MIDI events completely
+			for i = 1, #self.song:getTracks() do
+				local track = self.song:getTrack(i)
+				
+				if track:getEnabled() then			
+					for j = self.lastPlayedEventIDs[i]+1, #track:getRawEvents() do
+						local event = track:getRawEvent(j)
+						
+						if time >= event:getTime() then
+							if event:getType() < 0xF0 then
+								midi.sendMessage(0, event:getType(), event:getMsg1(), event:getMsg2() or 0)
+								
+								self.lastPlayedEventIDs[i] = j
+							end
+						else
+							break
 						end
-					else
-						break
 					end
 				end
 			end
@@ -131,7 +136,9 @@ class "Player" {
 		end
 		
 		------------ Update the time --------
-		self.timeManager:update(dt)
+		if not self.paused then
+			self.timeManager:update(dt)
+		end
 	end,
 
 	getSong = function (self)
@@ -186,8 +193,17 @@ class "Player" {
 	end,
 	
 	pause = function (self)
+		self.paused = true
+		self:mute()
 	end,
 	
 	resume = function (self)
+		self.paused = false
+	end,
+	
+	mute = function (self)
+		for chID = 0, 15 do
+			midi.sendMessage(0, 0xB0+chID, 120, 0)
+		end
 	end,
 }

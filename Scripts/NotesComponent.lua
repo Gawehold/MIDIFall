@@ -172,13 +172,13 @@ class "NotesComponent" {
 								-- self.noteShader:send("noteX", noteX+noteCulledWidth)
 								-- self.noteShader:send("noteWidth", noteWidth-noteCulledWidth)
 								-- love.graphics.shear(0,pbShift)
-								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY+pbShift, noteWidth-noteCulledWidth,noteHeight)
+								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY+pbShift, math.max(noteWidth-noteCulledWidth, 0),noteHeight)
 								-- love.graphics.setShader()
 								love.graphics.pop()
 								
 							else
 								-- love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight, noteHeight/2,noteHeight/2)
-								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight)
+								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, math.max(noteWidth-noteCulledWidth, 0),noteHeight)
 								
 								-- love.graphics.setColor(0,0,0)
 								-- love.graphics.setLineWidth(4)
