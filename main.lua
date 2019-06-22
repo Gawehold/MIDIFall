@@ -111,3 +111,9 @@ function love.mousemoved( x, y, dx, dy, istouch )
 		player:getTimeManager():setTime(player:getTimeManager():getTime()-dx)
 	end
 end
+
+function love.keypressed(key)
+	if key == "o" then
+		defaultTheme:setOrientation((defaultTheme.orientation+1)%4)
+	end
+end

@@ -7,18 +7,17 @@ class "DefaultTheme" {
 		
 		self.lowestKey = 30
 		self.highestKey = 92
-		self.keyGap = 0.3
-		
-		local song = player:getSong()
-		local tracks = song:getTracks()
+		self.keyGap = 0.1
 		
 		self.backgroundComponent = BackgroundComponent(0,0,0,0)
-		self.notesComponent = NotesComponent(0.25,0,0,0)
-		self.keyboardComponent = KeyboardComponent(0.2,0,0.05,1)
-		self.fallsComponent = FallsComponent(0,0,0.2,1)
+		self.notesComponent = NotesComponent(0.35,0,0,0)
+		self.keyboardComponent = KeyboardComponent(0.3,0,0.05,1)
+		self.fallsComponent = FallsComponent(0,0,0.3,1)
 		
-		self.hitAnimationComponent = HitAnimationComponent(0.2,0,1,1)
+		self.hitAnimationComponent = HitAnimationComponent(0.3,0,1,1)
 		self.measuresComponent = MeasuresComponent(0.28,0,1,1)
+		
+		self:setOrientation(0)
 	end,
 	
 	-- Implement
@@ -33,6 +32,9 @@ class "DefaultTheme" {
 		
 	-- Implement
 	draw = function (self)
+		local screenWidth = love.graphics.getWidth()
+		local screenHeight = love.graphics.getHeight()
+	
 		-- love.graphics.push()
 		-- love.graphics.translate(love.graphics.getHeight(), 0)
 		-- love.graphics.rotate(math.pi/2)
@@ -46,5 +48,17 @@ class "DefaultTheme" {
 		self.hitAnimationComponent:draw(self.lowestKey,self.highestKey,self.keyGap)
 		
 		-- love.graphics.pop()
+	end,
+	
+	-- Override
+	setOrientation = function (self, orientation)
+		self.orientation = orientation
+		
+		self.backgroundComponent:setOrientation(orientation)
+		self.notesComponent:setOrientation(orientation)
+		self.keyboardComponent:setOrientation(orientation)
+		self.fallsComponent:setOrientation(orientation)
+		self.hitAnimationComponent:setOrientation(orientation)
+		self.measuresComponent:setOrientation(orientation)
 	end,
 }

@@ -1,7 +1,7 @@
 class "TimeManager" {
 	new = function (self, player)
 		self.player = player
-		self.time = -100
+		self.time = 1000
 		self.currentTempoChangeID = 1
 	end,
 

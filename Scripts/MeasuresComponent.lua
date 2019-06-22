@@ -16,13 +16,18 @@ class "MeasuresComponent" {
 	
 	-- Implement
 	draw = function (self, noteScale)
+		love.graphics.push()
+		
 		local song = player:getSong()
 		local timeDivision = song:getTimeDivision()
 		local time = player:getTimeManager():getTime()
 		
 		local screenWidth = love.graphics.getWidth()
 		local screenHeight = love.graphics.getHeight()
-		local resolutionRatio = screenWidth / screenHeight
+		
+		if self.orientation == 1 or self.orientation == 3 then
+			screenWidth, screenHeight = screenHeight, screenWidth
+		end
 		
 		local pixelMoved = math.floor(noteScale*time)
 		
@@ -31,6 +36,7 @@ class "MeasuresComponent" {
 		local measures = song:getMeasures()
 		
 		local firstNonStartedMeasureID = player:getFirstNonStartedMeasureID()
+		
 		
 		for i = 0, 1 do
 			-- There are two culling direction, so draw forward first, then backward
@@ -68,11 +74,28 @@ class "MeasuresComponent" {
 				
 				local r,g,b = vivid.HSVtoRGB(self.measureColourHSV)
 				local a = math.max(math.min(1 - self.measureConcentrationRate * math.abs(timeUntilMeasureStart+measureLength*0.25) / timeDivision, self.measureAlpha), 0)	-- maximum alpha at the 25% position of the measure
+				
 				love.graphics.setColor(r,g,b,a)
-				love.graphics.rectangle("fill", measureX,0, measureWidth,screenHeight)
+				if self.orientation == 0 then
+					love.graphics.rectangle("fill", measureX,0, measureWidth,screenHeight)
+				elseif self.orientation == 1 then
+					love.graphics.rectangle("fill", 0,screenHeight-measureX, screenHeight,measureWidth)
+				elseif self.orientation == 2 then
+					love.graphics.rectangle("fill", measureWidth-measureX,0, measureWidth,screenHeight)
+				elseif self.orientation == 3 then
+					love.graphics.rectangle("fill", 0,measureX, screenHeight,measureWidth)
+				end
 				
 				love.graphics.setColor(1,1,1,0.8)
-				love.graphics.print(measureID, measureX,0, 0,5)
+				if self.orientation == 0 then
+					love.graphics.print(measureID, measureX,0, 0,5)
+				elseif self.orientation == 1 then
+					love.graphics.print(measureID, 0,screenHeight-measureX, 0,5)
+				elseif self.orientation == 2 then
+					love.graphics.print(measureID, measureWidth-measureX,0, 0,5)
+				elseif self.orientation == 3 then
+					love.graphics.print(measureID, 0,measureX, 0,5)
+				end
 				
 				-- Increment / decrement for the while loop
 				if i == 0 then
@@ -82,5 +105,7 @@ class "MeasuresComponent" {
 				end
 			end
 		end
+		
+		love.graphics.pop()
 	end,
 }

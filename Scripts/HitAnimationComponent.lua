@@ -17,6 +17,8 @@ class "HitAnimationComponent" {
 	
 	-- Implement
 	draw = function (self, lowestKey, highestKey, keyGap)
+		love.graphics.push()
+		
 		--//////// Common Infomation ////////
 		local song = player:getSong()
 		
@@ -25,7 +27,20 @@ class "HitAnimationComponent" {
 		
 		local screenWidth = love.graphics.getWidth()
 		local screenHeight = love.graphics.getHeight()
-		local resolutionRatio = screenWidth / screenHeight
+		if self.orientation == 1 or self.orientation == 3 then
+			if self.orientation == 1 then
+				love.graphics.translate(0,screenHeight)
+				love.graphics.scale(1,-1)
+			end
+			love.graphics.translate(screenWidth, 0)
+			love.graphics.rotate(math.pi/2)
+			
+			screenWidth, screenHeight = screenHeight, screenWidth
+			
+		elseif self.orientation == 2 then
+			love.graphics.translate(screenWidth, 0)
+			love.graphics.scale(-1,1)
+		end
 		
 		local spaceForEachKey = screenHeight / (highestKey-lowestKey+1)
 		local keyHeightRatio = 1 - keyGap
@@ -85,5 +100,7 @@ class "HitAnimationComponent" {
 				end
 			end
 		end
+		
+		love.graphics.pop()
 	end,
 }

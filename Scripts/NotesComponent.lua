@@ -21,55 +21,6 @@ class "NotesComponent" {
 		self.brightNodeValue = 1
 		
 		self.pitchBendSemitone = 12
-		
-			
-		-- self.noteShader = love.graphics.newShader([[
-			-- extern bool isPitchBendValueIncreasing;
-			
-			-- vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords) {
-				-- vec4 texcolor = Texel(tex, texture_coords);
-				
-				-- if (isPitchBendValueIncreasing) {
-					-- return vec4(1,1,1,1);
-				-- } else {
-					-- return vec4(1,0,1,1);
-				-- }
-				
-				-- return texcolor * color;
-			-- }
-		-- ]], [[
-		
-		self.noteShader = love.graphics.newShader([[
-			extern float noteX;
-			extern float noteWidth;
-			
-			vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords) {
-				vec4 texcolor = Texel(tex, texture_coords);
-				
-				for (int i = 0; i < 200; i++) {
-					if ((screen_coords.x+1080-i*30) < screen_coords.y && (screen_coords.x+1080-i*30)+10 >= screen_coords.y) {
-						return vec4(0,0,0,0);
-					}
-				}
-				
-				color.a = color.a * (noteX+noteWidth-screen_coords.x)/50.0f;
-				
-				return  texcolor * color;
-			}
-		]], [[
-			vec4 position(mat4 transform_projection, vec4 vertex_position) {
-				mat4 custom_transform_matrix;
-				
-				custom_transform_matrix = mat4(
-					vec4(1,0,0,0),
-					vec4(0,1,0,0),
-					vec4(0,0,1,0),
-					vec4(0,0,0,1)
-				);
-				
-				return custom_transform_matrix * transform_projection * vertex_position;
-			}
-		]])
 	end,
 
 	-- Implement
@@ -79,6 +30,8 @@ class "NotesComponent" {
 	
 	-- Implement
 	draw = function (self, lowestKey, highestKey, keyGap)
+		love.graphics.push()
+		
 		--//////// Common Infomation ////////
 		local song = player:getSong()
 		
@@ -87,6 +40,22 @@ class "NotesComponent" {
 		
 		local screenWidth = love.graphics.getWidth()
 		local screenHeight = love.graphics.getHeight()
+		
+		if self.orientation == 1 or self.orientation == 3 then
+			if self.orientation == 1 then
+				love.graphics.translate(0,screenHeight)
+				love.graphics.scale(1,-1)
+			end
+			love.graphics.translate(screenWidth, 0)
+			love.graphics.rotate(math.pi/2)
+			
+			screenWidth, screenHeight = screenHeight, screenWidth
+			
+		elseif self.orientation == 2 then
+			love.graphics.translate(screenWidth, 0)
+			love.graphics.scale(-1,1)
+		end
+		
 		local resolutionRatio = screenWidth / screenHeight
 		
 		local spaceForEachKey = screenHeight / (highestKey-lowestKey+1)
@@ -167,14 +136,8 @@ class "NotesComponent" {
 							-- if false then
 								local pbV = currentPitchBendValueInTracks[trackID]
 								local pbShift = -self.pitchBendSemitone*spaceForEachKey * pbV/8192
-								love.graphics.push()
-								-- love.graphics.setShader(self.noteShader)
-								-- self.noteShader:send("noteX", noteX+noteCulledWidth)
-								-- self.noteShader:send("noteWidth", noteWidth-noteCulledWidth)
-								-- love.graphics.shear(0,pbShift)
+								
 								love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY+pbShift, math.max(noteWidth-noteCulledWidth, 0),noteHeight)
-								-- love.graphics.setShader()
-								love.graphics.pop()
 								
 							else
 								-- love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight, noteHeight/2,noteHeight/2)
@@ -193,6 +156,8 @@ class "NotesComponent" {
 				end
 			end
 		end
+		
+		love.graphics.pop()
 	end,
 	
 	getNotesScale = function (self)

@@ -9,7 +9,7 @@ class "FallsComponent" {
 		self.noteLengthOffset = 0
 		self.noteLengthFlooring = true
 		
-		self.colourAlpha = 0.8
+		self.colourAlpha = 0.0
 		
 		self.useRainbowColour = true
 		self.rainbowColourHueShift = 0.5
@@ -24,6 +24,8 @@ class "FallsComponent" {
 	
 	-- Implement
 	draw = function (self, lowestKey, highestKey, keyGap)
+		love.graphics.push()
+		
 		--//////// Common Infomation ////////
 		local song = player:getSong()
 		
@@ -32,6 +34,22 @@ class "FallsComponent" {
 		
 		local screenWidth = love.graphics.getWidth()
 		local screenHeight = love.graphics.getHeight()
+		
+		if self.orientation == 1 or self.orientation == 3 then
+			if self.orientation == 1 then
+				love.graphics.translate(0,screenHeight)
+				love.graphics.scale(1,-1)
+			end
+			love.graphics.translate(screenWidth, 0)
+			love.graphics.rotate(math.pi/2)
+			
+			screenWidth, screenHeight = screenHeight, screenWidth
+			
+		elseif self.orientation == 2 then
+			love.graphics.translate(screenWidth, 0)
+			love.graphics.scale(-1,1)
+		end
+		
 		local resolutionRatio = screenWidth / screenHeight
 		
 		local spaceForEachKey = screenHeight / (highestKey-lowestKey+1)
@@ -83,7 +101,7 @@ class "FallsComponent" {
 							h,s,v = unpack(track:getCustomColourHSV())
 						end
 						
-						a = math.clamp(1 - (time - (noteTime+noteLength))/200, 0, 1)
+						a = self.colourAlpha * math.clamp(1 - (time - (noteTime+noteLength))/200, 0, 1)
 						
 						love.graphics.setColor(vivid.HSVtoRGB(h,s,v,a))
 						love.graphics.rectangle("fill", noteX,noteY, noteWidth,noteHeight)
@@ -93,5 +111,7 @@ class "FallsComponent" {
 				end
 			end
 		end
+		
+		love.graphics.pop()
 	end,
 }

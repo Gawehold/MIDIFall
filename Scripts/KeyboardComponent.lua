@@ -68,11 +68,23 @@ class "KeyboardComponent" {
 	
 	-- Implement
 	draw = function (self, lowestKey, highestKey, keyGap)
+		love.graphics.push()
+		
 		local screenWidth = love.graphics.getWidth()
 		local screenHeight = love.graphics.getHeight()
-		local resolutionRatio = screenWidth / screenHeight
+		if self.orientation == 1 or self.orientation == 3 then
+			love.graphics.translate(screenWidth, 0)
+			love.graphics.rotate(math.pi/2)
+			
+			screenWidth, screenHeight = screenHeight, screenWidth
+		end
+		
 		local keyboardX = math.floor(screenWidth * self.x)
 		local keyboardWidth = math.floor(screenWidth * self.width)
+		if self.orientation == 1 or self.orientation == 2 then
+			keyboardX = screenWidth - keyboardX - keyboardWidth
+		end
+		
 		local spaceForEachKey = screenHeight / (highestKey-lowestKey+1)
 		local keyHeightRatio = 1 - keyGap
 		
@@ -107,6 +119,8 @@ class "KeyboardComponent" {
 				love.graphics.rectangle("fill", keyboardX,keyY, keyboardWidth,keyHeight)
 			end
 		end
+		
+		love.graphics.pop()
 	end,
 	
 	checkIsBlackKey = function (self, i)

@@ -2,15 +2,16 @@ class "BackgroundComponent" {
 	extends "DisplayComponent",
 	
 	-- Override
-	new = function (self, x,y, width,height)
-		self:super(x,y, width,height)
+	new = function (self, left,right,top,bottom)
+		self:super(left,right,top,bottom)
+		
 		self.image = nil
 		self.fits = {true, true}
 		self.scales = {0.2, 0.2}
 		self.offsets = {0, 0}
 		self.isAlignCentre = false
 		
-		self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/background.jpg")
+		self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/1186946-free-wallpaper-for-vertical-monitor-1440x3440.jpg")
 	end,
 	
 	-- Implement
@@ -21,7 +22,6 @@ class "BackgroundComponent" {
 	draw = function (self)
 		local screenWidth = love.graphics.getWidth()
 		local screenHeight = love.graphics.getHeight()
-		local resolutionRatio = screenWidth / screenHeight
 		
 		-- Find out the display scales of the background image
 		local scales = {self.scales[1], self.scales[2]}
