@@ -8,6 +8,12 @@ class "MeasuresComponent" {
 		self.measureColourHSV = {0,0,0}
 		self.measureAlpha = 0.5
 		self.measureConcentrationRate = 0.2
+		
+		self.fontSize = 0
+		self.font = nil
+		self.measureTextOffsets = {0.02, 0.025}
+		self.measureTextScale = 0.05
+		self:loadFontIfNecessary(love.graphics.getHeight())
 	end,
 	
 	-- Implement
@@ -37,6 +43,7 @@ class "MeasuresComponent" {
 		
 		local firstNonStartedMeasureID = player:getFirstNonStartedMeasureID()
 		
+		self:loadFontIfNecessary(screenHeight)
 		
 		for i = 0, 1 do
 			-- There are two culling direction, so draw forward first, then backward
@@ -87,15 +94,22 @@ class "MeasuresComponent" {
 				end
 				
 				love.graphics.setColor(1,1,1,0.8)
+				love.graphics.setFont(self.font)
+				
+				local textOffsets = {self.measureTextOffsets[1] * screenHeight, self.measureTextOffsets[2] * screenHeight}
+				love.graphics.push()
+				love.graphics.translate(textOffsets[1], textOffsets[2])
+				
 				if self.orientation == 0 then
-					love.graphics.print(measureID, measureX,0, 0,5)
+					love.graphics.print(measureID, measureX,0)
 				elseif self.orientation == 1 then
-					love.graphics.print(measureID, 0,screenHeight-measureX, 0,5)
+					love.graphics.print(measureID, 0,screenHeight-measureX)
 				elseif self.orientation == 2 then
-					love.graphics.print(measureID, measureWidth-measureX,0, 0,5)
+					love.graphics.print(measureID, measureWidth-measureX,0)
 				elseif self.orientation == 3 then
-					love.graphics.print(measureID, 0,measureX, 0,5)
+					love.graphics.print(measureID, 0,measureX)
 				end
+				love.graphics.pop()
 				
 				-- Increment / decrement for the while loop
 				if i == 0 then
@@ -107,5 +121,13 @@ class "MeasuresComponent" {
 		end
 		
 		love.graphics.pop()
+	end,
+	
+	loadFontIfNecessary = function (self, screenHeight)
+		local newFontSize = self.measureTextScale * screenHeight
+		if self.fontSize ~= newFontSize then
+			self.fontSize = newFontSize
+			self.font = love.graphics.newFont("Assets/MODERNE SANS.ttf", self.fontSize)
+		end
 	end,
 }

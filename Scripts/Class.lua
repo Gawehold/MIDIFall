@@ -8,10 +8,6 @@ local objectMetaTable = {
 		if method == nil then
 			if key == "new" then
 				error(string.format("Class %s do not has a constructor.", self.class.name))
-			end
-			
-			if field == nil then
-				error(string.format("Non-static member \"%s\" does not exist in class \"%s\".", key, self.class.name))
 			else
 				return field
 			end
@@ -24,9 +20,9 @@ local objectMetaTable = {
 		local field = self.fields[key]
 		local method = self.methods[key]
 		
-		if type(value) == "function" then
-			error("You cannot define a new method.")
-		end
+		-- if type(value) == "function" then
+			-- error("You cannot define a new method.")
+		-- end
 		
 		if method ~= nil then
 			error("You cannot modify a method.")
@@ -63,27 +59,25 @@ function buildClass(className, classDefinition)
 		end
 	end
 	
-	classDefinition.parent = namespace["Object"]
-	classDefinition.static = {}
-	
-	for k, v in ipairs(classDefinition) do
-		if type(v) == "table" and v[1] == "extends" then
-			classDefinition.parent = v[2]
-			classDefinition[k] = nil
-			break
-		end
+	for k, v in pairs(classDefinition) do
 		
-		if type(v) == "table" and v[1] == "static" then
-			classDefinition.static = v[2]
-			classDefinition[k] = nil
-			break
+		if type(v) == "table" and #v >= 1 then
+			if v[1] == "extends" then
+				classDefinition.parent = v[2]
+				classDefinition[k] = nil
+			elseif v[1] == "static" then
+				classDefinition.static = v[2]
+				classDefinition[k] = nil
+			end
 		end
 	end
+	
+	classDefinition.parent = classDefinition.parent or namespace["Object"]
 	
 	local instanceMethods = {}
 	if classDefinition.parent then
 		for k, v in pairs(classDefinition.parent.classDefinition) do
-			if k ~= "static" then
+			if k ~= "static" and type(v) == "function" then
 				if k == "new" then
 					instanceMethods.super = v
 				else
@@ -94,7 +88,9 @@ function buildClass(className, classDefinition)
 	end
 	
 	for k, v in pairs(classDefinition) do
-		instanceMethods[k] = v
+		if type(v) == "function" then
+			instanceMethods[k] = v
+		end
 	end
 	
 	namespace[className] = setmetatable(
@@ -109,7 +105,11 @@ function buildClass(className, classDefinition)
 				if key == "parent" then
 					return self.classDefinition.parent or self
 				elseif key == "static" then
-					return self.classDefinition.static
+					if self.classDefinition.static then
+						return self.classDefinition.static
+					else
+						error(string.format("Class %s does not contain any static members.", self.name))
+					end
 				else
 					return self.static[key] or self.parent.static[key] or error(string.format("Static member \"%s\" does not exist in class \"%s\".", key, self.name))
 				end

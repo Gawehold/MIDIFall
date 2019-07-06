@@ -9,7 +9,7 @@ class "FallsComponent" {
 		self.noteLengthOffset = 0
 		self.noteLengthFlooring = true
 		
-		self.colourAlpha = 0.0
+		self.colourAlpha = 0.8
 		
 		self.useRainbowColour = true
 		self.rainbowColourHueShift = 0.5

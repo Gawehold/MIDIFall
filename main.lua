@@ -7,8 +7,8 @@ end
 bit = require "bit"
 ffi = require "ffi"
 vivid = require "Libraries/vivid/vivid"
--- simploo.config["production"] = true
 midi = require "luamidi"
+tick = require "Libraries/tick/tick"
 
 ffi.cdef[[
 char *malloc(size_t size);
@@ -45,15 +45,26 @@ require "Scripts/HitAnimationComponent"
 require "Scripts/MeasuresComponent"
 require "Scripts/DefaultTheme"
 
+require "Scripts/UI/UIObject"
+require "Scripts/UI/UIPanel"
+require "Scripts/UI/UIButton"
+require "Scripts/UI/UICheckbox"
+require "Scripts/UI/SettingsMenu"
+require "Scripts/UI/UIManager"
+
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
--- local song = MIDIParser:parse(love.filesystem.read("Assets/debug.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
-local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
+
 player = Player(song)
+defaultTheme = DefaultTheme(0,0,0,0)
 
+local defaultFont = love.graphics.newFont()
 
-local defaultTheme = DefaultTheme(0,0,0,0)
+local uiManager = UIManager()
 
 function love.load()
 	-- table.foreach(midi.enumerateinports(), print)
@@ -68,34 +79,41 @@ end
 
 function love.update(dt)
 	defaultTheme:update(dt)
-	
+	-- settingsMenu:update(dt)
+	uiManager:update(dt)
 	player:update(dt)
 end
 
 function love.draw()
 	defaultTheme:draw()
+	-- settingsMenu:draw()
+	uiManager:draw()
 	
-	love.graphics.setColor(1,1,1,1)
-	love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
-	love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
-	love.graphics.print(player:getSong():getTempoChanges()[player:getTimeManager().currentTempoChangeID]:getTempo(), 0,40, 0, 2)
+	-- love.graphics.setColor(1,1,1,1)
+	-- love.graphics.setFont(defaultFont)
+	-- love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
+	-- love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
+	-- love.graphics.print(player:getSong():getTempoChanges()[player:getTimeManager().currentTempoChangeID]:getTempo(), 0,40, 0, 2)
 end
 
 function love.quit()
 	midi.gc()
-	
 	-- TODO: free memory allocated by ffi.C.malloc()
 end
 
 function love.mousepressed(mouseX, mouseY, button, istouch, presses)
-	
+	uiManager:mousePressed(mouseX, mouseY, button, istouch, presses)
+	-- settingsMenu:mousePressed(mouseX, mouseY, button, istouch, presses)
 end
 
 function love.mousereleased(mouseX, mouseY, istouch, presses)
+	uiManager:mouseReleased(mouseX, mouseY, istouch, presses)
 	player:resume()
 end
 
-function love.mousemoved( x, y, dx, dy, istouch )
+function love.mousemoved(x, y, dx, dy, istouch)
+	uiManager:mouseMoved(x, y, dx, dy, istouch)
+
 	if love.mouse.isDown(1) then
 		if math.abs(dx) > 0 then
 			player:pause()
@@ -113,6 +131,8 @@ function love.mousemoved( x, y, dx, dy, istouch )
 end
 
 function love.keypressed(key)
+	uiManager:keyPressed(key)
+	
 	if key == "o" then
 		defaultTheme:setOrientation((defaultTheme.orientation+1)%4)
 	end

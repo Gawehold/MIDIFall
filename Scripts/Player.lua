@@ -34,7 +34,7 @@ class "Player" {
 						
 						if time >= event:getTime() then
 							if event:getType() < 0xF0 then
-								midi.sendMessage(0, event:getType(), event:getMsg1(), event:getMsg2() or 0)
+								midi.sendMessage(1, event:getType(), event:getMsg1(), event:getMsg2() or 0)
 								
 								self.lastPlayedEventIDs[i] = j
 							end
