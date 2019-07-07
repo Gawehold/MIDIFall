@@ -49,6 +49,7 @@ require "Scripts/UI/UIObject"
 require "Scripts/UI/UIPanel"
 require "Scripts/UI/UIButton"
 require "Scripts/UI/UICheckbox"
+require "Scripts/UI/UISlider"
 require "Scripts/UI/SettingsMenu"
 require "Scripts/UI/UIManager"
 
@@ -81,7 +82,7 @@ function love.update(dt)
 	defaultTheme:update(dt)
 	-- settingsMenu:update(dt)
 	uiManager:update(dt)
-	player:update(dt)
+	-- player:update(dt)
 end
 
 function love.draw()

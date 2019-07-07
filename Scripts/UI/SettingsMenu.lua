@@ -13,7 +13,7 @@ class "SettingsMenu" {
 		self.pages = {
 			homepage = UIPanel(0.75,0.0, 0.25,1.0,
 				{
-					UICheckbox(0.1,0.0,nil,0.05,"System"),
+					UICheckbox(0.1,0.0,nil,0.05,"Scale"),
 					UIButton(0.1,0.1,0.8,0.05,"System", love.graphics.newImage("Assets/Free desktop PC icon.png"), 
 						function (obj)
 							self.currentPage = self.pages.system
@@ -39,6 +39,7 @@ class "SettingsMenu" {
 							self.currentPage = self.pages.about
 						end
 					),
+					UISlider(0.1,0.6,0.8,0.02, Alias(defaultTheme.notesComponent, "noteScale")),
 				}
 			),
 			

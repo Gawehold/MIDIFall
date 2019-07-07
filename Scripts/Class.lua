@@ -2,8 +2,12 @@ local namespace = _G
 
 local objectMetaTable = {
 	__index = function (self, key)
-		local field = self.fields[key]
-		local method = self.methods[key]
+		local field = rawget(self.fields, key)
+		local method = rawget(self.methods, key)
+		
+		if type(field) == "table" and rawget(field, "class") and rawget(field, "class").name == "Alias" then
+			return rawget(field, "fields").table[field.key]
+		end
 		
 		if method == nil then
 			if key == "new" then
@@ -17,8 +21,14 @@ local objectMetaTable = {
 	end,
 	
 	__newindex = function (self, key, value)
-		local field = self.fields[key]
-		local method = self.methods[key]
+		local field = rawget(self.fields, key)
+		local method = rawget(self.methods, key)
+		
+		if type(field) == "table" and rawget(field, "class") and rawget(field, "class").name == "Alias" then
+			rawget(field, "fields").table[field.key] = value
+			
+			return
+		end
 		
 		-- if type(value) == "function" then
 			-- error("You cannot define a new method.")
@@ -161,6 +171,29 @@ class "Object" {
 	new = function (self)
 	end,
 }
+
+class "Alias" {
+	new = function (self, t, key)
+		self.table = t
+		self.key = key
+	end,
+}
+
+
+-- class "B" {
+	-- new = function (self)
+		-- self.b = Alias(_G, "a")
+	-- end,
+-- }
+
+-- a = 10
+-- local obj = B()
+-- print(a, obj.b)
+-- obj.b = 20
+-- print(a, obj.b)
+-- obj.b = 40
+-- print(a, obj.b)
+
 
 -- class "Foo" {
 	-- static {
