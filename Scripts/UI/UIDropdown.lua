@@ -1,0 +1,5 @@
+class "UIInputBox" {
+	extends "UIObject",
+	
+	
+}

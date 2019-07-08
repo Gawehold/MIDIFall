@@ -16,7 +16,7 @@ void free(void *ptr);
 ]]
 
 -- Define global variables
-NULL = {}
+-- NULL = {}
 
 -- Load scripts
 require "Scripts/Class"
@@ -50,7 +50,10 @@ require "Scripts/UI/UIPanel"
 require "Scripts/UI/UIButton"
 require "Scripts/UI/UICheckbox"
 require "Scripts/UI/UISlider"
+require "Scripts/UI/UIInputBox"
+-- require "Scripts/UI/UIDropdown"
 require "Scripts/UI/SettingsMenu"
+require "Scripts/UI/PlayerControl"
 require "Scripts/UI/UIManager"
 
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
@@ -114,27 +117,20 @@ end
 
 function love.mousemoved(x, y, dx, dy, istouch)
 	uiManager:mouseMoved(x, y, dx, dy, istouch)
+end
 
-	if love.mouse.isDown(1) then
-		if math.abs(dx) > 0 then
-			player:pause()
-		end
-	
-		if dx > 0 then
-			-- player:initiailzeStates()
-		end
-		
-		local speed = 1
-		if love.keyboard.isDown("lctrl") then speed = 1/4 end
-		
-		player:getTimeManager():setTime(player:getTimeManager():getTime()-dx)
-	end
+function love.wheelmoved(x, y)
+	uiManager:wheelMoved(x, y)
 end
 
 function love.keypressed(key)
 	uiManager:keyPressed(key)
-	
-	if key == "o" then
-		defaultTheme:setOrientation((defaultTheme.orientation+1)%4)
-	end
+end
+
+function love.keyreleased(key)
+	uiManager:keyReleased(key)
+end
+
+function love.textinput(ch)
+	uiManager:textInput(ch)
 end

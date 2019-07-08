@@ -56,11 +56,17 @@ class "UIPanel" {
 		end
 	end,
 	
+	wheelMoved = function (self, x, y)
+		for k,v in ipairs(self.children) do
+			v:wheelMoved(x, y)
+		end
+	end,
+	
 	mouseMoved = function (self, x, y, dx, dy, istouch )
 		if self:findIsInside(x,y) then
-			self:mouseEnter()
+			self:mouseEntered()
 		else
-			self:mouseExit()
+			self:mouseExited()
 		end
 		
 		for k,v in ipairs(self.children) do
@@ -70,7 +76,33 @@ class "UIPanel" {
 	
 	keyPressed = function (self, key)
 		for k,v in ipairs(self.children) do
-			v:keyPressed(self, key)
+			v:keyPressed(key)
 		end
+	end,
+	
+	keyReleased = function (self, key)
+		for k,v in ipairs(self.children) do
+			v:keyReleased(key)
+		end
+	end,
+	
+	textInput = function (self, ch)
+		for k,v in ipairs(self.children) do
+			v:textInput(ch)
+		end
+	end,
+	
+	getIsInside = function (self)
+		return self.isInside
+	end,
+	
+	getIsFocusing = function (self)
+		for k,v in ipairs(self.children) do
+			if v.getIsFocusing and v:getIsFocusing() then
+				return true
+			end
+		end
+		
+		return false
 	end,
 }

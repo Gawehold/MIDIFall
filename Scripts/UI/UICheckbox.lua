@@ -57,9 +57,9 @@ class "UICheckbox" {
 	
 	mouseMoved = function (self, x, y, dx, dy, istouch )
 		if self:findIsInside(x,y) then
-			self:mouseEnter()
+			self:mouseEntered()
 		else
-			self:mouseExit()
+			self:mouseExited()
 		end
 	end,
 }

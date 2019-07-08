@@ -44,15 +44,24 @@ class "UIObject" {
 
 	mouseMoved = function (self, x, y, dx, dy, istouch)
 	end,
+	
+	wheelMoved = function (self, x, y)
+	end,
 
 	keyPressed = function (self, key)
 	end,
 	
-	mouseEnter = function (self)
+	keyReleased = function (self, key)
+	end,
+	
+	textInput = function (self, ch)
+	end,
+	
+	mouseEntered = function (self)
 		self.isInside = true
 	end,
 	
-	mouseExit = function (self)
+	mouseExited = function (self)
 		self.isInside = false
 	end,
 }

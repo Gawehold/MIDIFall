@@ -39,7 +39,8 @@ class "SettingsMenu" {
 							self.currentPage = self.pages.about
 						end
 					),
-					UISlider(0.1,0.6,0.8,0.02, Alias(defaultTheme.notesComponent, "noteScale")),
+					UISlider(0.1,0.6,0.8,0.02, Alias(defaultTheme.notesComponent, "noteScale"),0,10.0),
+					UIInputBox(0.1,0.65,0.8,0.05, Alias(defaultTheme.notesComponent, "noteScale")),
 				}
 			),
 			
@@ -120,8 +121,28 @@ class "SettingsMenu" {
 	mouseMoved = function (self, x, y, dx, dy, istouch)
 		self.currentPage:mouseMoved(x, y, dx, dy, istouch)
 	end,
+	
+	wheelMoved = function (self, x, y)
+		self.currentPage:wheelMoved(x, y)
+	end,
 
 	keyPressed = function(self, key)
 		self.currentPage:keyPressed(key)
+	end,
+	
+	keyReleased = function (self, key)
+		self.currentPage:keyReleased(key)
+	end,
+	
+	textInput = function (self, ch)
+		self.currentPage:textInput(ch)
+	end,
+	
+	getIsInside = function (self)
+		return self.currentPage:getIsInside()
+	end,
+	
+	getIsFocusing = function (self)
+		return self.currentPage:getIsFocusing()
 	end,
 }
