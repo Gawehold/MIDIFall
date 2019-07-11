@@ -39,7 +39,7 @@ class "SettingsMenu" {
 							self.currentPage = self.pages.about
 						end
 					),
-					UISlider(0.1,0.6,0.8,0.02, Alias(defaultTheme.notesComponent, "noteScale"),0,10.0),
+					UISlider(0.1,0.6,0.8,0.02, Alias(defaultTheme.notesComponent, "noteScale"),0.1,10.0),
 					UIInputBox(0.1,0.65,0.8,0.05, Alias(defaultTheme.notesComponent, "noteScale")),
 				}
 			),
@@ -52,7 +52,7 @@ class "SettingsMenu" {
 		
 		self.currentPage = self.pages.homepage
 		
-		self:open()
+		-- self:open()
 	end,
 	
 	update = function (self, dt)

@@ -3,7 +3,7 @@ class "Player" {
 		self.song = song
 		self.timeManager = TimeManager(self)
 		
-		self.paused = false
+		self.paused = true
 		
 		self.playbackSpeed = 1
 		
@@ -24,7 +24,7 @@ class "Player" {
 		local time = self.timeManager:getTime()
 		-- TODO: Set the intial index of the searching (i.e. j = ?) as the next one of the last played event
 		
-		if not self.paused then	-- TODO: should not bypass the MIDI events completely
+		if not self.paused then
 			for i = 1, #self.song:getTracks() do
 				local track = self.song:getTrack(i)
 				
@@ -34,7 +34,7 @@ class "Player" {
 						
 						if time >= event:getTime() then
 							if event:getType() < 0xF0 then
-								midi.sendMessage(1, event:getType(), event:getMsg1(), event:getMsg2() or 0)
+								midi.sendMessage(0, event:getType(), event:getMsg1(), event:getMsg2() or 0)
 								
 								self.lastPlayedEventIDs[i] = j
 							end
@@ -104,6 +104,7 @@ class "Player" {
 				
 				if noteTime <= time then
 					self.firstNonPlayedNoteIDInTracks[trackID] = math.max(noteID+1, self.firstNonPlayedNoteIDInTracks[trackID])
+				else
 					break
 				end
 			end
@@ -120,6 +121,7 @@ class "Player" {
 				
 				if noteTime + noteLength <= time then
 					self.firstNonFinishedNoteIDInTracks[trackID] = math.max(noteID+1, self.firstNonFinishedNoteIDInTracks[trackID])
+				else
 					break
 				end
 			end
@@ -128,6 +130,7 @@ class "Player" {
 		---------- Update lastStartedMeasure
 		local measures = song:getMeasures()
 		
+		self.firstNonStartedMeasureID = #measures + 1
 		for measureID = self.firstNonStartedMeasureID, #measures do
 			if time < measures[measureID]:getTime() then
 				self.firstNonStartedMeasureID = measureID
@@ -201,9 +204,39 @@ class "Player" {
 		self.paused = false
 	end,
 	
+	pauseOrResume = function (self)
+		if self.paused then
+			self:resume()
+		else
+			self:pause()
+		end
+	end,
+	
 	mute = function (self)
 		for chID = 0, 15 do
 			midi.sendMessage(0, 0xB0+chID, 120, 0)
+		end
+	end,
+	
+	moveToBeginning = function (self)
+		self:moveToTime(0)
+	end,
+	
+	moveToEnd = function (self)
+		self:moveToTime(self.song:getEndTime())
+	end,
+	
+	moveToTime = function(self, time)
+		local needToResetStates = false
+		
+		if time < self.timeManager:getTime() then
+			needToResetStates = true
+		end
+		
+		self.timeManager:setTime(time)
+		
+		if needToResetStates then
+			self:initiailzeStates()
 		end
 	end,
 }

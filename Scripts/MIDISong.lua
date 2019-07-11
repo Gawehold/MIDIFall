@@ -127,7 +127,7 @@ class "MIDISong" {
 				end
 			end
 			
-			currentMeasureLength = currentTimeSignature:getNumerator() * (self.timeDivision * currentTimeSignature:getDenominator() / 4)
+			currentMeasureLength = 4 * self.timeDivision * (currentTimeSignature:getNumerator() / currentTimeSignature:getDenominator())
 			self:addMeasure(Measure(currentMeasureTime))
 			
 			currentMeasureTime = currentMeasureTime + currentMeasureLength

@@ -15,6 +15,8 @@ class "FallsComponent" {
 		self.rainbowColourHueShift = 0.5
 		self.rainbowColourSaturation = 0.8
 		self.rainbowColourValue = 0.8
+		
+		self.fadingOutSpeed = 1
 	end,
 
 	-- Implement
@@ -31,6 +33,9 @@ class "FallsComponent" {
 		
 		local tracks = song:getTracks()
 		local time = player:getTimeManager():getTime()
+		
+		local timeDivision = song:getTimeDivision()
+		local tempo = player:getTimeManager():getTempo()
 		
 		local screenWidth = love.graphics.getWidth()
 		local screenHeight = love.graphics.getHeight()
@@ -101,7 +106,7 @@ class "FallsComponent" {
 							h,s,v = unpack(track:getCustomColourHSV())
 						end
 						
-						a = self.colourAlpha * math.clamp(1 - (time - (noteTime+noteLength))/200, 0, 1)
+						a = self.colourAlpha * math.clamp(1 - self.fadingOutSpeed * tempo * ((time - (noteTime+noteLength)) / timeDivision) / 100, 0, 1)
 						
 						love.graphics.setColor(vivid.HSVtoRGB(h,s,v,a))
 						love.graphics.rectangle("fill", noteX,noteY, noteWidth,noteHeight)

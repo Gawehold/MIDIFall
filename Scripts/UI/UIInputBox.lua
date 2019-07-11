@@ -80,7 +80,7 @@ class "UIInputBox" {
 						end
 					end
 				end
-			else
+			elseif self.isFocusing then
 				self:enter()
 			end
 		end

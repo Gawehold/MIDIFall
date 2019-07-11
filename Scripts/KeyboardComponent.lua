@@ -134,11 +134,13 @@ class "KeyboardComponent" {
 	end,
 	
 	setKeyColour = function (self, i, lowestKey, highestKey, isBlackKey)
-		local h
-		if self.rainbow then
-			h = ((i-lowestKey) / highestKey + self.rainbowHueShift) % 1
-		elseif self.isPlayingKeys[i] then
-			h = player:getSong():getTracks()[self.isPlayingKeys[i]]:getCustomColourHSV()
+		local h = 0
+		if self.isPlayingKeys[i] then
+			if self.rainbow then
+				h = ((i-lowestKey) / highestKey + self.rainbowHueShift) % 1
+			elseif self.isPlayingKeys[i] then
+				h = player:getSong():getTracks()[self.isPlayingKeys[i]]:getCustomColourHSV()
+			end
 		end
 				
 		if isBlackKey then

@@ -6,8 +6,8 @@ class "MeasuresComponent" {
 		self:super(x,y, width,height)
 		
 		self.measureColourHSV = {0,0,0}
-		self.measureAlpha = 0.5
-		self.measureConcentrationRate = 0.2
+		self.measureAlpha = 0.8
+		self.measureConcentrationRate = 0.08
 		
 		self.fontSize = 0
 		self.font = nil
@@ -45,6 +45,9 @@ class "MeasuresComponent" {
 		
 		self:loadFontIfNecessary(screenHeight)
 		
+		local firstMeasureLength = measures[2]:getTime() - measures[1]:getTime()
+		local lastMeasureLength = measures[#measures]:getTime() - measures[#measures-1]:getTime()
+		
 		for i = 0, 1 do
 			-- There are two culling direction, so draw forward first, then backward
 			-- i = 0: draw forward
@@ -52,21 +55,44 @@ class "MeasuresComponent" {
 				
 			local measureID = firstNonStartedMeasureID - i	-- just a trick to make a shortcut for making different starting points for draw forward and backward
 			
-			while measureID > 0 and measureID < #measures do
+			while true do
 				local measure = measures[measureID]
-				local nextMeasure = measures[measureID+1]
+				local nextMeasureID = measureID + (-2*i+1)
 				
-				local measureTime = measure:getTime()
-				local nextMeasureTime = nextMeasure:getTime()
+				if measureID >= 1 then
+					nextMeasureID = measureID + 1
+				end
+				local nextMeasure = measures[nextMeasureID]
 				
+				local measureTime
+				if measureID <= 0 then
+					measureTime = measures[1]:getTime() + (measureID-1) * firstMeasureLength
+				elseif measureID > #measures then
+					measureTime = measures[1]:getTime() + (measureID-1) * lastMeasureLength
+				else
+					measureTime = measure:getTime()
+				end
 				local timeUntilMeasureStart = measureTime - time
+				
+				
+				local nextMeasureTime
+				if nextMeasureID <= 0 then
+					nextMeasureTime = measures[1]:getTime() + (nextMeasureID-1) * firstMeasureLength
+				elseif nextMeasureID > #measures then
+					nextMeasureTime = measures[1]:getTime() + (nextMeasureID-1) * lastMeasureLength
+				else
+					nextMeasureTime = nextMeasure:getTime()
+				end
 				local timeUntilNextMeasureStart = nextMeasureTime - time
+				
 				
 				local measureLength = nextMeasureTime - measureTime 
 				
 				local measureScale = noteScale * 128 / timeDivision	-- Multiplier for MIDI time domain to screen display domain convertion
-				local measureX = offset + math.floor(measureScale * timeUntilMeasureStart)
-				local measureWidth = offset + math.floor(measureScale * timeUntilNextMeasureStart) - measureX	-- pixel distance between current and next measures
+				local measureX = offset + measureScale * timeUntilMeasureStart
+				local measureWidth = math.abs((measureScale * (nextMeasureTime - measureTime)))	-- pixel distance between current and next measures
+				
+				-- currentMeasureLength = currentTimeSignature:getNumerator() * (self.timeDivision * currentTimeSignature:getDenominator() / 4)
 				
 				-- Culling
 				if i == 0 then
@@ -80,7 +106,7 @@ class "MeasuresComponent" {
 				end
 				
 				local r,g,b = vivid.HSVtoRGB(self.measureColourHSV)
-				local a = math.max(math.min(1 - self.measureConcentrationRate * math.abs(timeUntilMeasureStart+measureLength*0.25) / timeDivision, self.measureAlpha), 0)	-- maximum alpha at the 25% position of the measure
+				local a = math.max(self.measureAlpha * (1 - self.measureConcentrationRate * math.abs(timeUntilMeasureStart+measureLength*0.25) / timeDivision), 0)	-- maximum alpha at the 25% position of the measure
 				
 				love.graphics.setColor(r,g,b,a)
 				if self.orientation == 0 then

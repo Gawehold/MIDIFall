@@ -7,7 +7,7 @@ class "DefaultTheme" {
 		
 		self.lowestKey = 30
 		self.highestKey = 92
-		self.keyGap = 0.1
+		self.keyGap = 0.2
 		
 		self.backgroundComponent = BackgroundComponent(0,0,0,0)
 		self.notesComponent = NotesComponent(0.35,0,0,0)
@@ -15,7 +15,7 @@ class "DefaultTheme" {
 		self.fallsComponent = FallsComponent(0,0,0.3,1)
 		
 		self.hitAnimationComponent = HitAnimationComponent(0.3,0,1,1)
-		self.measuresComponent = MeasuresComponent(0.28,0,1,1)
+		self.measuresComponent = MeasuresComponent(0.35,0,1,1)
 		
 		self:setOrientation(0)
 	end,

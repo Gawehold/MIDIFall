@@ -10,6 +10,31 @@ class "UIPanel" {
 		end
 		
 		self.childrenTransform = love.math.newTransform()
+		
+		-- self.blurringShader = love.graphics.newShader([[
+			-- float dx = 1 / 1920;
+			-- float dy = 1 / 1080;
+			
+			-- float kernal[25] = float[](
+				-- 0.003765, 0.015019, 0.023792, 0.015019, 0.003765,
+				-- 0.015019, 0.059912, 0.094907, 0.059912, 0.015019,
+				-- 0.023792, 0.094907, 0.150342, 0.094907, 0.023792,
+				-- 0.015019, 0.059912, 0.094907, 0.059912, 0.015019,
+				-- 0.003765, 0.015019, 0.023792, 0.015019, 0.003765
+			-- );
+			
+			-- vec4 effect(vec4 colour, Image texture, vec2 textureCoords, vec2 screenCoords) {
+				-- vec4 averagedColour;
+				
+				-- for (int i = -2; i <= 2; i++) {
+					-- for (int j = -2; j <= 2; j++) {
+						-- averagedColour += kernal[5*i + j] * Texel(texture, textureCoords + vec2(dx*j, dy*i));
+					-- }
+				-- }
+				
+				-- return averagedColour * colour;
+			-- }
+		-- ]])
 	end,
 	
 	update = function (self, dt, transform)
@@ -26,15 +51,12 @@ class "UIPanel" {
 	
 	draw = function (self)
 		love.graphics.push()
+		
 		if self.transform then
 			love.graphics.applyTransform(self.transform)
 		end
 		
-		if self.isInside then
-			love.graphics.setColor(0.5,0,0,0.8)
-		else
-			love.graphics.setColor(0,0,0,0.8)
-		end
+		love.graphics.setColor(0,0,0,0.8)
 		love.graphics.rectangle("fill", self.x,self.y, self.width,self.height)
 		
 		love.graphics.pop()

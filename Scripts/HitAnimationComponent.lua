@@ -9,6 +9,8 @@ class "HitAnimationComponent" {
 		self.rainbowColourHueShift = 0.5
 		self.rainbowColourSaturation = 0.8
 		self.rainbowColourValue = 0.8
+		
+		self.fadingOutSpeed = 1.0
 	end,
 	
 	-- Implement
@@ -24,6 +26,9 @@ class "HitAnimationComponent" {
 		
 		local tracks = song:getTracks()
 		local time = player:getTimeManager():getTime()
+		
+		local timeDivision = song:getTimeDivision()
+		local tempo = player:getTimeManager():getTempo()
 		
 		local screenWidth = love.graphics.getWidth()
 		local screenHeight = love.graphics.getHeight()
@@ -75,9 +80,11 @@ class "HitAnimationComponent" {
 							h,s,v = unpack(track:getCustomColourHSV())
 						end
 						
-						local t = math.max(time - noteTime, 0)
-						local size = t/5+spaceForEachKey
-						a = 1 - math.clamp((time - noteTime) / 100, 0, 1)
+						local displacement = self.fadingOutSpeed * tempo * (time - noteTime) / timeDivision
+						
+						local t = math.max(displacement, 0)
+						local size = (t * spaceForEachKey / 20)/5+spaceForEachKey
+						a = 1 - math.clamp(displacement / 100, 0, 1)
 						
 						if a <= 0 then
 							break

@@ -40,4 +40,8 @@ class "TimeManager" {
 	setTime = function (self, time)
 		self.time = time
 	end,
+	
+	getTempo = function (self)
+		return self.player:getSong():getTempoChanges()[self.currentTempoChangeID]:getTempo()
+	end,
 }

@@ -14,6 +14,7 @@ Improved:
 - Framerate and memory usage
 - Performance mainly depends on the current screen
 - Can use black key as boundaries
+- More smooth fullscreen switching
 
 Removed:
 - Rounding mode (always use ceilling)
@@ -48,7 +49,15 @@ Any users
 		Optional colour scheme for 16 channels, cycles through hue progressively.
 		Showing BPM,time,beats,etc.
 		Add FPS Monitor
-		Increase Note Length Scale to 8
+[DONE]	Increase Note Length Scale to 8
 		Send SysEx string to current MIDI device (a box to type some hex values in, like the one for GM Reset, etc). Why? Good for MIDIs which dont have any SysEx but require instrument resets/specific playing modes on hard synths.
 
 
+-------------
+-ADDED
+- measure 左右無限
+- falls and hit animation alpha depends on res
+- MEASURE TEMPO CHANGES
+- fixed firstNonFinishedNoteIDInTracks and firstNonPlayedNoteIDInTracks delay
+- hit animation size propotional ton res
+- controls
