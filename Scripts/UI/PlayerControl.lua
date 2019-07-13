@@ -11,13 +11,18 @@ class "PlayerControl" {
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
-		local mouseClickedTime = love.timer.getTime()
+		if button == 1 then
+			local mouseClickedTime = love.timer.getTime()
+			
+			if mouseClickedTime - self.lastMouseClickedTime <= self.doubleClickInterval then
+				player:pauseOrResume()
+			end
 		
-		if mouseClickedTime - self.lastMouseClickedTime <= self.doubleClickInterval then
-			player:pauseOrResume()
+			self.lastMouseClickedTime = mouseClickedTime
+			
+		elseif button == 3 then
+			love.window.setFullscreen(not select(3, love.window.getMode()).fullscreen)
 		end
-	
-		self.lastMouseClickedTime = mouseClickedTime
 	end,
 	
 	mouseReleased = function (self, mouseX, mouseY, istouch, presses)

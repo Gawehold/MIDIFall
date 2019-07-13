@@ -38,8 +38,8 @@ class "NotesComponent" {
 		local tracks = song:getTracks()
 		local time = player:getTimeManager():getTime()
 		
-		local screenWidth = love.graphics.getWidth()
-		local screenHeight = love.graphics.getHeight()
+		local screenWidth = renderer:getWidth()
+		local screenHeight = renderer:getHeight()
 		
 		if self.orientation == 1 or self.orientation == 3 then
 			if self.orientation == 1 then

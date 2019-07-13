@@ -11,7 +11,8 @@ class "BackgroundComponent" {
 		self.offsets = {0, 0}
 		self.isAlignCentre = false
 		
-		self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/1186946-free-wallpaper-for-vertical-monitor-1440x3440.jpg")
+		-- self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/1186946-free-wallpaper-for-vertical-monitor-1440x3440.jpg")
+		self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/transparent.png")
 	end,
 	
 	-- Implement

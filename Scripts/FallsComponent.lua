@@ -37,8 +37,8 @@ class "FallsComponent" {
 		local timeDivision = song:getTimeDivision()
 		local tempo = player:getTimeManager():getTempo()
 		
-		local screenWidth = love.graphics.getWidth()
-		local screenHeight = love.graphics.getHeight()
+		local screenWidth = renderer:getWidth()
+		local screenHeight = renderer:getHeight()
 		
 		if self.orientation == 1 or self.orientation == 3 then
 			if self.orientation == 1 then

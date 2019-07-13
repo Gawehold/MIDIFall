@@ -70,8 +70,8 @@ class "KeyboardComponent" {
 	draw = function (self, lowestKey, highestKey, keyGap)
 		love.graphics.push()
 		
-		local screenWidth = love.graphics.getWidth()
-		local screenHeight = love.graphics.getHeight()
+		local screenWidth = renderer:getWidth()
+		local screenHeight = renderer:getHeight()
 		if self.orientation == 1 or self.orientation == 3 then
 			love.graphics.translate(screenWidth, 0)
 			love.graphics.rotate(math.pi/2)

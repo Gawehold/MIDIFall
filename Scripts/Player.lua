@@ -5,6 +5,9 @@ class "Player" {
 		
 		self.paused = true
 		
+		self.initialTime = 0
+		self.endTime = self.song:getEndTime()
+		
 		self.playbackSpeed = 1
 		
 		self.lastPlayedEventIDs = {}
@@ -16,7 +19,7 @@ class "Player" {
 		self.isPitchBendValueInTracksIncreasing = {}
 		self.firstNonStartedMeasureID = nil
 		
-		self:initiailzeStates()
+		self:initialzeStates()
 	end,
 
 	update = function (self, dt)
@@ -180,7 +183,7 @@ class "Player" {
 		return self.firstNonStartedMeasureID
 	end,
 	
-	initiailzeStates = function (self)
+	initialzeStates = function (self)
 		local tracks = self.song:getTracks()
 		
 		for i = 1, #tracks do
@@ -223,7 +226,7 @@ class "Player" {
 	end,
 	
 	moveToEnd = function (self)
-		self:moveToTime(self.song:getEndTime())
+		self:moveToTime(self.endTime)
 	end,
 	
 	moveToTime = function(self, time)
@@ -236,7 +239,15 @@ class "Player" {
 		self.timeManager:setTime(time)
 		
 		if needToResetStates then
-			self:initiailzeStates()
+			self:initialzeStates()
 		end
+	end,
+	
+	getInitialTime = function (self)
+		return self.initialTime
+	end,
+	
+	getEndTime = function (self)
+		return self.endTime
 	end,
 }

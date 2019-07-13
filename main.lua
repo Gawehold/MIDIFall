@@ -56,10 +56,12 @@ require "Scripts/UI/SettingsMenu"
 require "Scripts/UI/PlayerControl"
 require "Scripts/UI/UIManager"
 
--- local song = MIDIParser:parse(love.filesystem.read("Assets/debug.mid"))
+require "Scripts/Renderer"
+
+local song = MIDIParser:parse(love.filesystem.read("Assets/stair.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
-local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
@@ -71,6 +73,8 @@ defaultTheme = DefaultTheme(0,0,0,0)
 local defaultFont = love.graphics.newFont()
 
 local uiManager = UIManager()
+
+renderer = Renderer()
 
 function love.load()
 	-- table.foreach(midi.enumerateinports(), print)
@@ -85,15 +89,17 @@ end
 
 function love.update(dt)
 	defaultTheme:update(dt)
-	-- settingsMenu:update(dt)
 	uiManager:update(dt)
-	player:update(dt)
+	renderer:update(dt, 
+		player
+	)
 end
 
 function love.draw()
-	defaultTheme:draw()
-	-- settingsMenu:draw()
-	uiManager:draw()
+	renderer:draw(
+		defaultTheme,
+		uiManager
+	)
 	
 	love.graphics.setColor(1,1,1,1)
 	love.graphics.setFont(defaultFont)
@@ -113,7 +119,6 @@ end
 
 function love.mousepressed(mouseX, mouseY, button, istouch, presses)
 	uiManager:mousePressed(mouseX, mouseY, button, istouch, presses)
-	-- settingsMenu:mousePressed(mouseX, mouseY, button, istouch, presses)
 end
 
 function love.mousereleased(mouseX, mouseY, istouch, presses)
@@ -130,6 +135,10 @@ end
 
 function love.keypressed(key)
 	uiManager:keyPressed(key)
+	
+	if key == "r" then
+		renderer:startToRender(1920, 1080, 60)
+	end
 end
 
 function love.keyreleased(key)
@@ -150,4 +159,18 @@ function love.filedropped(file)
 			-- song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
 		-- end
 	-- end
+end
+
+function love.threaderror(thread, errorstr)
+	print("Thread error!\n"..errorstr)
+	-- thread:getError() will return the same error string now.
+end
+
+function love.quit()
+	if renderer:getIsExportingVideo() then
+		renderer:terminateVideoExport()
+		return true
+	end
+	
+	return false
 end
