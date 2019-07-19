@@ -3,6 +3,14 @@ math.clamp = function (x,a,b)
 	return math.max(math.min(x,b),a)
 end
 
+math.round = function (x, n)	-- n is the step
+	if x % n >= n / 2 then
+		return x - (x % n) + n
+	else
+		return x - (x % n)
+	end
+end
+
 -- Load global libraries
 bit = require "bit"
 ffi = require "ffi"
@@ -36,17 +44,19 @@ require "Scripts/MIDIParser"
 require "Scripts/Player"
 require "Scripts/TimeManager"
 
-require "Scripts/DisplayComponent"
-require "Scripts/BackgroundComponent"
-require "Scripts/NotesComponent"
-require "Scripts/KeyboardComponent"
-require "Scripts/FallsComponent"
-require "Scripts/HitAnimationComponent"
-require "Scripts/MeasuresComponent"
-require "Scripts/DefaultTheme"
+require "Scripts/Visualization/DisplayComponent"
+require "Scripts/Visualization/BackgroundComponent"
+require "Scripts/Visualization/NotesComponent"
+require "Scripts/Visualization/KeyboardComponent"
+require "Scripts/Visualization/FallsComponent"
+require "Scripts/Visualization/HitAnimationComponent"
+require "Scripts/Visualization/MeasuresComponent"
+require "Scripts/Visualization/MainComponent"
+require "Scripts/Visualization/DisplayComponentsRenderer"
 
 require "Scripts/UI/UIObject"
 require "Scripts/UI/UIPanel"
+require "Scripts/UI/UIText"
 require "Scripts/UI/UIButton"
 require "Scripts/UI/UICheckbox"
 require "Scripts/UI/UISlider"
@@ -56,25 +66,23 @@ require "Scripts/UI/SettingsMenu"
 require "Scripts/UI/PlayerControl"
 require "Scripts/UI/UIManager"
 
-require "Scripts/Renderer"
-
-local song = MIDIParser:parse(love.filesystem.read("Assets/stair.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/stair.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
--- local song = MIDIParser:parse(love.filesystem.read("Assets/U2.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/進化系Colors.mid"))
 
 player = Player(song)
-defaultTheme = DefaultTheme(0,0,0,0)
+mainComponent = MainComponent(0,0,0,0)
 
 local defaultFont = love.graphics.newFont()
 
 local uiManager = UIManager()
 
-renderer = Renderer()
+displayComponentsRenderer = DisplayComponentsRenderer()
 
 function love.load()
 	-- table.foreach(midi.enumerateinports(), print)
@@ -88,18 +96,19 @@ function love.load()
 end
 
 function love.update(dt)
-	defaultTheme:update(dt)
+	mainComponent:update(dt)
 	uiManager:update(dt)
-	renderer:update(dt, 
+	displayComponentsRenderer:update(dt, 
 		player
 	)
 end
 
 function love.draw()
-	renderer:draw(
-		defaultTheme,
-		uiManager
+	displayComponentsRenderer:draw(
+		mainComponent
 	)
+	
+	uiManager:draw()
 	
 	love.graphics.setColor(1,1,1,1)
 	love.graphics.setFont(defaultFont)
@@ -118,47 +127,67 @@ function love.quit()
 end
 
 function love.mousepressed(mouseX, mouseY, button, istouch, presses)
+	if displayComponentsRenderer:getIsExportingVideo() then
+		return
+	end
+	
 	uiManager:mousePressed(mouseX, mouseY, button, istouch, presses)
 end
 
 function love.mousereleased(mouseX, mouseY, istouch, presses)
+	if displayComponentsRenderer:getIsExportingVideo() then
+		return
+	end
+	
 	uiManager:mouseReleased(mouseX, mouseY, istouch, presses)
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
+	if displayComponentsRenderer:getIsExportingVideo() then
+		return
+	end
+	
 	uiManager:mouseMoved(x, y, dx, dy, istouch)
 end
 
 function love.wheelmoved(x, y)
+	if displayComponentsRenderer:getIsExportingVideo() then
+		return
+	end
+	
 	uiManager:wheelMoved(x, y)
 end
 
 function love.keypressed(key)
+	if displayComponentsRenderer:getIsExportingVideo() then
+		return
+	end
+	
 	uiManager:keyPressed(key)
 	
 	if key == "r" then
-		renderer:startToRender(1920, 1080, 60)
+		displayComponentsRenderer:startToRender(1920, 1080, 60)
 	end
 end
 
 function love.keyreleased(key)
+	if displayComponentsRenderer:getIsExportingVideo() then
+		return
+	end
+	
 	uiManager:keyReleased(key)
 end
 
 function love.textinput(ch)
+	if displayComponentsRenderer:getIsExportingVideo() then
+		return
+	end
+	
 	uiManager:textInput(ch)
 end
 
 function love.filedropped(file)
-	
-	-- if extension == ".mid" then
-		-- if file:open("r") then
-			-- mute()
-			-- showLoadingScreen()
-			-- project.smf = readSmf(file:read(file:getSize()))
-			-- song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
-		-- end
-	-- end
+	uiManager:fileDropped(file)
 end
 
 function love.threaderror(thread, errorstr)
@@ -167,8 +196,8 @@ function love.threaderror(thread, errorstr)
 end
 
 function love.quit()
-	if renderer:getIsExportingVideo() then
-		renderer:terminateVideoExport()
+	if displayComponentsRenderer:getIsExportingVideo() then
+		displayComponentsRenderer:terminateVideoExport()
 		return true
 	end
 	

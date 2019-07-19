@@ -79,4 +79,10 @@ class "UIManager" {
 			v:textInput(ch)
 		end
 	end,
+	
+	fileDropped = function (self, file)
+		for k,v in ipairs(self.components) do
+			v:fileDropped(file)
+		end
+	end,
 }

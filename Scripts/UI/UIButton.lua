@@ -6,7 +6,7 @@ class "UIButton" {
 		self.text = text
 		self.icon = icon
 		self.iconSpace = 0.05
-		self.padding = 0.1
+		self.padding = 0.15
 		self.centred = false
 		
 		self.clicked = clicked
@@ -17,39 +17,52 @@ class "UIButton" {
 	end,
 	
 	draw = function (self)
+		local font = love.graphics.getFont()
+	
 		-- Draw the box
-		love.graphics.push()
+		local boxX, boxY = self.transform:transformPoint(self.x, self.y)
+		local boxX2, boxY2 = self.transform:transformPoint(self.x+self.width, self.y+self.height)
+		local boxWidth = boxX2 - boxX
+		local boxHeight = boxY2 - boxY
 		
-			if self.transform then
-				love.graphics.applyTransform(self.transform)
-			end
+		if self.isInside then
+			love.graphics.setColor(1,1,1,0.8)
+			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 			
-			if self.isInside then
-				love.graphics.setColor(1,1,1,0.8)
-			else
-				love.graphics.setColor(0,0,0,0.8)
-			end
-			love.graphics.rectangle("fill", self.x,self.y, self.width,self.height, 0.04,1.0)
-		
-		love.graphics.pop()
-		
+			love.graphics.setColor(0,0.5,1,1)
+			love.graphics.setLineWidth((boxWidth+boxHeight) / 128)
+			love.graphics.rectangle("line", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
+		else
+			love.graphics.setColor(0,0.5,1,0.8)
+			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
+		end
 		
 		-- Draw icon and text
 		if self.isInside then
-			love.graphics.setColor(0,0,0,0.8)
+			love.graphics.setColor(0,0.5,1,1)
 		else
 			love.graphics.setColor(1,1,1,0.8)
 		end
 		
 		if self.icon then
-			local iconScale = love.graphics.getFont():getHeight() / self.icon:getHeight()
+			local iconScale = (boxHeight / self.icon:getHeight()) * 0.8
 			local iconX, iconY = self.transform:transformPoint(self.x+self.padding,self.y)
+			iconY = iconY + (boxHeight - iconScale*self.icon:getWidth()) / 2
+			
 			love.graphics.draw(self.icon, iconX,iconY, 0, iconScale)
 			
+			
 			local textX,textY = self.transform:transformPoint(self.x+self.width*(self.iconSpace)+self.padding,self.y)
+			textY = textY + (boxHeight - font:getHeight()) / 2
+			
 			love.graphics.print(self.text, textX+iconScale*self.icon:getWidth(), textY)
 		else
-			love.graphics.print(self.text, self.transform:transformPoint(self.x,self.y))
+		
+			local textX,textY = self.transform:transformPoint(self.x,self.y)
+			textX = textX + (boxWidth - font:getWidth(self.text)) / 2
+			textY = textY + (boxHeight - font:getHeight()) / 2
+			
+			love.graphics.print(self.text, textX,textY)
 		end
 	end,
 	

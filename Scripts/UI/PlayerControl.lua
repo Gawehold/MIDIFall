@@ -56,7 +56,7 @@ class "PlayerControl" {
 
 	keyPressed = function(self, key)
 		if key == "o" then
-			defaultTheme:setOrientation((defaultTheme.orientation+1)%4)
+			mainComponent:setOrientation((mainComponent.orientation+1)%4)
 			
 		elseif key == "escape" then
 			love.event.quit()
@@ -91,6 +91,40 @@ class "PlayerControl" {
 	end,
 	
 	textInput = function (self, ch)
+	end,
+	
+	fileDropped = function (self, file)
+		if displayComponentsRenderer:getIsExportingVideo() then
+			return
+		end
+		
+		local extension = nil
+		local filename = file:getFilename()
+		local len = string.len(filename)
+		
+		for i = 0, len-1 do
+			local str = string.sub(filename, len-i, len)
+			if string.sub(str, 1, 1) == "." then
+				extension = str
+				break
+			end
+		end
+		assert(extension, "No extension name.")
+		
+		if extension == ".mid" then
+			player:loadSongFromFile(file)
+		elseif extension == ".jpg" or extension == ".png" or extension == ".bmp" or extension == ".jpeg" then
+			local data
+			if file:open("r") then
+				data = file:read()
+				file:close()
+			end
+		
+			local dataFile = love.filesystem.newFileData(data, "backgroundImage")
+			local imageData = love.image.newImageData(dataFile)
+
+			mainComponent.backgroundComponent.image = love.graphics.newImage(imageData)
+		end
 	end,
 	
 	getIsInside = function (self)

@@ -1,7 +1,10 @@
 class "SettingsMenu" {
 	new = function (self)
 		self.position = 0
+		self.x = 0.75
+		self.y = 0
 		self.width = 0.25
+		self.height = 1.0
 		
 		self.openAndCloseSpeed = 1.0
 		self.childrenTransform = love.math.newTransform()
@@ -10,10 +13,11 @@ class "SettingsMenu" {
 		self.isOpened = false
 		self.isClosing = false
 		
+		self.font = love.graphics.newFont("Assets/NotoSansCJKtc-Medium_1.otf", 36)
+		
 		self.pages = {
-			homepage = UIPanel(0.75,0.0, 0.25,1.0,
+			homepage = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UICheckbox(0.1,0.0,nil,0.05,"Scale"),
 					UIButton(0.1,0.1,0.8,0.05,"System", love.graphics.newImage("Assets/Free desktop PC icon.png"), 
 						function (obj)
 							self.currentPage = self.pages.system
@@ -34,18 +38,56 @@ class "SettingsMenu" {
 							self.currentPage = self.pages.display
 						end
 					),
-					UIButton(0.1,0.5,0.8,0.05,"About", love.graphics.newImage("Assets/Resume icon 6.png"), 
+					UIButton(0.1,0.5,0.8,0.05,"Experimental", nil, 
+						function (obj)
+							self.currentPage = self.pages.experimental
+						end
+					),
+					UIButton(0.1,0.6,0.8,0.05,"About", love.graphics.newImage("Assets/Resume icon 6.png"), 
 						function (obj)
 							self.currentPage = self.pages.about
 						end
 					),
-					UISlider(0.1,0.6,0.8,0.02, Alias(defaultTheme.notesComponent, "noteScale"),0.1,10.0),
-					UIInputBox(0.1,0.65,0.8,0.05, Alias(defaultTheme.notesComponent, "noteScale")),
 				}
 			),
 			
-			system = UIPanel(0.75,0.0, 0.25,1.0,
+			system = UIPanel(self.x,self.y, self.width,self.height,
 				{
+					
+				}
+			),
+			
+			playback = UIPanel(self.x,self.y, self.width,self.height,
+				{
+					
+				}
+			),
+			
+			tracks = UIPanel(self.x,self.y, self.width,self.height,
+				{
+					
+				}
+			),
+			
+			display = UIPanel(self.x,self.y, self.width,self.height,
+				{
+					UIText(0.1,0.1,0.3,0.05, "Keyboard Position", 0.75),
+					UIInputBox(0.4,0.115,0.3,0.05, Alias(mainComponent, "keyboardPosition")),
+					UISlider(0.1,0.2,0.8,0.02, Alias(mainComponent, "keyboardPosition"),-1,1,0.01),
+					UISlider(0.1,0.3,0.8,0.02, Alias(mainComponent, "keyboardLength"),0,1,0.01),
+					UISlider(0.1,0.4,0.8,0.02, Alias(mainComponent.notesComponent, "rainbowColourHueShift"),0,1,0.01),
+				}
+			),
+			
+			experimental = UIPanel(self.x,self.y, self.width,self.height,
+				{
+					
+				}
+			),
+			
+			about = UIPanel(self.x,self.y, self.width,self.height,
+				{
+					UIText(0.1,0.1,0.8,0.5, "A MIDI score (smf file) visualizer with rainbow falls!", 1)
 				}
 			),
 		}
@@ -80,9 +122,12 @@ class "SettingsMenu" {
 	end,
 	
 	draw = function (self)
+		local previousFont = love.graphics.getFont()
+		love.graphics.setFont(self.font)
 		if self.isOpened or self.isOpening or self.isClosing then
 			self.currentPage:draw()
 		end
+		love.graphics.setFont(previousFont)
 	end,
 	
 	open = function (self)
@@ -136,6 +181,9 @@ class "SettingsMenu" {
 	
 	textInput = function (self, ch)
 		self.currentPage:textInput(ch)
+	end,
+	
+	fileDropped = function (self, file)
 	end,
 	
 	getIsInside = function (self)

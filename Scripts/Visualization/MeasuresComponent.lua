@@ -21,15 +21,12 @@ class "MeasuresComponent" {
 	end,
 	
 	-- Implement
-	draw = function (self, noteScale)
+	draw = function (self, screenWidth,screenHeight, noteScale)
 		love.graphics.push()
 		
 		local song = player:getSong()
 		local timeDivision = song:getTimeDivision()
 		local time = player:getTimeManager():getTime()
-		
-		local screenWidth = renderer:getWidth()
-		local screenHeight = renderer:getHeight()
 		
 		if self.orientation == 1 or self.orientation == 3 then
 			screenWidth, screenHeight = screenHeight, screenWidth

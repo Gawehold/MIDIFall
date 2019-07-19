@@ -12,7 +12,7 @@ class "BackgroundComponent" {
 		self.isAlignCentre = false
 		
 		-- self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/1186946-free-wallpaper-for-vertical-monitor-1440x3440.jpg")
-		self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/transparent.png")
+		self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/no_character.png")
 	end,
 	
 	-- Implement
@@ -20,9 +20,7 @@ class "BackgroundComponent" {
 	end,
 	
 	-- Implement
-	draw = function (self)
-		local screenWidth = love.graphics.getWidth()
-		local screenHeight = love.graphics.getHeight()
+	draw = function (self, screenWidth,screenHeight)
 		
 		-- Find out the display scales of the background image
 		local scales = {self.scales[1], self.scales[2]}

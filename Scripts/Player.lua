@@ -21,6 +21,26 @@ class "Player" {
 		
 		self:initialzeStates()
 	end,
+	
+	loadSongFromFile = function (self, file)
+		file:open("r")
+		
+		self:pause()
+		self.song = MIDIParser:parse(file:read(file:getSize()))
+		self.timeManager = TimeManager(self)
+		self.initialTime = 0
+		self.endTime = self.song:getEndTime()
+		self:initialzeStates()
+		self:moveToBeginning()
+		
+		file:close()
+	end,
+	
+	loadSsongFromPath = function (self, path)
+		-- local file = io.open(path, "rb")
+		
+		
+	end,
 
 	update = function (self, dt)
 		---------- Playback the MIDI song and update the last played event ID of each track
@@ -72,14 +92,7 @@ class "Player" {
 				local curPBID = self.currentPitchBendIDInTracks[trackID]
 				local curPB = pitchBends[curPBID]
 				
-				if #pitchBends >= self.currentPitchBendIDInTracks[trackID] + 1 then	
-					local nextPB = pitchBends[curPBID+1]
-					
-					-- Linear Interpolation
-					self.currentPitchBendValueInTracks[trackID] = ((time-curPB:getTime())*pitchBends[curPBID]:getSignedValue() + (nextPB:getTime()-time)*pitchBends[curPBID+1]:getSignedValue()) / (nextPB:getTime()-curPB:getTime())
-				else
-					self.currentPitchBendValueInTracks[trackID] = curPB:getSignedValue()
-				end
+				self.currentPitchBendValueInTracks[trackID] = curPB:getSignedValue()
 			end
 			
 			-- Check whether the pitchbend value is increasing or decreasing
@@ -222,7 +235,7 @@ class "Player" {
 	end,
 	
 	moveToBeginning = function (self)
-		self:moveToTime(0)
+		self:moveToTime(self.initialTime)
 	end,
 	
 	moveToEnd = function (self)

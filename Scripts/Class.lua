@@ -9,6 +9,10 @@ local objectMetaTable = {
 			return rawget(field, "fields").table[field.key]
 		end
 		
+		if type(field) == "table" and rawget(field, "class") and rawget(field, "class").name == "Follower" then
+			return field:func()
+		end
+		
 		if method == nil then
 			if key == "new" then
 				error(string.format("Class %s do not has a constructor.", self.class.name))
@@ -176,6 +180,12 @@ class "Alias" {
 	new = function (self, t, key)
 		self.table = t
 		self.key = key
+	end,
+}
+
+class "Follower" {
+	new = function (self, func)
+		self.func = func
 	end,
 }
 

@@ -6,7 +6,7 @@ class "KeyboardComponent" {
 		self:super(x,y, width,height)
 		
 		self.rainbow = true
-		self.rainbowHueShift = 0.5
+		self.rainbowHueShift = 0.45
 		
 		self.blackKeyColourHSV = {0, 0, 0.2}
 		self.blackKeyAlpha = 0.0
@@ -19,11 +19,11 @@ class "KeyboardComponent" {
 		
 		-- TODO: adjust these values
 		self.whiteHeadsUpperPartRatio = {
-			[1] = 0.4,
-			[3] = 0.6,
-			[6] = 0.35,
+			[1] = 0.36,
+			[3] = 0.64,
+			[6] = 0.25,
 			[8] = 0.5,
-			[10] = 0.65
+			[10] = 0.75
 		}
 		
 		self.isPlayingKeys = {}
@@ -67,11 +67,9 @@ class "KeyboardComponent" {
 	end,
 	
 	-- Implement
-	draw = function (self, lowestKey, highestKey, keyGap)
+	draw = function (self, screenWidth,screenHeight, lowestKey, highestKey, keyGap)
 		love.graphics.push()
 		
-		local screenWidth = renderer:getWidth()
-		local screenHeight = renderer:getHeight()
 		if self.orientation == 1 or self.orientation == 3 then
 			love.graphics.translate(screenWidth, 0)
 			love.graphics.rotate(math.pi/2)
@@ -85,7 +83,7 @@ class "KeyboardComponent" {
 			keyboardX = screenWidth - keyboardX - keyboardWidth
 		end
 		
-		local spaceForEachKey = screenHeight / (highestKey-lowestKey+1)
+		local spaceForEachKey = (self.height*screenHeight) / (highestKey-lowestKey+1)
 		local keyHeightRatio = 1 - keyGap
 		
 		for i = lowestKey, highestKey do

@@ -1,31 +1,26 @@
-class "FallsComponent" {
+class "HitAnimationComponent" {
 	extends "DisplayComponent",
 	
 	-- Override
 	new = function (self, x,y, width,height)
 		self:super(x,y, width,height)
 		
-		self.noteScale = 2
-		self.noteLengthOffset = 0
-		self.noteLengthFlooring = true
-		
-		self.colourAlpha = 0.8
-		
 		self.useRainbowColour = true
 		self.rainbowColourHueShift = 0.5
 		self.rainbowColourSaturation = 0.8
 		self.rainbowColourValue = 0.8
 		
-		self.fadingOutSpeed = 1
-	end,
-
-	-- Implement
-	update = function (self, dt)
-		
+		self.fadingOutSpeed = 0.6
+		self.lengthScale = 0.8
+		self.sizeScale = 0.8
 	end,
 	
 	-- Implement
-	draw = function (self, lowestKey, highestKey, keyGap)
+	update = function (self, dt)
+	end,
+	
+	-- Implement
+	draw = function (self, screenWidth,screenHeight, lowestKey, highestKey, keyGap)
 		love.graphics.push()
 		
 		--//////// Common Infomation ////////
@@ -37,12 +32,9 @@ class "FallsComponent" {
 		local timeDivision = song:getTimeDivision()
 		local tempo = player:getTimeManager():getTempo()
 		
-		local screenWidth = renderer:getWidth()
-		local screenHeight = renderer:getHeight()
-		
 		if self.orientation == 1 or self.orientation == 3 then
 			if self.orientation == 1 then
-				love.graphics.translate(0,screenHeight)
+				love.graphics.translate(0,self.height*screenHeight)
 				love.graphics.scale(1,-1)
 			end
 			love.graphics.translate(screenWidth, 0)
@@ -55,14 +47,8 @@ class "FallsComponent" {
 			love.graphics.scale(-1,1)
 		end
 		
-		local resolutionRatio = screenWidth / screenHeight
-		
-		local spaceForEachKey = screenHeight / (highestKey-lowestKey+1)
+		local spaceForEachKey = (self.height*screenHeight) / (highestKey-lowestKey+1)
 		local keyHeightRatio = 1 - keyGap
-		local noteLengthOffset = resolutionRatio * self.noteScale*128 * self.noteLengthOffset	-- 1.0 = a crotchet
-		
-		local noteScale = self.noteScale*128/song:getTimeDivision()
-		local pixelMoved = math.floor(noteScale*(time-song:getInitialTime()))
 		
 		local leftBoundary = math.floor(self.x * screenWidth)
 		local rightBoundary = leftBoundary + math.floor(self.width * screenWidth)
@@ -84,20 +70,8 @@ class "FallsComponent" {
 					local notePitch = note:getPitch()
 					
 					if notePitch >= lowestKey and notePitch <= highestKey then
-						local noteX = math.floor(screenWidth*(self.x+self.width) + noteScale * (noteTime-time))
 						local noteY = (highestKey-notePitch) * spaceForEachKey
-						
-						-- Here math.max seems to be unnecessary since it would be culled out before.
-						-- However, the precision problem may cause a very small negative number.
-						-- Hence, to prevent a note being shown outside the boundary, using a math.max is better.
-						local noteWidth = math.ceil(math.max(noteScale*noteLength - self.noteLengthOffset, 0))
-						local noteHeight = math.max((screenHeight / (highestKey-lowestKey+1))*keyHeightRatio, 0)
-						noteWidth = math.max(math.min(rightBoundary - noteX, noteWidth), 0)	-- Cull out the note width outside the right boundary
-						
-						-- If the current note is outside the left boundary, then so to the later notes
-						if noteX + noteWidth < leftBoundary then
-							break
-						end
+						local noteHeight = math.max(((self.height*screenHeight) / (highestKey-lowestKey+1))*keyHeightRatio, 0)
 						
 						local h,s,v,a
 						if self.useRainbowColour then
@@ -106,12 +80,34 @@ class "FallsComponent" {
 							h,s,v = unpack(track:getCustomColourHSV())
 						end
 						
-						a = self.colourAlpha * math.clamp(1 - self.fadingOutSpeed * tempo * ((time - (noteTime+noteLength)) / timeDivision) / 100, 0, 1)
+						local displacement = self.fadingOutSpeed * tempo * (time - noteTime) / timeDivision / 2
+						
+						local t = math.max(displacement, 0)
+						local size
+						a = 1 - math.clamp(displacement / 100, 0, 1)
+						
+						if a <= 0 then
+							break
+						end
 						
 						love.graphics.setColor(vivid.HSVtoRGB(h,s,v,a))
-						love.graphics.rectangle("fill", noteX,noteY, noteWidth,noteHeight)
 						
-						
+						love.graphics.push()
+							love.graphics.translate(leftBoundary,noteY)
+							
+							size = (t * spaceForEachKey / 20)/5+spaceForEachKey
+							size = size * self.sizeScale
+							love.graphics.rectangle("fill", -size/2 -t*4 * self.lengthScale, -size/2 + spaceForEachKey/2, size, size)
+							
+							size = t/3+spaceForEachKey
+							size = size * self.sizeScale
+							love.graphics.rectangle("fill", -size/2 -t*3 * self.lengthScale, -size/2 + spaceForEachKey/2-(t^2)/200, size, size)
+							-- love.graphics.pop()
+							
+							size = t/2+spaceForEachKey
+							size = size * self.sizeScale
+							love.graphics.rectangle("fill", -size/2 -t*2 * self.lengthScale, -size/2 + spaceForEachKey/2+(t^2)/200, size, size)
+						love.graphics.pop()
 					end
 				end
 			end

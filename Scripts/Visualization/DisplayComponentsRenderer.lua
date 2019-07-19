@@ -1,4 +1,4 @@
-class "Renderer" {
+class "DisplayComponentsRenderer" {
 	new = function (self)
 		self.isRenderingVideo = false
 		self.isEncodingVideo = false
@@ -52,10 +52,11 @@ class "Renderer" {
 	draw = function (self, ...)
 		if self.isRenderingVideo then
 			love.graphics.setCanvas(self.canvas)
+			love.graphics.clear()
 		end
 		
 		for i = 1, select("#", ...) do
-			select(i, ...):draw()
+			select(i, ...):draw(self:getWidth(), self:getHeight())
 		end
 		
 		love.graphics.setColor(1,1,1)
@@ -67,6 +68,7 @@ class "Renderer" {
 			-- if love.thread.getChannel("imageData"):getCount() >= 3 then
 				-- while love.thread.getChannel("imageData"):getCount() > 0 do end
 				love.thread.getChannel("imageData"):push(imageData)
+				imageData:release()
 			-- end
 			
 			local percentage = string.format("%3.2f", math.min(100*(player:getTimeManager():getTime()-player:getInitialTime())/(player:getEndTime()-player:getInitialTime()), 100))
@@ -93,12 +95,16 @@ class "Renderer" {
 		self.isRenderingVideo = true
 		self.isEncodingVideo = true
 		self.canvas = love.graphics.newCanvas(width, height)
-		self.exportingThread:start(framerate, width, height, 4*width*height, 18,1, "D:/MIDIFall_Project/MIDIFall/test.mp4")
+		self.exportingThread:start(framerate, width, height, 4*width*height, 0,"medium", "D:/MIDIFall_Project/MIDIFall/test.mp4")
 		self.exportingFramerate = framerate
+		
+		player:moveToBeginning()
 		player:resume()
 	end,
 	
 	finishRendering = function (self)
+		player:pause()
+		player:moveToBeginning()
 		self.isRenderingVideo = false
 		love.thread.getChannel("renderingStopped"):push(true)
 	end,

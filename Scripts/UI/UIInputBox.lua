@@ -20,24 +20,25 @@ class "UIInputBox" {
 	
 	draw = function (self)
 		-- Draw the box
-		love.graphics.push()
+		local boxX, boxY = self.transform:transformPoint(self.x, self.y)
+		local boxX2, boxY2 = self.transform:transformPoint(self.x+self.width, self.y+self.height)
+		local boxWidth = boxX2 - boxX
+		local boxHeight = boxY2 - boxY
 		
-			if self.transform then
-				love.graphics.applyTransform(self.transform)
-			end
+		if self.isFocusing then
+			love.graphics.setColor(1,1,1,0.8)
+			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 			
-			if self.isInside then
-				love.graphics.setColor(1,1,1,0.8)
-			else
-				love.graphics.setColor(1,1,1,0.8)
-			end
-			love.graphics.rectangle("fill", self.x,self.y, self.width,self.height, 0.04,1.0)
+			love.graphics.setColor(0,0.5,1,1)
+			love.graphics.setLineWidth((boxWidth+boxHeight) / 128)
+			love.graphics.rectangle("line", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
+		else
+			love.graphics.setColor(1,1,1,0.8)
+			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
+		end
 		
-		love.graphics.pop()
-		
-		
-		if self.isInside then
-			love.graphics.setColor(0,0,0,0.8)
+		if self.isFocusing then
+			love.graphics.setColor(0,0.5,1,1)
 		else
 			love.graphics.setColor(0,0,0,0.8)
 		end
@@ -47,14 +48,10 @@ class "UIInputBox" {
 		
 		-- Draw cursor
 		if self.isFocusing then
-			if self.isInside then
-				love.graphics.setColor(0,0,0,0.8)
-			else
-				love.graphics.setColor(0,0,0,0.8)
-			end
+			love.graphics.setColor(0,0.5,1,1)
 			local cursorX, cursorY = self.transform:transformPoint(self.x,self.y)
 			cursorX = cursorX + love.graphics.getFont():getWidth(string.sub(self.text, 1, self.cursorPosition))
-			love.graphics.rectangle("fill", cursorX, cursorY, 5,50)
+			love.graphics.line(cursorX,cursorY+4*love.graphics.getLineWidth(), cursorX,boxY2-4*love.graphics.getLineWidth())
 		end
 	end,
 	

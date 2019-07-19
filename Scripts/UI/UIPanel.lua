@@ -4,6 +4,9 @@ class "UIPanel" {
 	new = function (self, x,y, width,height, children)
 		self:super(x,y, width,height)
 		
+		self.shift = 0
+		self.shiftStep = 0.05
+		
 		self.children = children or {}
 		for k,v in ipairs(self.children) do
 			v:setParent(self)
@@ -41,6 +44,8 @@ class "UIPanel" {
 		self.transform = transform
 		
 		self.childrenTransform = self.transform:clone()
+		self.childrenTransform:translate(0, -self.shiftStep*self.shift)
+		
 		self.childrenTransform:scale(self.width,self.height)
 		self.childrenTransform:translate(self.x/self.width,self.y/self.height)
 		
@@ -79,8 +84,12 @@ class "UIPanel" {
 	end,
 	
 	wheelMoved = function (self, x, y)
-		for k,v in ipairs(self.children) do
-			v:wheelMoved(x, y)
+		if self.isInside then
+			self.shift = self.shift + y
+			
+			for k,v in ipairs(self.children) do
+				v:wheelMoved(x, y)
+			end
 		end
 	end,
 	

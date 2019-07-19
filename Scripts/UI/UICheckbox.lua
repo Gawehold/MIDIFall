@@ -2,14 +2,16 @@ class "UICheckbox" {
 	extends "UIObject",
 	
 	static {
-		uncheckedIcon = love.graphics.newImage("Assets/Television 2.png"),
+		uncheckedIcon = love.graphics.newImage("Assets/unchecked.png"),
 		checkedIcon = love.graphics.newImage("Assets/Free check mark icon 2.png"),
 	},
 	
-	new = function (self, x,y,width,height, text,icon)
+	new = function (self, x,y,width,height, text,icon, valueAlias, checkBehaviour,uncheckBehaviour)
 		self:super(x,y, width,height)
 		self.text = text
-		self.isChecked = false
+		self.checkBehaviour = checkBehaviour
+		self.uncheckBehaviour = uncheckBehaviour
+		self.isChecked = valueAlias or false
 	end,
 	
 	update = function (self, dt, transform)
@@ -21,7 +23,7 @@ class "UICheckbox" {
 		love.graphics.push()
 			
 			if self.isInside then
-				love.graphics.setColor(0,1,1,0.8)
+				love.graphics.setColor(0,0.5,1,0.8)
 			else
 				love.graphics.setColor(1,1,1,0.8)
 			end
@@ -49,9 +51,23 @@ class "UICheckbox" {
 		love.graphics.print(self.text, textX,textY, 0, 0.5)
 	end,
 	
+	toggle = function (self)
+		self.isChecked = not self.isChecked
+		
+		if self.isChecked then
+			if self.checkBehaviour then
+				self:checkBehaviour()
+			end
+		else
+			if self.uncheckBehaviour then
+				self:uncheckBehaviour()
+			end
+		end
+	end,
+	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
 		if self.isInside and button == 1 then
-			self.isChecked = not self.isChecked
+			self:toggle()
 		end
 	end,
 	

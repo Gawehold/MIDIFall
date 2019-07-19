@@ -9,16 +9,16 @@ class "NotesComponent" {
 		self.noteLengthOffset = 0		-- TODO: offset not yet done!
 		self.noteLengthFlooring = true
 		
-		self.colourAlpha = 1.0
+		self.colourAlpha = 0.8
 		
 		self.useRainbowColour = true
-		self.rainbowColourHueShift = 0.5
+		self.rainbowColourHueShift = 0.45
 		self.rainbowColourSaturation = 0.8
 		self.rainbowColourValue = 0.8
 		
 		self.brightNote = true
-		self.brightNoteSaturation = 0.4
-		self.brightNodeValue = 1
+		self.brightNoteSaturation = 0.6
+		self.brightNodeValue = 0.9
 		
 		self.pitchBendSemitone = 12
 	end,
@@ -29,7 +29,7 @@ class "NotesComponent" {
 	end,
 	
 	-- Implement
-	draw = function (self, lowestKey, highestKey, keyGap)
+	draw = function (self, screenWidth,screenHeight, lowestKey, highestKey, keyGap)
 		love.graphics.push()
 		
 		--//////// Common Infomation ////////
@@ -38,12 +38,9 @@ class "NotesComponent" {
 		local tracks = song:getTracks()
 		local time = player:getTimeManager():getTime()
 		
-		local screenWidth = renderer:getWidth()
-		local screenHeight = renderer:getHeight()
-		
 		if self.orientation == 1 or self.orientation == 3 then
 			if self.orientation == 1 then
-				love.graphics.translate(0,screenHeight)
+				love.graphics.translate(0,self.height*screenHeight)
 				love.graphics.scale(1,-1)
 			end
 			love.graphics.translate(screenWidth, 0)
@@ -56,9 +53,9 @@ class "NotesComponent" {
 			love.graphics.scale(-1,1)
 		end
 		
-		local resolutionRatio = screenWidth / screenHeight
+		local resolutionRatio = screenWidth / (self.height*screenHeight)
 		
-		local spaceForEachKey = screenHeight / (highestKey-lowestKey+1)
+		local spaceForEachKey = (self.height*screenHeight) / (highestKey-lowestKey+1)
 		local keyHeightRatio = 1 - keyGap
 		local noteLengthOffset = resolutionRatio * self.noteScale*128 * self.noteLengthOffset	-- 1.0 = a crotchet
 		
@@ -115,7 +112,7 @@ class "NotesComponent" {
 						
 						--//////// Drawing ////////
 						if track:getIsDiamond() then
-							local size = math.max(12/7*(screenHeight / (highestKey-lowestKey+1))*keyHeightRatio, 0)
+							local size = math.max(12/7*((self.height*screenHeight) / (highestKey-lowestKey+1))*keyHeightRatio, 0)
 							local halfSize = size / 2
 							
 							love.graphics.polygon("fill",
@@ -129,7 +126,7 @@ class "NotesComponent" {
 							-- However, the precision problem may cause a very small negative number.
 							-- Hence, to prevent a note being shown outside the boundary, using a math.max is better.
 							local noteWidth = math.ceil(math.max(noteScale*noteLength - self.noteLengthOffset, 0))
-							local noteHeight = math.max((screenHeight / (highestKey-lowestKey+1))*keyHeightRatio, 0)
+							local noteHeight = math.max(((self.height*screenHeight) / (highestKey-lowestKey+1))*keyHeightRatio, 0)
 							
 							if noteTime <= time then
 							-- if true then

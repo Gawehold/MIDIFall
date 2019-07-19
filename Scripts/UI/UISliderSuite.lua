@@ -6,6 +6,7 @@ class "UISliderSuite" {
 		
 		self.text = text
 		self.slider = Slider(x,y, width,height, valueAlias, minValue,maxValue)
+		self.inputBox = UIInputBox(0.1,0.65,0.8,0.05, valueAlias),
 		
 	end,
 	
