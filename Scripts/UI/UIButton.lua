@@ -2,7 +2,9 @@ class "UIButton" {
 	extends "UIObject",
 	
 	new = function (self, x,y,width,height, text,icon, clicked)
-		self:super(x,y, width,height)
+		-- self:super(x,y, width,height)
+		UIObject.instanceMethods.new(self, x,y, width,height) -- self.super not working for two level inhertance
+		
 		self.text = text
 		self.icon = icon
 		self.iconSpace = 0.05
@@ -27,7 +29,7 @@ class "UIButton" {
 		
 		if self.isInside then
 			love.graphics.setColor(1,1,1,0.8)
-			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
+			-- love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 			
 			love.graphics.setColor(0,0.5,1,1)
 			love.graphics.setLineWidth((boxWidth+boxHeight) / 128)
@@ -47,7 +49,7 @@ class "UIButton" {
 		if self.icon then
 			local iconScale = (boxHeight / self.icon:getHeight()) * 0.8
 			local iconX, iconY = self.transform:transformPoint(self.x+self.padding,self.y)
-			iconY = iconY + (boxHeight - iconScale*self.icon:getWidth()) / 2
+			iconY = iconY + (boxHeight - iconScale*self.icon:getHeight()) / 2
 			
 			love.graphics.draw(self.icon, iconX,iconY, 0, iconScale)
 			

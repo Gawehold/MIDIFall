@@ -48,12 +48,24 @@ class "SettingsMenu" {
 							self.currentPage = self.pages.about
 						end
 					),
+					UIDropdown(0.1,0.7,0.8,0.05,
+						{
+							"Fast",
+							"Medium",
+							"Slow as hell",
+						}, 1
+					),
 				}
 			),
 			
 			system = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					
+					UIColorPicker(0,0,1,0.5, 
+						Alias(mainComponent.keyboardComponent.whiteKeyColourHSV, 1),
+						Alias(mainComponent.keyboardComponent.whiteKeyColourHSV, 2),
+						Alias(mainComponent.keyboardComponent.whiteKeyColourHSV, 3),
+						Alias(mainComponent.keyboardComponent, "whiteKeyAlpha")
+					),
 				}
 			),
 			
@@ -76,6 +88,7 @@ class "SettingsMenu" {
 					UISlider(0.1,0.2,0.8,0.02, Alias(mainComponent, "keyboardPosition"),-1,1,0.01),
 					UISlider(0.1,0.3,0.8,0.02, Alias(mainComponent, "keyboardLength"),0,1,0.01),
 					UISlider(0.1,0.4,0.8,0.02, Alias(mainComponent.notesComponent, "rainbowColourHueShift"),0,1,0.01),
+					UISlider(0.1,0.5,0.8,0.02, Alias(mainComponent, "keyGap"),0,1,0.01),
 				}
 			),
 			

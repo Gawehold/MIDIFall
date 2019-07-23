@@ -4,6 +4,8 @@ math.clamp = function (x,a,b)
 end
 
 math.round = function (x, n)	-- n is the step
+	n = n or 1
+	
 	if x % n >= n / 2 then
 		return x - (x % n) + n
 	else
@@ -61,7 +63,10 @@ require "Scripts/UI/UIButton"
 require "Scripts/UI/UICheckbox"
 require "Scripts/UI/UISlider"
 require "Scripts/UI/UIInputBox"
--- require "Scripts/UI/UIDropdown"
+require "Scripts/UI/UIDropdown"
+require "Scripts/UI/UIPalette"
+require "Scripts/UI/UIColorBlock"
+require "Scripts/UI/UIColorPicker"
 require "Scripts/UI/SettingsMenu"
 require "Scripts/UI/PlayerControl"
 require "Scripts/UI/UIManager"

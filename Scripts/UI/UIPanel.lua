@@ -2,7 +2,10 @@ class "UIPanel" {
 	extends "UIObject",
 	
 	new = function (self, x,y, width,height, children)
-		self:super(x,y, width,height)
+		-- self:super(x,y, width,height)
+		UIObject.instanceMethods.new(self, x,y, width,height) -- self.super not working for two level inhertance
+		
+		self.isOpened = true
 		
 		self.shift = 0
 		self.shiftStep = 0.05
@@ -41,10 +44,14 @@ class "UIPanel" {
 	end,
 	
 	update = function (self, dt, transform)
+		if not self.isOpened then
+			return
+		end
+		
 		self.transform = transform
 		
 		self.childrenTransform = self.transform:clone()
-		self.childrenTransform:translate(0, -self.shiftStep*self.shift)
+		self.childrenTransform:translate(0, self.shiftStep*self.shift)
 		
 		self.childrenTransform:scale(self.width,self.height)
 		self.childrenTransform:translate(self.x/self.width,self.y/self.height)
@@ -55,6 +62,10 @@ class "UIPanel" {
 	end,
 	
 	draw = function (self)
+		if not self.isOpened then
+			return
+		end
+		
 		love.graphics.push()
 		
 		if self.transform then
@@ -72,18 +83,30 @@ class "UIPanel" {
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
+		if not self.isOpened then
+			return
+		end
+		
 		for k,v in ipairs(self.children) do
 			v:mousePressed(mouseX, mouseY, button, istouch, presses)
 		end
 	end,
 	
 	mouseReleased = function (self, mouseX, mouseY, istouch, presses)
+		if not self.isOpened then
+			return
+		end
+		
 		for k,v in ipairs(self.children) do
 			v:mouseReleased(mouseX, mouseY, istouch, presses)
 		end
 	end,
 	
 	wheelMoved = function (self, x, y)
+		if not self.isOpened then
+			return
+		end
+		
 		if self.isInside then
 			self.shift = self.shift + y
 			
@@ -94,6 +117,10 @@ class "UIPanel" {
 	end,
 	
 	mouseMoved = function (self, x, y, dx, dy, istouch )
+		if not self.isOpened then
+			return
+		end
+		
 		if self:findIsInside(x,y) then
 			self:mouseEntered()
 		else
@@ -106,25 +133,43 @@ class "UIPanel" {
 	end,
 	
 	keyPressed = function (self, key)
+		if not self.isOpened then
+			return
+		end
+		
 		for k,v in ipairs(self.children) do
 			v:keyPressed(key)
 		end
 	end,
 	
 	keyReleased = function (self, key)
+		if not self.isOpened then
+			return
+		end
+		
 		for k,v in ipairs(self.children) do
 			v:keyReleased(key)
 		end
 	end,
 	
 	textInput = function (self, ch)
+		if not self.isOpened then
+			return
+		end
+		
 		for k,v in ipairs(self.children) do
 			v:textInput(ch)
 		end
 	end,
 	
 	getIsInside = function (self)
-		return self.isInside
+		local isInside = self.isInside
+		
+		for k,v in ipairs(self.children) do
+			isInside = isInside or v:getIsInside()
+		end
+		
+		return isInside
 	end,
 	
 	getIsFocusing = function (self)
@@ -135,5 +180,26 @@ class "UIPanel" {
 		end
 		
 		return false
+	end,
+	
+	addChild = function (self, child)
+		table.insert(self.children, child)
+		child:setParent(self)
+	end,
+	
+	open = function (self)
+		self.isOpened = true
+	end,
+	
+	close = function (self)
+		self.isOpened = false
+	end,
+	
+	toggle = function (self)
+		self.isOpened = not self.isOpened
+	end,
+	
+	getIsOpened = function (self)
+		return self.isOpened
 	end,
 }

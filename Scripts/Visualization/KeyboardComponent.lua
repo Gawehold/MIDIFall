@@ -9,7 +9,7 @@ class "KeyboardComponent" {
 		self.rainbowHueShift = 0.45
 		
 		self.blackKeyColourHSV = {0, 0, 0.2}
-		self.blackKeyAlpha = 0.0
+		self.blackKeyAlpha = 0.9
 		
 		self.whiteKeyColourHSV = {0, 0, 0.9}
 		self.whiteKeyAlpha = 0.9
@@ -85,6 +85,9 @@ class "KeyboardComponent" {
 		
 		local spaceForEachKey = (self.height*screenHeight) / (highestKey-lowestKey+1)
 		local keyHeightRatio = 1 - keyGap
+		local absoluteKeyGap = keyGap*spaceForEachKey
+		
+		love.graphics.translate(0, absoluteKeyGap/2)
 		
 		for i = lowestKey, highestKey do
 			local keyY = (highestKey-i) * spaceForEachKey
@@ -98,19 +101,19 @@ class "KeyboardComponent" {
 				self:setKeyColour(i+1, lowestKey, highestKey, false)
 				love.graphics.rectangle(
 					"fill",
-					keyboardX+keyboardWidth*0.65+keyGap*spaceForEachKey,
-					keyY-keyGap*spaceForEachKey,
-					keyboardWidth*0.35-keyGap*spaceForEachKey,
-					(keyHeight+2*keyGap*spaceForEachKey)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - keyGap*spaceForEachKey/2
+					math.min( keyboardX+keyboardWidth*0.65+absoluteKeyGap, keyboardX+keyboardWidth ),
+					keyY-absoluteKeyGap,
+					keyboardWidth*0.35-absoluteKeyGap,
+					(keyHeight+2*absoluteKeyGap)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - absoluteKeyGap/2
 				)
 				
 				self:setKeyColour(i-1, lowestKey, highestKey, false)
 				love.graphics.rectangle(
 					"fill",
-					keyboardX+keyboardWidth*0.65+keyGap*spaceForEachKey,
-					keyY-keyGap*spaceForEachKey+(keyHeight+2*keyGap*spaceForEachKey)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - keyGap*spaceForEachKey/2+keyGap*spaceForEachKey,
-					keyboardWidth*0.35-keyGap*spaceForEachKey,
-					(keyHeight+2*keyGap*spaceForEachKey)*(1-self.whiteHeadsUpperPartRatio[semitoneInOctave]) - keyGap*spaceForEachKey/2
+					math.min( keyboardX+keyboardWidth*0.65+absoluteKeyGap, keyboardX+keyboardWidth ),
+					keyY-absoluteKeyGap+(keyHeight+2*absoluteKeyGap)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - absoluteKeyGap/2+absoluteKeyGap,
+					keyboardWidth*0.35-absoluteKeyGap,
+					(keyHeight+2*absoluteKeyGap)*(1-self.whiteHeadsUpperPartRatio[semitoneInOctave]) - absoluteKeyGap/2
 				)
 			else
 				self:setKeyColour(i, lowestKey, highestKey, false)

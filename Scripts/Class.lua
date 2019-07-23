@@ -90,9 +90,10 @@ function buildClass(className, classDefinition)
 	
 	local instanceMethods = {}
 	if classDefinition.parent then
-		for k, v in pairs(classDefinition.parent.classDefinition) do
-			if k ~= "static" and type(v) == "function" then
+		for k, v in pairs(classDefinition.parent.instanceMethods) do
+			if k ~= "super" then
 				if k == "new" then
+					-- print(className, classDefinition.parent.name, v)
 					instanceMethods.super = v
 				else
 					instanceMethods[k] = v
@@ -189,6 +190,44 @@ class "Follower" {
 	end,
 }
 
+-- class "A" {
+	-- f = function (self)
+		-- print("I am A or descendant of A.")
+	-- end,
+-- }
+
+-- class "B" {
+	-- extends "A",
+	-- new = function (self)
+		-- self.x = 1
+	-- end,
+-- }
+
+-- class "C" {
+	-- extends "B",
+	-- new = function (self)
+		-- self:super()
+		-- -- B.instanceMethods.new(self)
+		-- -- print(B.instanceMethods.new)
+		-- -- print(self.super)
+	-- end,
+-- }
+-- for k,v in pairs(A.instanceMethods) do
+	-- print(k,v)
+-- end
+-- print("==========")
+-- for k,v in pairs(B.instanceMethods) do
+	-- print(k,v)
+-- end
+-- print("==========")
+-- for k,v in pairs(C.instanceMethods) do
+	-- print(k,v)
+-- end
+
+-- local obj = C()
+-- print(obj.x)
+
+-------------------------------------------------
 
 -- class "B" {
 	-- new = function (self)

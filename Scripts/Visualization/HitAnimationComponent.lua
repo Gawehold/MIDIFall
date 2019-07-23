@@ -49,6 +49,7 @@ class "HitAnimationComponent" {
 		
 		local spaceForEachKey = (self.height*screenHeight) / (highestKey-lowestKey+1)
 		local keyHeightRatio = 1 - keyGap
+		local absoluteKeyGap = keyGap*spaceForEachKey
 		
 		local leftBoundary = math.floor(self.x * screenWidth)
 		local rightBoundary = leftBoundary + math.floor(self.width * screenWidth)
@@ -56,6 +57,8 @@ class "HitAnimationComponent" {
 		local firstNonPlayedNoteIDInTracks = player:getFirstNonPlayedNoteIDInTracks()
 		
 		--//////// Main Section ////////
+		love.graphics.translate(0, absoluteKeyGap/2)
+		
 		for trackID = 1, #tracks do
 			local track = tracks[trackID]
 			

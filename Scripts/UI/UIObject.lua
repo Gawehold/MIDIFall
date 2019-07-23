@@ -10,6 +10,13 @@ class "UIObject" {
 		self.isInside = false
 	end,
 	
+	update = function (self, dt, transform)
+		self.transform = transform
+	end,
+	
+	draw = function (self)
+	end,
+	
 	setParent = function (self, parent)
 		self.parent = parent
 	end,
@@ -42,7 +49,12 @@ class "UIObject" {
 	mouseReleased = function (self, mouseX, mouseY, istouch, presses)
 	end,
 
-	mouseMoved = function (self, x, y, dx, dy, istouch)
+	mouseMoved = function (self, x, y, dx, dy, istouch )
+		if self:findIsInside(x,y) then
+			self:mouseEntered()
+		else
+			self:mouseExited()
+		end
 	end,
 	
 	wheelMoved = function (self, x, y)

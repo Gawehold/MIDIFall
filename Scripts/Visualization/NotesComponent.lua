@@ -58,6 +58,7 @@ class "NotesComponent" {
 		local spaceForEachKey = (self.height*screenHeight) / (highestKey-lowestKey+1)
 		local keyHeightRatio = 1 - keyGap
 		local noteLengthOffset = resolutionRatio * self.noteScale*128 * self.noteLengthOffset	-- 1.0 = a crotchet
+		local absoluteKeyGap = keyGap*spaceForEachKey
 		
 		local noteScale = self.noteScale*128/song:getTimeDivision()
 		local pixelMoved = math.floor(noteScale*(time-song:getInitialTime()))
@@ -68,6 +69,8 @@ class "NotesComponent" {
 		local currentPitchBendValueInTracks = player:getCurrentPitchBendValueInTracks()
 		
 		--//////// Main Section ////////
+		love.graphics.translate(0, absoluteKeyGap/2)
+		
 		for trackID = 1, #tracks do
 		-- for trackID = 3,3 do
 			local track = tracks[trackID]

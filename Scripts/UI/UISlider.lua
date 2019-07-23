@@ -1,13 +1,14 @@
 class "UISlider" {
 	extends "UIObject",
 	
-	new = function (self, x,y,width,height, valueAlias, minValue,maxValue, valueStep)
+	new = function (self, x,y,width,height, valueAlias, minValue,maxValue, valueStep, isVertical)
 		self:super(x,y, width,height)
 		self.value = valueAlias
 		self.minValue = minValue
 		self.maxValue = maxValue
 		self.isClicking = false
 		self.valueStep = valueStep
+		self.isVertical = isVertical or false	-- TODO
 	end,
 	
 	update = function (self, dt, transform)
