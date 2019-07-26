@@ -1,7 +1,7 @@
 class "UIPanel" {
 	extends "UIObject",
 	
-	new = function (self, x,y, width,height, children)
+	new = function (self, x,y, width,height, ...)
 		-- self:super(x,y, width,height)
 		UIObject.instanceMethods.new(self, x,y, width,height) -- self.super not working for two level inhertance
 		
@@ -10,10 +10,20 @@ class "UIPanel" {
 		self.shift = 0
 		self.shiftStep = 0.05
 		
-		self.children = children or {}
-		for k,v in ipairs(self.children) do
-			v:setParent(self)
+		self.pages = {}
+		for i = 1, select("#", ...) do
+			local page = select(i, ...)
+			self.pages[i] = page
+			
+			for k,v in ipairs(page) do
+				v:setParent(self)
+			end
 		end
+		
+		self.homepageID = 1
+		self.homepage = self.pages[self.homepageID]
+		
+		self.children = self.pages[self.homepageID] or {}
 		
 		self.childrenTransform = love.math.newTransform()
 		
@@ -192,7 +202,38 @@ class "UIPanel" {
 	end,
 	
 	close = function (self)
-		self.isOpened = false
+		-- Return
+		-- True:	If self is closed
+		-- False:	If self is not closed
+		
+		if self.children == self.homepage then
+			self.isOpened = false
+			return true
+		else
+			self:changePage(self.homepageID)
+			return false
+		end
+	end,
+	
+	closeTopPanels = function (self)
+		-- Return
+		-- True:	The top panel is self
+		-- False:	The top panel is not self
+		
+		local openedChildPanel = nil
+		
+		for k,v in ipairs(self.children) do
+			if v.closeTopPanels and v:getIsOpened() then	-- v.closeTopPanels is to check if it is a Panel/descendant object of Panel
+				openedChildPanel = v
+				v:closeTopPanels()
+			end
+		end
+		
+		if openedChildPanel then
+			return false
+		else
+			return self:close()
+		end
 	end,
 	
 	toggle = function (self)
@@ -201,5 +242,9 @@ class "UIPanel" {
 	
 	getIsOpened = function (self)
 		return self.isOpened
+	end,
+	
+	changePage = function (self, pageID)
+		self.children = self.pages[pageID]
 	end,
 }

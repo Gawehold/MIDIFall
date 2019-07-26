@@ -21,39 +21,38 @@ class "SettingsMenu" {
 					UIButton(0.1,0.1,0.8,0.05,"System", love.graphics.newImage("Assets/Free desktop PC icon.png"), 
 						function (obj)
 							self.currentPage = self.pages.system
+							self.currentPage:open()
 						end
 					),
 					UIButton(0.1,0.2,0.8,0.05,"Playback", love.graphics.newImage("Assets/video cassette recorder icon 2.png"), 
 						function (obj)
 							self.currentPage = self.pages.playback
+							self.currentPage:open()
 						end
 					),
 					UIButton(0.1,0.3,0.8,0.05,"Tracks", love.graphics.newImage("Assets/mixer (music) icon 1.png"), 
 						function (obj)
 							self.currentPage = self.pages.tracks
+							self.currentPage:open()
 						end
 					),
 					UIButton(0.1,0.4,0.8,0.05,"Display", love.graphics.newImage("Assets/projector.png"), 
 						function (obj)
 							self.currentPage = self.pages.display
+							self.currentPage:open()
 						end
 					),
 					UIButton(0.1,0.5,0.8,0.05,"Experimental", nil, 
 						function (obj)
 							self.currentPage = self.pages.experimental
+							self.currentPage:open()
 						end
 					),
 					UIButton(0.1,0.6,0.8,0.05,"About", love.graphics.newImage("Assets/Resume icon 6.png"), 
 						function (obj)
 							self.currentPage = self.pages.about
+							self.currentPage:open()
 						end
-					),
-					UIDropdown(0.1,0.7,0.8,0.05,
-						{
-							"Fast",
-							"Medium",
-							"Slow as hell",
-						}, 1
 					),
 				}
 			),
@@ -65,6 +64,14 @@ class "SettingsMenu" {
 						Alias(mainComponent.keyboardComponent.whiteKeyColourHSV, 2),
 						Alias(mainComponent.keyboardComponent.whiteKeyColourHSV, 3),
 						Alias(mainComponent.keyboardComponent, "whiteKeyAlpha")
+					),
+					
+					UIDropdown(0.1,0.7,0.8,0.05,
+						{
+							"Fast",
+							"Medium",
+							"Slow as hell",
+						}, 1
 					),
 				}
 			),
@@ -83,18 +90,58 @@ class "SettingsMenu" {
 			
 			display = UIPanel(self.x,self.y, self.width,self.height,
 				{
+					UIButton(0.1,0.1,0.8,0.05,"Background", nil, 
+						function (obj)
+							obj.parent:changePage(2)
+						end
+					),
+					UIButton(0.1,0.2,0.8,0.05,"Keyboard", nil, 
+						function (obj)
+							obj.parent:changePage(3)
+						end
+					),
+					UIButton(0.1,0.3,0.8,0.05,"Notes", nil, 
+						function (obj)
+							obj.parent:changePage(4)
+						end
+					),
+					UIButton(0.1,0.4,0.8,0.05,"Falls", nil, 
+						function (obj)
+							obj.parent:changePage(5)
+						end
+					),
+					UIButton(0.1,0.5,0.8,0.05,"Hit Animation", nil, 
+						function (obj)
+							obj.parent:changePage(6)
+						end
+					),
+					UIButton(0.1,0.6,0.8,0.05,"Measure", nil, 
+						function (obj)
+							obj.parent:changePage(7)
+						end
+					),
+				},
+				
+				{
+					UISliderSuite(0.1,0.1, 0.8,0.1, "Opacity", Alias(mainComponent.backgroundComponent, "opacity"), 0,1, 0.01),
+				},
+				
+				{
+					UIText(0.1,0.1,0.3,0.05, "Keyboard Position", 0.75),
 					UIText(0.1,0.1,0.3,0.05, "Keyboard Position", 0.75),
 					UIInputBox(0.4,0.115,0.3,0.05, Alias(mainComponent, "keyboardPosition")),
 					UISlider(0.1,0.2,0.8,0.02, Alias(mainComponent, "keyboardPosition"),-1,1,0.01),
 					UISlider(0.1,0.3,0.8,0.02, Alias(mainComponent, "keyboardLength"),0,1,0.01),
 					UISlider(0.1,0.4,0.8,0.02, Alias(mainComponent.notesComponent, "rainbowColourHueShift"),0,1,0.01),
-					UISlider(0.1,0.5,0.8,0.02, Alias(mainComponent, "keyGap"),0,1,0.01),
+					UISlider(0.1,0.5,0.8,0.02, Alias(mainComponent, "keyGap"),0,1,0.01),					
 				}
 			),
 			
 			experimental = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					
+					UIInputBox(0.1,0.1,0.2,0.05, Alias(mainComponent, "lowestKey")),
+					UIInputBox(0.5,0.1,0.2,0.05, Alias(mainComponent, "highestKey")),
+					UIRangeSlider(0.1,0.5,0.8,0.02, Alias(mainComponent, "lowestKey"),Alias(mainComponent, "highestKey"), 0,127,1),
 				}
 			),
 			
@@ -165,7 +212,9 @@ class "SettingsMenu" {
 					self:open()
 				end
 			else
-				self.currentPage = self.pages.homepage
+				if self.currentPage:closeTopPanels() then
+					self.currentPage = self.pages.homepage
+				end
 			end
 		end
 		

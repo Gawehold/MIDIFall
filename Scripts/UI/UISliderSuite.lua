@@ -1,48 +1,74 @@
 class "UISliderSuite" {
 	extends "UIObject",
 	
-	new = function (self, x,y,width,height, text, valueAlias, minValue,maxValue)
+	new = function (self, x,y,width,height, text, valueAlias, minValue,maxValue, valueStep)
 		self:super(x,y, width,height)
 		
-		self.text = text
-		self.slider = Slider(x,y, width,height, valueAlias, minValue,maxValue)
-		self.inputBox = UIInputBox(0.1,0.65,0.8,0.05, valueAlias),
+		self.text = UIText(x,y, width/2,height/2, text, 1)
+		self.inputBox = UIInputBox(x+width/2,y, width/2,height/2, valueAlias)
+		self.slider = UISlider(x,y+3*height/4, width,height/4, valueAlias, minValue,maxValue, valueStep)
 		
 	end,
 	
 	update = function (self, dt, transform)
 		self.transform = transform
 		
-		self.slider:update()
+		self.text:update(dt, transform)
+		self.inputBox:update(dt, transform)
+		self.slider:update(dt, transform)
 	end,
 	
 	draw = function (self)
-		self.slider 
+		self.text:draw()
+		self.inputBox:draw()
+		self.slider:draw()
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
-		if self.isInside and button == 1 then
-			self.isClicking = true
-			
-			self.value = (self.maxValue - self.minValue) * (mouseX - self.transform:transformPoint(self.x,0)) / (self.transform:transformPoint(self.width,0) - self.transform:transformPoint(0,0))
-			self.value = math.clamp(self.value, self.minValue, self.maxValue)
-		end
+		self.text:mousePressed(mouseX, mouseY, button, istouch, presses)
+		self.inputBox:mousePressed(mouseX, mouseY, button, istouch, presses)
+		self.slider:mousePressed(mouseX, mouseY, button, istouch, presses)
 	end,
 	
 	mouseReleased = function (self, mouseX, mouseY, istouch, presses)
-		self.isClicking = false
+		self.text:mouseReleased(mouseX, mouseY, istouch, presses)
+		self.inputBox:mouseReleased(mouseX, mouseY, istouch, presses)
+		self.slider:mouseReleased(mouseX, mouseY, istouch, presses)
+	end,
+
+	mouseMoved = function (self, x, y, dx, dy, istouch)
+		self.text:mouseMoved(x, y, dx, dy, istouch)
+		self.inputBox:mouseMoved(x, y, dx, dy, istouch)
+		self.slider:mouseMoved(x, y, dx, dy, istouch)
 	end,
 	
-	mouseMoved = function (self, x, y, dx, dy, istouch)
-		if self:findIsInside(x,y) then
-			self:mouseEntered()
-		else
-			self:mouseExited()
-		end
-		
-		if self.isClicking then
-			self.value = (self.maxValue - self.minValue) * (x - self.transform:transformPoint(self.x,0)) / (self.transform:transformPoint(self.width,0) - self.transform:transformPoint(0,0))
-			self.value = math.clamp(self.value, self.minValue, self.maxValue)
-		end
+	wheelMoved = function (self, x, y)
+		self.text:wheelMoved(x, y)
+		self.inputBox:wheelMoved(x, y)
+		self.slider:wheelMoved(x, y)
+	end,
+
+	keyPressed = function(self, key)
+		self.text:keyPressed(key)
+		self.inputBox:keyPressed(key)
+		self.slider:keyPressed(key)
+	end,
+	
+	keyReleased = function (self, key)
+		self.text:keyReleased(key)
+		self.inputBox:keyReleased(key)
+		self.slider:keyReleased(key)
+	end,
+	
+	textInput = function (self, ch)
+		self.text:textInput(ch)
+		self.inputBox:textInput(ch)
+		self.slider:textInput(ch)
+	end,
+	
+	fileDropped = function (self, file)
+		self.text:fileDropped(file)
+		self.inputBox:fileDropped(file)
+		self.slider:fileDropped(file)
 	end,
 }

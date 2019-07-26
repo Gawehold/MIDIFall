@@ -62,23 +62,25 @@ require "Scripts/UI/UIText"
 require "Scripts/UI/UIButton"
 require "Scripts/UI/UICheckbox"
 require "Scripts/UI/UISlider"
+require "Scripts/UI/UIRangeSlider"
 require "Scripts/UI/UIInputBox"
 require "Scripts/UI/UIDropdown"
 require "Scripts/UI/UIPalette"
 require "Scripts/UI/UIColorBlock"
 require "Scripts/UI/UIColorPicker"
+require "Scripts/UI/UISliderSuite"
 require "Scripts/UI/SettingsMenu"
 require "Scripts/UI/PlayerControl"
 require "Scripts/UI/UIManager"
 
--- local song = MIDIParser:parse(love.filesystem.read("Assets/stair.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/stair.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
-local song = MIDIParser:parse(love.filesystem.read("Assets/進化系Colors.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/進化系Colors.mid"))
 
 player = Player(song)
 mainComponent = MainComponent(0,0,0,0)

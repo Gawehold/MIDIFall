@@ -31,14 +31,22 @@ class "UIText" {
 		local wordX = boxX
 		local wordY = boxY
 		
+		local scale = self.scale
+		
 		for i,word in ipairs(self.words) do
-			if wordX + self.scale*font:getWidth(word) + spaceWidth > boxX2 then
-				wordX = boxX
-				wordY = wordY + fontHeight
+			if wordX + scale*font:getWidth(word) + spaceWidth > boxX2 then
+				if boxX + scale*font:getWidth(word) + spaceWidth > boxX2 then
+					-- If the space is too small for the word, then make the text smaller
+					scale = (boxX2 - wordX - spaceWidth) / font:getWidth(word)
+				else
+					-- Newline
+					wordX = boxX
+					wordY = wordY + fontHeight
+				end
 			end
 			
-			love.graphics.print(word, wordX,wordY, 0, self.scale)
-			wordX = wordX + self.scale*font:getWidth(word) + spaceWidth
+			love.graphics.print(word, wordX,wordY, 0, scale)
+			wordX = wordX + scale*font:getWidth(word) + spaceWidth
 		end
 	end,
 	

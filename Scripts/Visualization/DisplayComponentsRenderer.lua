@@ -11,7 +11,7 @@ class "DisplayComponentsRenderer" {
 			require "love.event"
 			
 			local pipe = io.popen(
-				string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -pix_fmt yuv420p -crf %d -preset:v %s -y %s", ...), "wb"
+				string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -vf colormatrix=bt601:bt709 -pix_fmt yuv420p -c:v libx264 -crf %d -preset:v %s -y %s", ...), "wb"
 			)
 			
 			while not love.thread.getChannel("renderingStopped"):peek() or love.thread.getChannel("imageData"):getCount() > 0 do

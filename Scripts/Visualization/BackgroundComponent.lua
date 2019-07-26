@@ -10,6 +10,7 @@ class "BackgroundComponent" {
 		self.scales = {0.2, 0.2}
 		self.offsets = {0, 0}
 		self.isAlignCentre = false
+		self.opacity = 1
 		
 		-- self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/1186946-free-wallpaper-for-vertical-monitor-1440x3440.jpg")
 		self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/no_character.png")
@@ -42,7 +43,7 @@ class "BackgroundComponent" {
 		end
 		
 		-- Draw the background image
-		love.graphics.setColor(1,1,1)
+		love.graphics.setColor(1,1,1,self.opacity)
 		love.graphics.draw(self.image, screenWidth*self.x+offsets[1], screenHeight*self.y+offsets[2], 0, scales[1], scales[2])
 	end,
 	
