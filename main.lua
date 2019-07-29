@@ -23,7 +23,10 @@ tick = require "Libraries/tick/tick"
 ffi.cdef[[
 char *malloc(size_t size);
 void free(void *ptr);
+char* openFileDialog();
 ]]
+
+clib = ffi.load("D:\\MIDIFall_Project\\MIDIFall\\Scripts\\openFileDialog.dll")
 
 -- Define global variables
 -- NULL = {}
@@ -68,6 +71,7 @@ require "Scripts/UI/UIDropdown"
 require "Scripts/UI/UIPalette"
 require "Scripts/UI/UIColorBlock"
 require "Scripts/UI/UIColorPicker"
+require "Scripts/UI/UIColorPickerToggle"
 require "Scripts/UI/UISliderSuite"
 require "Scripts/UI/SettingsMenu"
 require "Scripts/UI/PlayerControl"
@@ -195,6 +199,10 @@ end
 
 function love.filedropped(file)
 	uiManager:fileDropped(file)
+end
+
+function love.resize(w, h)
+	uiManager:resize(w, h)
 end
 
 function love.threaderror(thread, errorstr)

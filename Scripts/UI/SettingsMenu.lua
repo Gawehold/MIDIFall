@@ -13,6 +13,8 @@ class "SettingsMenu" {
 		self.isOpened = false
 		self.isClosing = false
 		
+		self.proposedResolution = {1920, 1080}
+		
 		self.font = love.graphics.newFont("Assets/NotoSansCJKtc-Medium_1.otf", 36)
 		
 		self.pages = {
@@ -42,13 +44,19 @@ class "SettingsMenu" {
 							self.currentPage:open()
 						end
 					),
-					UIButton(0.1,0.5,0.8,0.05,"Experimental", nil, 
+					UIButton(0.1,0.5,0.8,0.05,"Video Export", nil, 
 						function (obj)
 							self.currentPage = self.pages.experimental
 							self.currentPage:open()
 						end
 					),
-					UIButton(0.1,0.6,0.8,0.05,"About", love.graphics.newImage("Assets/Resume icon 6.png"), 
+					UIButton(0.1,0.6,0.8,0.05,"Update", love.graphics.newImage("Assets/Resume icon 6.png"), 
+						function (obj)
+							self.currentPage = self.pages.about
+							self.currentPage:open()
+						end
+					),
+					UIButton(0.1,0.7,0.8,0.05,"About", love.graphics.newImage("Assets/Resume icon 6.png"), 
 						function (obj)
 							self.currentPage = self.pages.about
 							self.currentPage:open()
@@ -59,20 +67,53 @@ class "SettingsMenu" {
 			
 			system = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UIColorPicker(0,0,1,0.5, 
-						Alias(mainComponent.keyboardComponent.whiteKeyColourHSV, 1),
-						Alias(mainComponent.keyboardComponent.whiteKeyColourHSV, 2),
-						Alias(mainComponent.keyboardComponent.whiteKeyColourHSV, 3),
-						Alias(mainComponent.keyboardComponent, "whiteKeyAlpha")
+					UIText(0.05,0.04, 0.35,0.05, "Properties"),
+					UIButton(0.1,0.1,0.35,0.05,"Import", nil, 
+						function (obj)
+							ffi.string(clib.openFileDialog())
+						end
+					),
+					UIButton(0.55,0.1,0.35,0.05,"Export", nil, 
+						function (obj)
+							ffi.string(clib.openFileDialog())
+						end
 					),
 					
-					UIDropdown(0.1,0.7,0.8,0.05,
-						{
-							"Fast",
-							"Medium",
-							"Slow as hell",
-						}, 1
+					UIText(0.05,0.24, 0.35,0.05, "Resolution"),
+					UISliderSuite(0.1,0.3, 0.8,0.07, "Width", Alias(self.proposedResolution, 1), 1,select(1, love.window.getDesktopDimensions()), 1),
+					UISliderSuite(0.1,0.4, 0.8,0.07, "Height", Alias(self.proposedResolution, 2), 1,select(2, love.window.getDesktopDimensions()), 1),
+					UIButton(0.1,0.5,0.35,0.05,"Update", nil, 
+						function (obj)
+							love.window.setFullscreen(false)
+							
+							local width, height, flags = love.window.getMode()
+							flags.x = nil
+							flags.y = nil
+							love.window.setMode(self.proposedResolution[1], self.proposedResolution[2], flags)
+						end
 					),
+					
+					UICheckbox(0.1,0.65, 0.55,0.05, "Fullscreen",nil, love.window.getFullscreen(), 
+						function (obj)
+							love.window.setFullscreen(true)
+						end,
+						function (obj)
+							love.window.setFullscreen(false)
+						end
+					),
+					
+					UICheckbox(0.1,0.72, 0.55,0.05, "Vsync",nil, select(3, love.window.getMode()).vsync, 
+						function (obj)
+							local width, height, flags = love.window.getMode()
+							flags.vsync = true
+							love.window.setMode(width, height, flags)
+						end,
+						function (obj)
+							local width, height, flags = love.window.getMode()
+							flags.vsync = false
+							love.window.setMode(width, height, flags)
+						end
+					)
 				}
 			),
 			
@@ -147,7 +188,7 @@ class "SettingsMenu" {
 			
 			about = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UIText(0.1,0.1,0.8,0.5, "A MIDI score (smf file) visualizer with rainbow falls!", 1)
+					UIText(0.1,0.1,0.8,0.5, "A MIDI score (smf file) visualizer with rainbow falls!", 1, true,true)
 				}
 			),
 		}
@@ -246,6 +287,14 @@ class "SettingsMenu" {
 	end,
 	
 	fileDropped = function (self, file)
+		self.currentPage:fileDropped(file)
+	end,
+	
+	resize = function (self, w, h)
+		self.proposedResolution[1] = w
+		self.proposedResolution[2] = h
+		
+		self.currentPage:resize(w, h)
 	end,
 	
 	getIsInside = function (self)

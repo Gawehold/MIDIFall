@@ -118,7 +118,15 @@ class "UIPanel" {
 		end
 		
 		if self.isInside then
-			self.shift = self.shift + y
+			for k,v in ipairs(self.children) do
+				if y > 0 and v.y + self.shiftStep*self.shift < self.y then
+					self.shift = self.shift + y
+					break
+				elseif y < 0 and v.y + v.height + self.shiftStep*self.shift > self.height then
+					self.shift = self.shift + y
+					break
+				end
+			end
 			
 			for k,v in ipairs(self.children) do
 				v:wheelMoved(x, y)
@@ -169,6 +177,18 @@ class "UIPanel" {
 		
 		for k,v in ipairs(self.children) do
 			v:textInput(ch)
+		end
+	end,
+	
+	fileDropped = function (self, file)
+		for k,v in ipairs(self.children) do
+			v:fileDropped(file)
+		end
+	end,
+	
+	resize = function (self, w, h)
+		for k,v in ipairs(self.children) do
+			v:resize(w, h)
 		end
 	end,
 	

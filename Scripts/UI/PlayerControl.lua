@@ -127,6 +127,9 @@ class "PlayerControl" {
 		end
 	end,
 	
+	resize = function (self, w, h)
+	end,
+	
 	getIsInside = function (self)
 		return true
 	end,

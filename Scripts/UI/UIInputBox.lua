@@ -5,17 +5,20 @@ class "UIInputBox" {
 		self:super(x,y, width,height)
 		
 		self.value = valueAlias
-		self.text = tostring(self.value)
+		
 		self.isFocusing = false
 		self.cursorPosition = 0
 		self.padding = 0.02
+		
+		self.text = UIText(x+self.padding,y, width-2*self.padding,height, tostring(self.value), 1, false,true)
 	end,
 	
 	update = function (self, dt, transform)
 		self.transform = transform
+		self.text:update(dt, transform)
 		
 		if not self.isFocusing then
-			self.text = tostring(self.value)
+			self.text:setText(tostring(self.value))
 		end
 	end,
 	
@@ -39,45 +42,50 @@ class "UIInputBox" {
 		end
 		
 		if self.isFocusing then
-			love.graphics.setColor(0,0.5,1,1)
+			self.text:setColor(0,0.5,1,1)
 		else
-			love.graphics.setColor(0,0,0,0.8)
+			self.text:setColor(0,0,0,0.8)
 		end
-		
-		local textX, textY = self.transform:transformPoint(self.x+self.padding,self.y)
-		love.graphics.print(self.text, textX, textY)
+		self.text:draw()
 		
 		-- Draw cursor
 		if self.isFocusing then
 			love.graphics.setColor(0,0.5,1,1)
-			local cursorX, cursorY = self.transform:transformPoint(self.x+self.padding,self.y)
-			cursorX = cursorX + love.graphics.getFont():getWidth(string.sub(self.text, 1, self.cursorPosition))
+			
+			local font = self.text:getFont()
+			
+			local cursorX, cursorY = self.transform:transformPoint(self.x + self.padding, self.y)
+			cursorX = cursorX + self.text:getScale() * ( font:getWidth(string.sub(self.text:getText(), 1, self.cursorPosition)) + font:getWidth(" ")/2 )
+			
 			love.graphics.line(cursorX,cursorY+4*love.graphics.getLineWidth(), cursorX,boxY2-4*love.graphics.getLineWidth())
 		end
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
+		local textObj = self.text
+		local text = self.text:getText()
+		
+		local startPositionOfText = self.transform:transformPoint(self.x+self.padding,self.y)
+		
 		if button == 1 then
 			if self.isInside then
 				self:focus()
-				
 				-- Find the cursor position
-				if mouseX > self.transform:transformPoint(self.x+self.padding,self.y) + love.graphics.getFont():getWidth(self.text) then
+				if mouseX > startPositionOfText + textObj:getSubstringWidth(1) then
 					-- If the mouse clicked on the spaces on the right of the text
-					self.cursorPosition = string.len(self.text)
+					self.cursorPosition = string.len(text)
 				else
-					for i = 0, string.len(self.text) do
-						local substring = string.sub(self.text, 1, i)
-						local substringWidth = love.graphics.getFont():getWidth(substring)
-						local lastCharacter = string.sub(self.text, -1)
-						local lastCharacterWidth = love.graphics.getFont():getWidth(lastCharacter)
+					for i = 0, string.len(text) do
+						local substringWidth = textObj:getSubstringWidth(1, i)
+						local lastCharacterWidth = textObj:getSubstringWidth(-1)
 						
-						if mouseX - lastCharacterWidth/2 <= self.transform:transformPoint(self.x+self.padding,self.y) + substringWidth then
+						if mouseX - lastCharacterWidth / 2 <= startPositionOfText + substringWidth then
 							self.cursorPosition = i
 							break
 						end
 					end
 				end
+				
 			elseif self.isFocusing then
 				self:enter()
 			end
@@ -91,7 +99,7 @@ class "UIInputBox" {
 	enter = function (self)
 		self.isFocusing = false
 		
-		self.value = tonumber(self.text) or self.value
+		self.value = tonumber(self.text:getText()) or self.value
 	end,
 	
 	mouseMoved = function (self, x, y, dx, dy, istouch )
@@ -102,36 +110,44 @@ class "UIInputBox" {
 		end
 	end,
 	
-	keyPressed = function (self, key)
+	keyPressed = function (self, key)	
 		if self.isFocusing then
+			local text = self.text:getText()
+			
 			if key == "return" or key == "kpenter" then
 				self:enter()
 				
 			elseif key == "backspace" then
-				self.text = string.sub(self.text, 0, self.cursorPosition-1) .. string.sub(self.text, self.cursorPosition+1, string.len(self.text))
+				text = string.sub(text, 0, self.cursorPosition-1) .. string.sub(text, self.cursorPosition+1, string.len(text))
 				self.cursorPosition = self.cursorPosition - 1
+				
+				self.text:setText(text)
 				
 			elseif key == "left" then
 				self.cursorPosition = self.cursorPosition - 1
-				self.cursorPosition = math.clamp(self.cursorPosition, 0, self.text:len())
+				self.cursorPosition = math.clamp(self.cursorPosition, 0, text:len())
 				
 			elseif key == "right" then
 				self.cursorPosition = self.cursorPosition + 1
-				self.cursorPosition = math.clamp(self.cursorPosition, 0, self.text:len())
+				self.cursorPosition = math.clamp(self.cursorPosition, 0, text:len())
 				
 			elseif key == "home" then
 				self.cursorPosition = 0
 				
 			elseif key == "end" then
-				self.cursorPosition = self.text:len()
+				self.cursorPosition = text:len()
 			end
 		end
 	end,
 	
 	textInput = function (self, ch)
 		if self.isFocusing then
-			self.text = string.sub(self.text, 0, self.cursorPosition) .. ch .. string.sub(self.text, self.cursorPosition+1, string.len(self.text))
+			local text = self.text:getText()
+			
+			text = string.sub(text, 0, self.cursorPosition) .. ch .. string.sub(text, self.cursorPosition+1, string.len(text))
 			self.cursorPosition = self.cursorPosition + 1
+			
+			self.text:setText(text)
 		end
 	end,
 	

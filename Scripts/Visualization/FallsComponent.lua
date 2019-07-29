@@ -6,8 +6,8 @@ class "FallsComponent" {
 		self:super(x,y, width,height)
 		
 		self.noteScale = 1.0
-		self.noteLengthOffset = 0
-		self.noteLengthFlooring = true
+		self.noteLengthOffset = 0.0
+		-- self.noteLengthFlooring = true
 		
 		self.colourAlpha = 0.8
 		
@@ -90,7 +90,7 @@ class "FallsComponent" {
 						-- Here math.max seems to be unnecessary since it would be culled out before.
 						-- However, the precision problem may cause a very small negative number.
 						-- Hence, to prevent a note being shown outside the boundary, using a math.max is better.
-						local noteWidth = math.ceil(math.max(noteScale*noteLength - self.noteLengthOffset, 0))
+						local noteWidth = math.ceil(math.max(noteScale*noteLength - noteScale*noteLength*self.noteLengthOffset, 0))
 						local noteHeight = math.max(((self.height*screenHeight) / (highestKey-lowestKey+1))*keyHeightRatio, 0)
 						noteWidth = math.max(math.min(rightBoundary - noteX, noteWidth), 0)	-- Cull out the note width outside the right boundary
 						

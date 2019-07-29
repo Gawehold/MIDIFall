@@ -68,7 +68,7 @@ class "MainComponent" {
 		self.notesComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
 		self.keyboardComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
 		self.fallsComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
-		self.hitAnimationComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
+		-- self.hitAnimationComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
 		love.graphics.setCanvas(previousCanvas)
 		
 		self.backgroundComponent:draw(screenWidth,screenHeight)

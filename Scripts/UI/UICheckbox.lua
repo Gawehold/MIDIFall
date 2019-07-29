@@ -8,7 +8,7 @@ class "UICheckbox" {
 	
 	new = function (self, x,y,width,height, text,icon, valueAlias, checkBehaviour,uncheckBehaviour)
 		self:super(x,y, width,height)
-		self.text = text
+		self.text = UIText(x+0.12,y,width-0.12,height,text,0.8,false,true)
 		self.checkBehaviour = checkBehaviour
 		self.uncheckBehaviour = uncheckBehaviour
 		self.isChecked = valueAlias or false
@@ -16,6 +16,7 @@ class "UICheckbox" {
 	
 	update = function (self, dt, transform)
 		self.transform = transform
+		self.text:update(dt, transform)
 	end,
 	
 	draw = function (self)
@@ -46,9 +47,10 @@ class "UICheckbox" {
 		love.graphics.pop()
 		
 		
-		local textX, textY = self.transform:transformPoint(self.x+self.width,self.y)
-		love.graphics.setColor(1,1,1,0.8)
-		love.graphics.print(self.text, textX,textY, 0, 0.5)
+		-- local textX, textY = self.transform:transformPoint(self.x+self.width,self.y)
+		-- love.graphics.setColor(1,1,1,0.8)
+		-- love.graphics.print(self.text, textX,textY, 0, 0.5)
+		self.text:draw()
 	end,
 	
 	toggle = function (self)

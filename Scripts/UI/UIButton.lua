@@ -5,17 +5,23 @@ class "UIButton" {
 		-- self:super(x,y, width,height)
 		UIObject.instanceMethods.new(self, x,y, width,height) -- self.super not working for two level inhertance
 		
-		self.text = text
 		self.icon = icon
 		self.iconSpace = 0.05
 		self.padding = 0.15
-		self.centred = false
 		
 		self.clicked = clicked
+		
+		if self.icon then
+			self.text = UIText(x+0.26,y, width-0.26,height, text,0.8,false,true)
+		else
+			self.text = UIText(x,y, width,height, text,0.8,true,true)
+		end
 	end,
 	
 	update = function (self, dt, transform)
 		self.transform = transform
+		
+		self.text:update(dt, transform)
 	end,
 	
 	draw = function (self)
@@ -52,20 +58,9 @@ class "UIButton" {
 			iconY = iconY + (boxHeight - iconScale*self.icon:getHeight()) / 2
 			
 			love.graphics.draw(self.icon, iconX,iconY, 0, iconScale)
-			
-			
-			local textX,textY = self.transform:transformPoint(self.x+self.width*(self.iconSpace)+self.padding,self.y)
-			textY = textY + (boxHeight - font:getHeight()) / 2
-			
-			love.graphics.print(self.text, textX+iconScale*self.icon:getWidth(), textY)
-		else
-		
-			local textX,textY = self.transform:transformPoint(self.x,self.y)
-			textX = textX + (boxWidth - font:getWidth(self.text)) / 2
-			textY = textY + (boxHeight - font:getHeight()) / 2
-			
-			love.graphics.print(self.text, textX,textY)
 		end
+		
+		self.text:draw()
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)

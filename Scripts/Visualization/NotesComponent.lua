@@ -7,7 +7,7 @@ class "NotesComponent" {
 		
 		self.noteScale = 1.0
 		self.noteLengthOffset = 0		-- TODO: offset not yet done!
-		self.noteLengthFlooring = true
+		-- self.noteLengthFlooring = true
 		
 		self.colourAlpha = 0.8
 		
@@ -128,7 +128,7 @@ class "NotesComponent" {
 							-- Here math.max seems to be unnecessary since it would be culled out before.
 							-- However, the precision problem may cause a very small negative number.
 							-- Hence, to prevent a note being shown outside the boundary, using a math.max is better.
-							local noteWidth = math.ceil(math.max(noteScale*noteLength - self.noteLengthOffset, 0))
+							local noteWidth = math.ceil(math.max(noteScale*noteLength - noteScale*noteLength*self.noteLengthOffset, 0))
 							local noteHeight = math.max(((self.height*screenHeight) / (highestKey-lowestKey+1))*keyHeightRatio, 0)
 							
 							if noteTime <= time then

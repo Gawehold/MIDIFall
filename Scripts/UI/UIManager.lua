@@ -85,4 +85,10 @@ class "UIManager" {
 			v:fileDropped(file)
 		end
 	end,
+	
+	resize = function (self, w, h)
+		for k,v in ipairs(self.components) do
+			v:resize(w, h)
+		end
+	end,
 }

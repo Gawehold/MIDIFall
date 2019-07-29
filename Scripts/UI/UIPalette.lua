@@ -81,4 +81,8 @@ class "UIPalette" {
 	mouseReleased = function (self, mouseX, mouseY, istouch, presses)
 		self.isClicking = false
 	end,
+	
+	resize = function (self, w, h)
+		self.canvas = nil
+	end,
 }

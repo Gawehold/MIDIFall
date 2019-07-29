@@ -69,6 +69,12 @@ class "UIObject" {
 	textInput = function (self, ch)
 	end,
 	
+	fileDropped = function (self, file)
+	end,
+	
+	resize = function (self, w, h)
+	end,
+	
 	mouseEntered = function (self)
 		self.isInside = true
 	end,
