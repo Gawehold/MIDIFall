@@ -1,7 +1,7 @@
 class "UIText" {
 	extends "UIObject",
 	
-	new = function (self, x,y,width,height, text, maxScale, horizontallyCentered, verticallyCentered, colorRGBA)
+	new = function (self, x,y,width,height, text, maxScale, horizontallyCentered, verticallyCentered, colorRGBA, isParagraph)
 		self:super(x,y, width,height)
 		self:setText(text or "")
 		self.maxScale = maxScale or 1
@@ -9,6 +9,7 @@ class "UIText" {
 		self.verticallyCentered = verticallyCentered or false
 		self.horizontallyCentered = horizontallyCentered or false
 		self.colorRGBA = colorRGBA or {1,1,1,0.8}
+		self.isParagraph = isParagraph or false
 		
 		self.font = love.graphics.getFont()
 	end,
@@ -42,21 +43,25 @@ class "UIText" {
 		local currentLine = 1
 		
 		for i,word in ipairs(self.words) do
+			-- print(font:getWidth("ABCD"))
 			if wordX + self.scale*font:getWidth(word) > boxX2 then
 				if self.scale*font:getWidth(word) > boxWidth then
 					-- If the space is too small for the word, then make the text smaller
 					self.scale = boxWidth / (self.scale*font:getWidth(word))
 				else
 					-- Newline
-					wordX = boxX
-					wordY = wordY + self.scale*fontHeight
-					
-					currentLine = currentLine + 1
+					if self.isParagraph then
+						wordX = boxX
+						wordY = wordY + self.scale*fontHeight
+						
+						currentLine = currentLine + 1
+					end
 				end
 			end
 			
 			lines[currentLine] = (lines[currentLine] or "") .. " " .. word
 			-- love.graphics.print(word, wordX,wordY, 0, self.scale)
+			
 			wordX = wordX + self.scale*font:getWidth(word) + self.scale*spaceWidth
 		end
 		

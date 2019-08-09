@@ -42,7 +42,7 @@ class "MIDIParser" {
 					local id = #midiSong:getTracks() + 1	-- the number of the track
 					
 					-- Save the header information of the track
-					midiSong:addTrack(MIDITrack())
+					midiSong:addTrack(MIDITrack(id))
 					
 					-- Variable for checking the bytes of each event AND what last event is
 					local timeByte = 1

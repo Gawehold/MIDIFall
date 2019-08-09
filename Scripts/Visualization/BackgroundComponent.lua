@@ -7,12 +7,12 @@ class "BackgroundComponent" {
 		
 		self.image = nil
 		self.fits = {true, true}
-		self.scales = {0.2, 0.2}
+		self.scales = {1, 1}
 		self.offsets = {0, 0}
 		self.isAlignCentre = false
-		self.opacity = 1
+		self.colorHSVA = {1,0,1,1}
 		
-		-- self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/1186946-free-wallpaper-for-vertical-monitor-1440x3440.jpg")
+		-- self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/transparent.png")
 		self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/no_character.png")
 	end,
 	
@@ -38,12 +38,12 @@ class "BackgroundComponent" {
 		local offsets = {screenWidth*self.offsets[1], screenHeight*self.offsets[2]}
 		
 		if self.isAlignCentre then
-			offsets[1] = (screenWidth - scales[1]*self.image:getWidth()) / 2
-			offsets[2] = (screenHeight - scales[2]*self.image:getHeight()) / 2
+			offsets[1] = offsets[1] + (screenWidth - scales[1]*self.image:getWidth()) / 2
+			offsets[2] = offsets[2] + (screenHeight - scales[2]*self.image:getHeight()) / 2
 		end
 		
 		-- Draw the background image
-		love.graphics.setColor(1,1,1,self.opacity)
+		love.graphics.setColor(vivid.HSVtoRGB(self.colorHSVA))
 		love.graphics.draw(self.image, screenWidth*self.x+offsets[1], screenHeight*self.y+offsets[2], 0, scales[1], scales[2])
 	end,
 	
@@ -54,9 +54,9 @@ class "BackgroundComponent" {
 		if file then
 			fileData = love.filesystem.newFileData(file:read("*a"), "backgroundImageFile")
 			file:close()
+			
+			local imageData = love.image.newImageData(fileData)
+			self.image = love.graphics.newImage(imageData)
 		end
-		
-		local imageData = love.image.newImageData(fileData)
-		self.image = love.graphics.newImage(imageData)
 	end,
 }

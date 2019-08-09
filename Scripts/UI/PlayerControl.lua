@@ -105,7 +105,7 @@ class "PlayerControl" {
 		for i = 0, len-1 do
 			local str = string.sub(filename, len-i, len)
 			if string.sub(str, 1, 1) == "." then
-				extension = str
+				extension = string.lower(str)
 				break
 			end
 		end

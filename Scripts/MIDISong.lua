@@ -4,6 +4,7 @@ class "MIDISong" {
 		self.timeDivision = timeDivision
 		
 		self.tracks = {}
+		self.sortedTracks = {}
 		self.tempoChanges = {}
 		self.timeSignatures = {}
 		self.measures = {}
@@ -109,12 +110,15 @@ class "MIDISong" {
 					end
 				end
 			end
+			
+			-- Set the default tracks colour
+			track.customColourHSV = {(i-1)/(#self:getTracks()-1),0.8,0.8}
 		end
 		
 		-- Initialize the measures
 		local currentMeasureTime = 0
 		local currentMeasureLength = 0
-		local currentTimeSignature = nil
+		local currentTimeSignature = TimeSignature(0, 0x58, string.char(4,2))
 		
 		for measureID = 1, math.huge do
 			for tsID, ts in ipairs(self.timeSignatures) do
@@ -137,5 +141,27 @@ class "MIDISong" {
 			end
 		end
 		
+		-- Initialize the sorted tracks list
+		self:sortTracks()
+	end,
+	
+	getSortedTracks = function (self)
+		return self.sortedTracks
+	end,
+	
+	sortTracks = function (self)
+		for i, track in ipairs(self.tracks) do
+			self.sortedTracks[i] = track
+		end
+		
+		table.sort(self.sortedTracks, function (a, b)
+			return a.priority < b.priority
+		end)
+	end,
+	
+	setTrackPriority = function (self, trackID, priority)
+		self.tracks[trackID]:setPriority(priority)
+		
+		self:sortTracks()
 	end,
 }

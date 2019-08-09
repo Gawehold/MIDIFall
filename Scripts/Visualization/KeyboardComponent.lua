@@ -5,7 +5,7 @@ class "KeyboardComponent" {
 	new = function (self, x,y, width,height)
 		self:super(x,y, width,height)
 		
-		self.rainbow = true
+		self.rainbow = false
 		self.rainbowHueShift = 0.45
 		
 		self.blackKeyColourHSV = {0, 0, 0.2}
@@ -34,22 +34,26 @@ class "KeyboardComponent" {
 	
 	-- Implement
 	update = function (self, dt)
+	end,
+	
+	-- Implement
+	draw = function (self, screenWidth,screenHeight, lowestKey, highestKey, keyGap)
 		------------------------------------------------------------------------
 		-- Check which keys are being played
 		local firstNonFinishedNoteIDInTracks = player:getFirstNonFinishedNoteIDInTracks()
 		local song = player:getSong()
-		local tracks = song:getTracks()
+		local sortedTracks = song:getSortedTracks()
 		local time = player:getTimeManager():getTime()
 		
 		for i = 0, 127 do
 			self.isPlayingKeys[i] = false
 		end
 		
-		for trackID = 1, #tracks do
-			local track = tracks[trackID]
+		for i, track in ipairs(sortedTracks) do
+			local trackID = track:getID()
 			
 			if track:getEnabled() then
-				local notes = tracks[trackID]:getNotes()
+				local notes = track:getNotes()
 				for noteID = firstNonFinishedNoteIDInTracks[trackID], #notes do
 					local note = notes[noteID]
 					local noteTime = note:getTime()
@@ -64,10 +68,7 @@ class "KeyboardComponent" {
 			end
 		end
 		------------------------------------------------------------------------
-	end,
-	
-	-- Implement
-	draw = function (self, screenWidth,screenHeight, lowestKey, highestKey, keyGap)
+		
 		love.graphics.push()
 		
 		if self.orientation == 1 or self.orientation == 3 then

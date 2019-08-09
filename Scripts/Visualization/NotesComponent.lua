@@ -11,7 +11,7 @@ class "NotesComponent" {
 		
 		self.colourAlpha = 0.8
 		
-		self.useRainbowColour = true
+		self.useRainbowColour = false
 		self.rainbowColourHueShift = 0.45
 		self.rainbowColourSaturation = 0.8
 		self.rainbowColourValue = 0.8
@@ -35,7 +35,7 @@ class "NotesComponent" {
 		--//////// Common Infomation ////////
 		local song = player:getSong()
 		
-		local tracks = song:getTracks()
+		local sortedTracks = song:getSortedTracks()
 		local time = player:getTimeManager():getTime()
 		
 		if self.orientation == 1 or self.orientation == 3 then
@@ -71,9 +71,8 @@ class "NotesComponent" {
 		--//////// Main Section ////////
 		love.graphics.translate(0, absoluteKeyGap/2)
 		
-		for trackID = 1, #tracks do
-		-- for trackID = 3,3 do
-			local track = tracks[trackID]
+		for i, track in ipairs(sortedTracks) do
+			local trackID = track:getID()
 			
 			if track:getEnabled() then
 				local notes = track:getNotes()

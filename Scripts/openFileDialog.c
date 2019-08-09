@@ -28,7 +28,7 @@ char* openFileDialog() {
     // Display the Open dialog box. 
  
     if (GetOpenFileName(&ofn) == TRUE) {
-        hf = CreateFile(ofn.lpstrFile, GENERIC_READ, 0, (LPSECURITY_ATTRIBUTES) NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, (HANDLE) NULL);
+        // hf = CreateFile(ofn.lpstrFile, GENERIC_READ, 0, (LPSECURITY_ATTRIBUTES) NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, (HANDLE) NULL);
 	}
 	
     return ofn.lpstrFile;

@@ -10,8 +10,12 @@ class "DisplayComponentsRenderer" {
 			require "love.image"
 			require "love.event"
 			
+			-- local pipe = io.popen(
+				-- string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -vf colormatrix=bt601:bt709 -pix_fmt yuv420p -c:v libx264 -crf %d -preset:v %s -y %s", ...), "wb"
+			-- )
+			
 			local pipe = io.popen(
-				string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -vf colormatrix=bt601:bt709 -pix_fmt yuv420p -c:v libx264 -crf %d -preset:v %s -y %s", ...), "wb"
+				string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -c:v png -y %s", ...), "wb"
 			)
 			
 			while not love.thread.getChannel("renderingStopped"):peek() or love.thread.getChannel("imageData"):getCount() > 0 do
@@ -59,12 +63,11 @@ class "DisplayComponentsRenderer" {
 			select(i, ...):draw(self:getWidth(), self:getHeight())
 		end
 		
-		love.graphics.setColor(1,1,1)
-		
 		if self.isRenderingVideo then
 			love.graphics.setCanvas()
 			
 			local imageData = self.canvas:newImageData(0,1, 0,0, self.canvas:getWidth(),self.canvas:getHeight())
+			
 			-- if love.thread.getChannel("imageData"):getCount() >= 3 then
 				-- while love.thread.getChannel("imageData"):getCount() > 0 do end
 				love.thread.getChannel("imageData"):push(imageData)
@@ -95,7 +98,8 @@ class "DisplayComponentsRenderer" {
 		self.isRenderingVideo = true
 		self.isEncodingVideo = true
 		self.canvas = love.graphics.newCanvas(width, height)
-		self.exportingThread:start(framerate, width, height, 4*width*height, 0,"medium", "D:/MIDIFall_Project/MIDIFall/test.mp4")
+		-- self.exportingThread:start(framerate, width, height, 4*width*height, 0,"veryfast", string.format("../../%s.mp4", os.date("%Y%m%d-%H%M%S")))
+		self.exportingThread:start(framerate, width, height, 4*width*height, string.format("../../%s.mp4", os.date("%Y%m%d-%H%M%S")))
 		self.exportingFramerate = framerate
 		
 		player:moveToBeginning()

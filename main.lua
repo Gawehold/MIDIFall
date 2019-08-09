@@ -56,6 +56,7 @@ require "Scripts/Visualization/KeyboardComponent"
 require "Scripts/Visualization/FallsComponent"
 require "Scripts/Visualization/HitAnimationComponent"
 require "Scripts/Visualization/MeasuresComponent"
+require "Scripts/Visualization/StatisticComponent"
 require "Scripts/Visualization/MainComponent"
 require "Scripts/Visualization/DisplayComponentsRenderer"
 
@@ -77,13 +78,14 @@ require "Scripts/UI/SettingsMenu"
 require "Scripts/UI/PlayerControl"
 require "Scripts/UI/UIManager"
 
-local song = MIDIParser:parse(love.filesystem.read("Assets/stair.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/overlap.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
--- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/Ultimate_Tetris_Remix.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/進化系Colors.mid"))
 
 player = Player(song)
@@ -121,15 +123,15 @@ function love.draw()
 	
 	uiManager:draw()
 	
-	love.graphics.setColor(1,1,1,1)
-	love.graphics.setFont(defaultFont)
-	love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
-	love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
-	love.graphics.print(player:getSong():getTempoChanges()[player:getTimeManager().currentTempoChangeID]:getTempo(), 0,40, 0, 2)
+	-- love.graphics.setColor(1,1,1,1)
+	-- love.graphics.setFont(defaultFont)
+	-- love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
+	-- love.graphics.print(player:getTimeManager():getTime(), 0,20, 0, 2)
+	-- love.graphics.print(player:getSong():getTempoChanges()[player:getTimeManager().currentTempoChangeID]:getTempo(), 0,40, 0, 2)
 	
-	for k,v in ipairs(player.song.tracks) do
-		love.graphics.print(tostring(player.firstNonPlayedNoteIDInTracks[k]), 0, 50+20*k,0,2)
-	end
+	-- for k,v in ipairs(player.song.tracks) do
+		-- love.graphics.print(tostring(player.firstNonPlayedNoteIDInTracks[k]), 0, 50+20*k,0,2)
+	-- end
 end
 
 function love.quit()

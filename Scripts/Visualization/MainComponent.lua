@@ -37,7 +37,8 @@ class "MainComponent" {
 		self.keyboardComponent = KeyboardComponent(keyboardPositionAlias,0,keyboardLengthAlias,1)
 		self.fallsComponent = FallsComponent(0,0,keyboardPositionAlias,1)
 		self.hitAnimationComponent = HitAnimationComponent(keyboardPositionAlias,0,1,1)
-		self.measuresComponent = MeasuresComponent(keyboardPositionAlias,0,0,1,1)
+		self.measuresComponent = MeasuresComponent(notesPositionFollower,0,0,1,1)
+		self.statisticComponent = StatisticComponent()
 		
 		self:setOrientation(0)
 	end,
@@ -50,6 +51,7 @@ class "MainComponent" {
 		self.fallsComponent:update(dt)
 		self.hitAnimationComponent:update(dt)
 		self.measuresComponent:update(dt)
+		self.statisticComponent:update(dt)
 	end,
 		
 	-- Implement
@@ -64,11 +66,12 @@ class "MainComponent" {
 		love.graphics.setCanvas(self.canvas)
 		love.graphics.clear()
 		
-		-- self.measuresComponent:draw(screenWidth,screenHeight, self.notesComponent:getNotesScale())
+		self.measuresComponent:draw(screenWidth,screenHeight, self.notesComponent:getNotesScale())
 		self.notesComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
 		self.keyboardComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
 		self.fallsComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
-		-- self.hitAnimationComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
+		self.hitAnimationComponent:draw(screenWidth,screenHeight, self.lowestKey,self.highestKey,self.keyGap)
+		self.statisticComponent:draw(screenWidth,screenHeight)
 		love.graphics.setCanvas(previousCanvas)
 		
 		self.backgroundComponent:draw(screenWidth,screenHeight)

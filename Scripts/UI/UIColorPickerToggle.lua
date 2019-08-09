@@ -16,20 +16,19 @@ class "UIColorPickerToggle" {
 	},
 	
 	new = function (self, x,y,width,height, colorHueAlias,colorSaturationAlias,colorValueAlias,colorAlphaAlias)
-		UIButton.instanceMethods.new(self, x,y,width,height, nil, nil, UIColorPickerToggle.toggleMenu)
+		UIButton.instanceMethods.new(self, x,y,width,height, "Change Color", nil, UIColorPickerToggle.toggleMenu)
 		
 		self.choices = choices
 		self.choiceID = defaultChoiceID
 		
-		self.text = "C"
-		
 		self.addedMenuToParent = false	-- The parent object is created AFTER this object is created, so we cannot add the menu as a child right now
 		
-		self.menu = UIColorPicker(-0.85,0.25, 0.8,0.5, colorHueAlias,colorSaturationAlias,colorValueAlias,colorAlphaAlias)
+		self.menu = UIColorPicker(-1.2,0.25, 1.0,0.5, colorHueAlias,colorSaturationAlias,colorValueAlias,colorAlphaAlias)
 		self.menu:close()
 	end,
 	
 	-- update = function (self, dt, transform)
+		-- UIButton.instanceMethods.update(self, dt, transform)
 	-- end,
 	
 	draw = function (self)

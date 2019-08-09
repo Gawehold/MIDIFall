@@ -36,10 +36,8 @@ class "Player" {
 		file:close()
 	end,
 	
-	loadSsongFromPath = function (self, path)
+	loadSongFromPath = function (self, path)
 		-- local file = io.open(path, "rb")
-		
-		
 	end,
 
 	update = function (self, dt)
@@ -57,7 +55,9 @@ class "Player" {
 						
 						if time >= event:getTime() then
 							if event:getType() < 0xF0 then
-								midi.sendMessage(0, event:getType(), event:getMsg1(), event:getMsg2() or 0)
+								if not displayComponentsRenderer:getIsExportingVideo() then
+									midi.sendMessage(0, event:getType(), event:getMsg1(), event:getMsg2() or 0)
+								end
 								
 								self.lastPlayedEventIDs[i] = j
 							end

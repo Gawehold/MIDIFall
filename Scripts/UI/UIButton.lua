@@ -12,16 +12,30 @@ class "UIButton" {
 		self.clicked = clicked
 		
 		if self.icon then
-			self.text = UIText(x+0.26,y, width-0.26,height, text,0.8,false,true)
+			self.paddings = {0.35,0.15, 0.1,0.15}
+			self.text = UIText(0,0, 1,1, text, 1, false,true)
 		else
-			self.text = UIText(x,y, width,height, text,0.8,true,true)
+			self.paddings = {0.1,0.15, 0.1,0.15}
+			self.text = UIText(0,0, 1,1, text, 1, true,true)
 		end
 	end,
 	
 	update = function (self, dt, transform)
 		self.transform = transform
 		
-		self.text:update(dt, transform)
+		local childrenTransform = self.transform:clone()
+		
+		childrenTransform:scale(
+			(1-(self.paddings[1]+self.paddings[3])) * self.width,
+			(1-(self.paddings[2]+self.paddings[4])) * self.height
+		)
+		
+		childrenTransform:translate(
+			(self.x + (self.paddings[1]*self.width)) / ((1-(self.paddings[1]+self.paddings[3])) * self.width),
+			(self.y + (self.paddings[2]*self.height)) / ((1-(self.paddings[2]+self.paddings[4])) * self.height)
+		)
+		
+		self.text:update(dt, childrenTransform)
 	end,
 	
 	draw = function (self)
@@ -47,9 +61,13 @@ class "UIButton" {
 		
 		-- Draw icon and text
 		if self.isInside then
-			love.graphics.setColor(0,0.5,1,1)
+			local r,g,b,a = 0,0.5,1,1
+			love.graphics.setColor(r,g,b,a)
+			self.text:setColor(r,g,b,a)
 		else
-			love.graphics.setColor(1,1,1,0.8)
+			local r,g,b,a = 1,1,1,0.8
+			love.graphics.setColor(r,g,b,a)
+			self.text:setColor(r,g,b,a)
 		end
 		
 		if self.icon then

@@ -6,9 +6,9 @@ class "UICheckbox" {
 		checkedIcon = love.graphics.newImage("Assets/Free check mark icon 2.png"),
 	},
 	
-	new = function (self, x,y,width,height, text,icon, valueAlias, checkBehaviour,uncheckBehaviour)
+	new = function (self, x,y,width,height, text, valueAlias, checkBehaviour,uncheckBehaviour)
 		self:super(x,y, width,height)
-		self.text = UIText(x+0.12,y,width-0.12,height,text,0.8,false,true)
+		self.text = UIText(x+0.15,y,width-0.15,height,text,0.8,false,true)
 		self.checkBehaviour = checkBehaviour
 		self.uncheckBehaviour = uncheckBehaviour
 		self.isChecked = valueAlias or false

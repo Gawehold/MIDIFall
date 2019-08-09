@@ -1,11 +1,14 @@
 class "MIDITrack" {
-	new = function (self)
+	new = function (self, id)
+		self.id = id
+		self.priority = id
+		
 		self.rawEvents = {}
 		self.notes = {}
 		self.pitchBends = {}
 		
 		self.enabled = true
-		self.customColourHSV = {0,1,1}
+		self.customColourHSV = {0,0,0}
 		self.isDiamond = false
 	end,
 	
@@ -80,7 +83,7 @@ class "MIDITrack" {
 			local msg2 = midiEvent:getMsg2()
 			
 			local typeFirstByte = math.floor(type/16)
-			local typeSecondByte = type - typeFirstByte
+			local typeSecondByte = type % 16
 			
 			if typeFirstByte == 0x9 and msg2 > 0 then
 				-- Note on
@@ -89,22 +92,25 @@ class "MIDITrack" {
 				-- TODO: Change the implementation of matching note on and note off by using Queue
 				for k = j+1, #self:getRawEvents() do
 					local noteOffEvent = self:getRawEvent(k)
-					local noteOffEvent = self:getRawEvent(k)
 					local noteOffTime = noteOffEvent:getTime()
 					local noteOffType = noteOffEvent:getType()
 					local noteOffMsg1 = noteOffEvent:getMsg1()
 					local noteOffMsg2 = noteOffEvent:getMsg2()
 			
 					local noteOffTypeFirstByte = math.floor(noteOffType/16)
-					local noteOffTypeSecondByte = noteOffType - noteOffTypeFirstByte
+					local noteOffTypeSecondByte = noteOffType % 16
 				
-					if noteOffTypeFirstByte == 0x8 or (noteOffTypeFirstByte == 0x9 and msg2 == 0) and not consumedNoteOffEvent[k] and msg1 == noteOffMsg1 and typeSecondByte == noteOffTypeSecondByte then
-					
-						local note = Note(time, noteOffTime-time, msg1, msg2, typeSecondByte)
-						self:addNote(note)
+					if noteOffTypeFirstByte == 0x8 or (noteOffTypeFirstByte == 0x9 and msg2 == 0) then
+						-- it is a note off event
 						
-						consumedNoteOffEvent[k] = true
-						break
+						if not consumedNoteOffEvent[k] and msg1 == noteOffMsg1 and typeSecondByte == noteOffTypeSecondByte then
+					
+							local note = Note(time, noteOffTime-time, msg1, msg2, typeSecondByte)
+							self:addNote(note)
+							
+							consumedNoteOffEvent[k] = true
+							break
+						end
 					end
 				end
 				
@@ -130,5 +136,17 @@ class "MIDITrack" {
 				self:addPitchBend(pb)
 			end
 		end
+	end,
+	
+	setPriority = function (self, priority)
+		self.priority = priority
+	end,
+	
+	getPriority = function (self)
+		return self.priority
+	end,
+	
+	getID = function (self)
+		return self.id
 	end,
 }

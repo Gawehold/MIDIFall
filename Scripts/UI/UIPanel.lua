@@ -20,6 +20,8 @@ class "UIPanel" {
 			end
 		end
 		
+		self.paddings = {0.1,0.05,0.1,0.05}
+		
 		self.homepageID = 1
 		self.homepage = self.pages[self.homepageID]
 		
@@ -63,8 +65,15 @@ class "UIPanel" {
 		self.childrenTransform = self.transform:clone()
 		self.childrenTransform:translate(0, self.shiftStep*self.shift)
 		
-		self.childrenTransform:scale(self.width,self.height)
-		self.childrenTransform:translate(self.x/self.width,self.y/self.height)
+		self.childrenTransform:scale(
+			(1-(self.paddings[1]+self.paddings[3])) * self.width,
+			(1-(self.paddings[2]+self.paddings[4])) * self.height
+		)
+		
+		self.childrenTransform:translate(
+			(self.x + (self.paddings[1]*self.width)) / ((1-(self.paddings[1]+self.paddings[3])) * self.width),
+			(self.y + (self.paddings[2]*self.height)) / ((1-(self.paddings[2]+self.paddings[4])) * self.height)
+		)
 		
 		for k,v in ipairs(self.children) do
 			v:update(dt, self.childrenTransform)
@@ -78,18 +87,26 @@ class "UIPanel" {
 		
 		love.graphics.push()
 		
-		if self.transform then
-			love.graphics.applyTransform(self.transform)
-		end
-		
-		love.graphics.setColor(0,0,0,0.8)
-		love.graphics.rectangle("fill", self.x,self.y, self.width,self.height)
+			if self.transform then
+				love.graphics.applyTransform(self.transform)
+			end
+			
+			love.graphics.setColor(0,0,0,0.8)
+			love.graphics.rectangle("fill", self.x,self.y, self.width,self.height)
 		
 		love.graphics.pop()
+		
+		-- local prevScissorX, prevScissorY, prevScissorWidth, prevScissorHeight = love.graphics.getScissor()
+		-- local scissorX, scissorY = self.childrenTransform:transformPoint(0, 0)
+		-- local scissorX2, scissorY2 = self.childrenTransform:transformPoint(1, 1)
+		-- local scissorWidth, scissorHeight = scissorX2 - scissorX, scissorY2 - scissorY
+		
+		-- love.graphics.setScissor(scissorX,scissorY, scissorWidth,scissorHeight)
 		
 		for k,v in ipairs(self.children) do
 			v:draw()
 		end
+		-- love.graphics.setScissor(prevScissorX, prevScissorY, prevScissorWidth, prevScissorHeight)
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)

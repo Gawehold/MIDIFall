@@ -11,12 +11,12 @@ class "FallsComponent" {
 		
 		self.colourAlpha = 0.8
 		
-		self.useRainbowColour = true
+		self.useRainbowColour = false
 		self.rainbowColourHueShift = 0.45
 		self.rainbowColourSaturation = 0.8
 		self.rainbowColourValue = 0.8
 		
-		self.fadingOutSpeed = 0.6
+		self.fadingOutSpeed = 0.8
 	end,
 
 	-- Implement
@@ -31,7 +31,7 @@ class "FallsComponent" {
 		--//////// Common Infomation ////////
 		local song = player:getSong()
 		
-		local tracks = song:getTracks()
+		local sortedTracks = song:getSortedTracks()
 		local time = player:getTimeManager():getTime()
 		
 		local timeDivision = song:getTimeDivision()
@@ -70,8 +70,8 @@ class "FallsComponent" {
 		--//////// Main Section ////////
 		love.graphics.translate(0, absoluteKeyGap/2)
 		
-		for trackID = 1, #tracks do
-			local track = tracks[trackID]
+		for i, track in ipairs(sortedTracks) do
+			local trackID = track:getID()
 			
 			if track:getEnabled() then
 				local notes = track:getNotes()
