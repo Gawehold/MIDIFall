@@ -57,6 +57,7 @@ require "Scripts/Visualization/FallsComponent"
 require "Scripts/Visualization/HitAnimationComponent"
 require "Scripts/Visualization/MeasuresComponent"
 require "Scripts/Visualization/StatisticComponent"
+require "Scripts/Visualization/Sprite"
 require "Scripts/Visualization/MainComponent"
 require "Scripts/Visualization/DisplayComponentsRenderer"
 

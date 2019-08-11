@@ -57,7 +57,7 @@ class "UIRangeSlider" {
 			local distanceToLowerValue = math.abs(relativeMouseX - ((self.lowerValue - self.minValue) / (self.maxValue - self.minValue)))
 			local distanceToUpperValue = math.abs(relativeMouseX - ((self.upperValue - self.minValue) / (self.maxValue - self.minValue)))
 			
-			print(distanceToLowerValue, distanceToUpperValue)
+			-- print(distanceToLowerValue, distanceToUpperValue)
 			
 			if distanceToLowerValue < distanceToUpperValue then
 				self.isClicking = "lowerValue"

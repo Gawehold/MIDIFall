@@ -9,7 +9,7 @@ class "BackgroundComponent" {
 		self.fits = {true, true}
 		self.scales = {1, 1}
 		self.offsets = {0, 0}
-		self.isAlignCentre = false
+		self.isAligncenter = false
 		self.colorHSVA = {1,0,1,1}
 		
 		-- self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/transparent.png")
@@ -37,7 +37,7 @@ class "BackgroundComponent" {
 		-- Find out the display offsets of the background image
 		local offsets = {screenWidth*self.offsets[1], screenHeight*self.offsets[2]}
 		
-		if self.isAlignCentre then
+		if self.isAligncenter then
 			offsets[1] = offsets[1] + (screenWidth - scales[1]*self.image:getWidth()) / 2
 			offsets[2] = offsets[2] + (screenHeight - scales[2]*self.image:getHeight()) / 2
 		end

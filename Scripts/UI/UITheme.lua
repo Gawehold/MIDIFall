@@ -1,6 +1,6 @@
 class "UITheme" {
-	new = function (self, primaryColour, secondaryColour)
-		self.primaryColour = primaryColour
-		self.secondaryColour = secondaryColour
+	new = function (self, primarycolor, secondarycolor)
+		self.primarycolor = primarycolor
+		self.secondarycolor = secondarycolor
 	end,
 }

@@ -41,16 +41,16 @@ class "UIPanel" {
 				-- 0.003765, 0.015019, 0.023792, 0.015019, 0.003765
 			-- );
 			
-			-- vec4 effect(vec4 colour, Image texture, vec2 textureCoords, vec2 screenCoords) {
-				-- vec4 averagedColour;
+			-- vec4 effect(vec4 color, Image texture, vec2 textureCoords, vec2 screenCoords) {
+				-- vec4 averagedcolor;
 				
 				-- for (int i = -2; i <= 2; i++) {
 					-- for (int j = -2; j <= 2; j++) {
-						-- averagedColour += kernal[5*i + j] * Texel(texture, textureCoords + vec2(dx*j, dy*i));
+						-- averagedcolor += kernal[5*i + j] * Texel(texture, textureCoords + vec2(dx*j, dy*i));
 					-- }
 				-- }
 				
-				-- return averagedColour * colour;
+				-- return averagedcolor * color;
 			-- }
 		-- ]])
 	end,

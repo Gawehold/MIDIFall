@@ -179,7 +179,7 @@ class "SettingsMenu" {
 						Alias(mainComponent.backgroundComponent.colorHSVA, 4)
 					),
 					
-					UICheckbox(0.0,0.3, 1.0,0.05, "Align Center", Alias(mainComponent.backgroundComponent, "isAlignCentre")),
+					UICheckbox(0.0,0.3, 1.0,0.05, "Align Center", Alias(mainComponent.backgroundComponent, "isAligncenter")),
 					
 					UICheckbox(0.0,0.35, 1.0,0.05, "Horizaontally Fit", Alias(mainComponent.backgroundComponent.fits, 1)),
 					
@@ -200,7 +200,7 @@ class "SettingsMenu" {
 					UIInputBox(0.4,0.115,0.3,0.05, Alias(mainComponent, "keyboardPosition")),
 					UISlider(0.1,0.2,0.8,0.02, Alias(mainComponent, "keyboardPosition"),-1,1,0.01),
 					UISlider(0.1,0.3,0.8,0.02, Alias(mainComponent, "keyboardLength"),0,1,0.01),
-					UISlider(0.1,0.4,0.8,0.02, Alias(mainComponent.notesComponent, "rainbowColourHueShift"),0,1,0.01),
+					UISlider(0.1,0.4,0.8,0.02, Alias(mainComponent.notesComponent, "rainbowcolorHueShift"),0,1,0.01),
 					UISlider(0.1,0.5,0.8,0.02, Alias(mainComponent, "keyGap"),0,1,0.01),					
 				}
 			),

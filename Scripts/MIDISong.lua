@@ -111,8 +111,8 @@ class "MIDISong" {
 				end
 			end
 			
-			-- Set the default tracks colour
-			track.customColourHSV = {(i-1)/(#self:getTracks()-1),0.8,0.8}
+			-- Set the default tracks color
+			track.customcolorHSV = {(i-1)/(#self:getTracks()-1),0.8,0.8}
 		end
 		
 		-- Initialize the measures

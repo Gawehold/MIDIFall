@@ -9,14 +9,22 @@ class "FallsComponent" {
 		self.noteLengthOffset = 0.0
 		-- self.noteLengthFlooring = true
 		
-		self.colourAlpha = 0.8
+		self.colorAlpha = 0.8
 		
-		self.useRainbowColour = false
-		self.rainbowColourHueShift = 0.45
-		self.rainbowColourSaturation = 0.8
-		self.rainbowColourValue = 0.8
+		self.useRainbowcolor = false
+		self.rainbowcolorHueShift = 0.45
+		self.rainbowcolorSaturation = 0.8
+		self.rainbowcolorValue = 0.8
 		
 		self.fadingOutSpeed = 0.8
+		
+		self.useDefaultTheme = true
+		self.sprite = Sprite(
+			love.graphics.newImage("Assets/note.png"),
+			{50,50, 780,220},
+			{0.2,0.2},
+			{1.0,0.5}
+		)
 	end,
 
 	-- Implement
@@ -59,7 +67,7 @@ class "FallsComponent" {
 		local noteLengthOffset = resolutionRatio * self.noteScale*128 * self.noteLengthOffset	-- 1.0 = a crotchet
 		local absoluteKeyGap = keyGap*spaceForEachKey
 		
-		local noteScale = self.noteScale*128/song:getTimeDivision()
+		local noteScale = ( screenWidth / 1920 ) * ( self.noteScale*128/song:getTimeDivision() )
 		local pixelMoved = math.floor(noteScale*(time-song:getInitialTime()))
 		
 		local leftBoundary = math.floor(self.x * screenWidth)
@@ -100,17 +108,21 @@ class "FallsComponent" {
 						end
 						
 						local h,s,v,a
-						if self.useRainbowColour then
-							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowColourHueShift) % 1, self.rainbowColourSaturation, self.rainbowColourValue
+						if self.useRainbowcolor then
+							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowcolorHueShift) % 1, self.rainbowcolorSaturation, self.rainbowcolorValue
 						else
-							h,s,v = unpack(track:getCustomColourHSV())
+							h,s,v = unpack(track:getCustomcolorHSV())
 						end
 						
-						a = self.colourAlpha * math.clamp(1 - self.fadingOutSpeed * tempo * ((time - (noteTime+noteLength)) / timeDivision) / 100, 0, 1)
+						a = self.colorAlpha * math.clamp(1 - self.fadingOutSpeed * tempo * ((time - (noteTime+noteLength)) / timeDivision) / 100, 0, 1)
 						
 						love.graphics.setColor(vivid.HSVtoRGB(h,s,v,a))
-						love.graphics.rectangle("fill", noteX,noteY, noteWidth,noteHeight)
 						
+						if self.useDefaultTheme then
+							love.graphics.rectangle("fill", noteX,noteY, noteWidth,noteHeight)
+						else
+							self.sprite:draw(noteX,noteY, noteWidth,noteHeight)
+						end
 						
 					end
 				end

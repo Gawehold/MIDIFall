@@ -9,7 +9,7 @@ class "MainComponent" {
 		self.highestKey = 95
 		self.keyGap = 0.18
 		
-		self.keyboardPosition = 0.4
+		self.keyboardPosition = 0.2
 		self.keyboardLength = 0.06
 		
 		self.shader = love.graphics.newShader([[
@@ -36,7 +36,7 @@ class "MainComponent" {
 		self.notesComponent = NotesComponent(notesPositionFollower,0,1,1)
 		self.keyboardComponent = KeyboardComponent(keyboardPositionAlias,0,keyboardLengthAlias,1)
 		self.fallsComponent = FallsComponent(0,0,keyboardPositionAlias,1)
-		self.hitAnimationComponent = HitAnimationComponent(keyboardPositionAlias,0,1,1)
+		self.hitAnimationComponent = HitAnimationComponent(0,0,keyboardPositionAlias,1)
 		self.measuresComponent = MeasuresComponent(notesPositionFollower,0,0,1,1)
 		self.statisticComponent = StatisticComponent()
 		

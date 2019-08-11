@@ -8,13 +8,13 @@ class "KeyboardComponent" {
 		self.rainbow = false
 		self.rainbowHueShift = 0.45
 		
-		self.blackKeyColourHSV = {0, 0, 0.2}
+		self.blackKeycolorHSV = {0, 0, 0.2}
 		self.blackKeyAlpha = 0.9
 		
-		self.whiteKeyColourHSV = {0, 0, 0.9}
+		self.whiteKeycolorHSV = {0, 0, 0.9}
 		self.whiteKeyAlpha = 0.9
 		
-		self.brightKeyColourHSV = {0,1,1}
+		self.brightKeycolorHSV = {0,1,1}
 		self.brightKeyAlpha = 0.9
 		
 		-- TODO: adjust these values
@@ -29,6 +29,18 @@ class "KeyboardComponent" {
 		self.isPlayingKeys = {}
 		for i = 0, 127 do
 			self.isPlayingKeys[i] = false
+		end
+		
+		self.useDefaultTheme = true
+		self.sprites = {}
+		for i = 1, 12 do
+			self.sprites[i] = Sprite(
+				love.graphics.newImage("Assets/key"..tostring(i)..".png"),
+				{50,50, 780,220},
+				{0.2,0.2},
+				{0.9,0.5},
+				{0.1,0}
+			)
 		end
 	end,
 	
@@ -95,30 +107,36 @@ class "KeyboardComponent" {
 			local keyHeight = keyHeightRatio*spaceForEachKey
 			local semitoneInOctave = i % 12
 			
-			if self:checkIsBlackKey(i) then
-				self:setKeyColour(i, lowestKey, highestKey, true)
-				love.graphics.rectangle("fill", keyboardX,keyY, keyboardWidth*0.65,keyHeight)
+			if self.useDefaultTheme then
+				if self:checkIsBlackKey(i) then
+					self:setKeycolor(i, lowestKey, highestKey, true)
+					love.graphics.rectangle("fill", keyboardX,keyY, keyboardWidth*0.65,keyHeight)
+					
+					self:setKeycolor(i+1, lowestKey, highestKey, false)
+					love.graphics.rectangle(
+						"fill",
+						math.min( keyboardX+keyboardWidth*0.65+absoluteKeyGap, keyboardX+keyboardWidth ),
+						keyY-absoluteKeyGap,
+						keyboardWidth*0.35-absoluteKeyGap,
+						(keyHeight+2*absoluteKeyGap)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - absoluteKeyGap/2
+					)
+					
+					self:setKeycolor(i-1, lowestKey, highestKey, false)
+					love.graphics.rectangle(
+						"fill",
+						math.min( keyboardX+keyboardWidth*0.65+absoluteKeyGap, keyboardX+keyboardWidth ),
+						keyY-absoluteKeyGap+(keyHeight+2*absoluteKeyGap)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - absoluteKeyGap/2+absoluteKeyGap,
+						keyboardWidth*0.35-absoluteKeyGap,
+						(keyHeight+2*absoluteKeyGap)*(1-self.whiteHeadsUpperPartRatio[semitoneInOctave]) - absoluteKeyGap/2
+					)
+				else
+					self:setKeycolor(i, lowestKey, highestKey, false)
+					love.graphics.rectangle("fill", keyboardX,keyY, keyboardWidth,keyHeight)
+				end
 				
-				self:setKeyColour(i+1, lowestKey, highestKey, false)
-				love.graphics.rectangle(
-					"fill",
-					math.min( keyboardX+keyboardWidth*0.65+absoluteKeyGap, keyboardX+keyboardWidth ),
-					keyY-absoluteKeyGap,
-					keyboardWidth*0.35-absoluteKeyGap,
-					(keyHeight+2*absoluteKeyGap)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - absoluteKeyGap/2
-				)
-				
-				self:setKeyColour(i-1, lowestKey, highestKey, false)
-				love.graphics.rectangle(
-					"fill",
-					math.min( keyboardX+keyboardWidth*0.65+absoluteKeyGap, keyboardX+keyboardWidth ),
-					keyY-absoluteKeyGap+(keyHeight+2*absoluteKeyGap)*self.whiteHeadsUpperPartRatio[semitoneInOctave] - absoluteKeyGap/2+absoluteKeyGap,
-					keyboardWidth*0.35-absoluteKeyGap,
-					(keyHeight+2*absoluteKeyGap)*(1-self.whiteHeadsUpperPartRatio[semitoneInOctave]) - absoluteKeyGap/2
-				)
 			else
-				self:setKeyColour(i, lowestKey, highestKey, false)
-				love.graphics.rectangle("fill", keyboardX,keyY, keyboardWidth,keyHeight)
+				self:setKeycolor(i, lowestKey, highestKey, self:checkIsBlackKey(i))
+				self.sprites[semitoneInOctave+1]:draw(keyboardX,keyY, keyboardWidth,keyHeight)
 			end
 		end
 		
@@ -135,29 +153,29 @@ class "KeyboardComponent" {
 		end
 	end,
 	
-	setKeyColour = function (self, i, lowestKey, highestKey, isBlackKey)
+	setKeycolor = function (self, i, lowestKey, highestKey, isBlackKey)
 		local h = 0
 		if self.isPlayingKeys[i] then
 			if self.rainbow then
 				h = ((i-lowestKey) / highestKey + self.rainbowHueShift) % 1
 			elseif self.isPlayingKeys[i] then
-				h = player:getSong():getTracks()[self.isPlayingKeys[i]]:getCustomColourHSV()
+				h = player:getSong():getTracks()[self.isPlayingKeys[i]]:getCustomcolorHSV()
 			end
 		end
 				
 		if isBlackKey then
 			if self.isPlayingKeys[i] then
-				love.graphics.setColor(vivid.HSVtoRGB(h, self.brightKeyColourHSV[2], self.brightKeyColourHSV[3], self.brightKeyAlpha))
+				love.graphics.setColor(vivid.HSVtoRGB(h, self.brightKeycolorHSV[2], self.brightKeycolorHSV[3], self.brightKeyAlpha))
 			else
-				local r,g,b,a = self.blackKeyColourHSV[1], self.blackKeyColourHSV[2], self.blackKeyColourHSV[3], self.blackKeyAlpha
+				local r,g,b,a = self.blackKeycolorHSV[1], self.blackKeycolorHSV[2], self.blackKeycolorHSV[3], self.blackKeyAlpha
 				love.graphics.setColor(vivid.HSVtoRGB(r,g,b,a))
 			end
 			
 		else
 			if self.isPlayingKeys[i] then
-				love.graphics.setColor(vivid.HSVtoRGB(h, self.brightKeyColourHSV[2], self.brightKeyColourHSV[3], self.brightKeyAlpha))
+				love.graphics.setColor(vivid.HSVtoRGB(h, self.brightKeycolorHSV[2], self.brightKeycolorHSV[3], self.brightKeyAlpha))
 			else
-				local r,g,b,a = self.whiteKeyColourHSV[1], self.whiteKeyColourHSV[2], self.whiteKeyColourHSV[3], self.whiteKeyAlpha
+				local r,g,b,a = self.whiteKeycolorHSV[1], self.whiteKeycolorHSV[2], self.whiteKeycolorHSV[3], self.whiteKeyAlpha
 				love.graphics.setColor(vivid.HSVtoRGB(r,g,b,a))
 			end
 		end

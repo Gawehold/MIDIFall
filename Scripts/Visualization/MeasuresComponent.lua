@@ -5,7 +5,7 @@ class "MeasuresComponent" {
 	new = function (self, x,y, width,height)
 		self:super(x,y, width,height)
 		
-		self.measureColourHSV = {0,0,0}
+		self.measurecolorHSV = {0,0,0}
 		self.measureAlpha = 0.8
 		self.measureConcentrationRate = 0.08
 		
@@ -85,7 +85,7 @@ class "MeasuresComponent" {
 				
 				local measureLength = nextMeasureTime - measureTime 
 				
-				local measureScale = noteScale * 128 / timeDivision	-- Multiplier for MIDI time domain to screen display domain convertion
+				local measureScale = ( screenWidth / 1920 ) * ( noteScale * 128 / timeDivision )	-- Multiplier for MIDI time domain to screen display domain convertion
 				local measureX = offset + measureScale * timeUntilMeasureStart
 				local measureWidth = math.abs((measureScale * (nextMeasureTime - measureTime)))	-- pixel distance between current and next measures
 				
@@ -102,7 +102,7 @@ class "MeasuresComponent" {
 					end
 				end
 				
-				local r,g,b = vivid.HSVtoRGB(self.measureColourHSV)
+				local r,g,b = vivid.HSVtoRGB(self.measurecolorHSV)
 				local a = math.max(self.measureAlpha * (1 - self.measureConcentrationRate * math.abs(timeUntilMeasureStart+measureLength*0.25) / timeDivision), 0)	-- maximum alpha at the 25% position of the measure
 				
 				love.graphics.setColor(r,g,b,a)
