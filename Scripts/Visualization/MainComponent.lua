@@ -11,6 +11,7 @@ class "MainComponent" {
 		
 		self.keyboardPosition = 0.2
 		self.keyboardLength = 0.06
+		self.keyboardHeight = 1.0
 		
 		self.shader = love.graphics.newShader([[
 			float PI = 3.141592654;
@@ -32,12 +33,31 @@ class "MainComponent" {
 		local keyboardLengthAlias = Alias(self, "keyboardLength")
 		local notesPositionFollower = Follower(function () return self.keyboardPosition + self.keyboardLength end)
 		
-		self.backgroundComponent = BackgroundComponent(0,0,1,1)
-		self.notesComponent = NotesComponent(notesPositionFollower,0,1,1)
-		self.keyboardComponent = KeyboardComponent(keyboardPositionAlias,0,keyboardLengthAlias,1)
-		self.fallsComponent = FallsComponent(0,0,keyboardPositionAlias,1)
-		self.hitAnimationComponent = HitAnimationComponent(0,0,keyboardPositionAlias,1)
-		self.measuresComponent = MeasuresComponent(notesPositionFollower,0,0,1,1)
+		self.backgroundComponent = BackgroundComponent(
+			0,0,
+			1,1
+		)
+		self.notesComponent = NotesComponent(
+			notesPositionFollower,(1-self.keyboardHeight)/2,
+			1,self.keyboardHeight
+		)
+		self.keyboardComponent = KeyboardComponent(
+			keyboardPositionAlias,(1-self.keyboardHeight)/2,
+			keyboardLengthAlias,self.keyboardHeight
+		)
+		self.fallsComponent = FallsComponent(
+			0,(1-self.keyboardHeight)/2,
+			keyboardPositionAlias,self.keyboardHeight
+		)
+		self.hitAnimationComponent = HitAnimationComponent(
+			0,(1-self.keyboardHeight)/2,
+			keyboardPositionAlias,self.keyboardHeight
+		)
+		self.measuresComponent = MeasuresComponent(
+			notesPositionFollower,0,
+			0,1,
+			self.keyboardHeight
+		)
 		self.statisticComponent = StatisticComponent()
 		
 		self:setOrientation(0)

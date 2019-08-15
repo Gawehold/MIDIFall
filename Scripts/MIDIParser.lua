@@ -1,5 +1,3 @@
--- TODO:	Convert the dt to actual time
---			Seperate the MIDI CC (e.g. tempo change)
 class "MIDIParser" {
 	-- Convert a string which contains bytes in ASCII encoding to a number
 	-- e.g. bytes2number("MThd", 1,4) => 4D546864 = 1297377380
@@ -18,7 +16,7 @@ class "MIDIParser" {
 		
 			-- Check if it is a proper MIDI file
 			if string.sub(dataStr, 1, 4) ~= "MThd" then
-				assert(false, "It is not a proper MIDI file.")
+				-- assert(false, "It is not a proper MIDI file.")
 			end
 			
 			-- Save the header information 
@@ -29,7 +27,7 @@ class "MIDIParser" {
 			
 			-- Check if the format type is 2
 			if formatType == 2 then
-				assert(false, "Format 2 files are not supported.")
+				-- assert(false, "Format 2 files are not supported.")
 			end
 			
 			-- Create the MIDISong

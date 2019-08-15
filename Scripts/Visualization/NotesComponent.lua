@@ -80,6 +80,8 @@ class "NotesComponent" {
 		local currentPitchBendValueInTracks = player:getCurrentPitchBendValueInTracks()
 		
 		--//////// Main Section ////////
+		love.graphics.translate(0, screenHeight*self.y)
+		
 		love.graphics.translate(0, absoluteKeyGap/2)
 		
 		love.graphics.setScissor(leftBoundary, 0, screenWidth-leftBoundary, screenHeight)

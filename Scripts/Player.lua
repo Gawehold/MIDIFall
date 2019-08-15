@@ -1,12 +1,14 @@
 class "Player" {
 	new = function (self, song)
 		self.song = song
-		self.timeManager = TimeManager(self)
 		
 		self.paused = true
+		self.isMovingForward = true
 		
 		self.initialTime = 0
 		self.endTime = self.song:getEndTime()
+		
+		self.timeManager = TimeManager(self)
 		
 		self.playbackSpeed = 1
 		
@@ -39,28 +41,52 @@ class "Player" {
 	loadSongFromPath = function (self, path)
 		-- local file = io.open(path, "rb")
 	end,
-
+	
+	sendMIDIMessage = function (self, event)
+		if event:getType() < 0xF0 then
+			-- not to send meta events
+			
+			if not displayComponentsRenderer:getIsExportingVideo() then
+				-- no need to send MIDI message if it is rendering
+				
+				local eventType = event:getType()
+				if not (self.paused and eventType >= 0x80 and eventType <= 0x9F) then
+					midi.sendMessage(0, eventType, event:getMsg1(), event:getMsg2() or 0)
+				end
+			end
+		end
+	end,
+	
+	getIsMovingForward = function (self)
+		return self.isMovingForward
+	end,
+	
 	update = function (self, dt)
 		---------- Playback the MIDI song and update the last played event ID of each track
 		local time = self.timeManager:getTime()
 		-- TODO: Set the intial index of the searching (i.e. j = ?) as the next one of the last played event
 		
-		if not self.paused then
-			for i = 1, #self.song:getTracks() do
-				local track = self.song:getTrack(i)
-				
-				if track:getEnabled() then			
+		for i = 1, #self.song:getTracks() do
+			local track = self.song:getTrack(i)
+			
+			if track:getEnabled() then
+				if self.isMovingForward then
 					for j = self.lastPlayedEventIDs[i]+1, #track:getRawEvents() do
 						local event = track:getRawEvent(j)
 						
 						if time >= event:getTime() then
-							if event:getType() < 0xF0 then
-								if not displayComponentsRenderer:getIsExportingVideo() then
-									midi.sendMessage(0, event:getType(), event:getMsg1(), event:getMsg2() or 0)
-								end
-								
-								self.lastPlayedEventIDs[i] = j
-							end
+							self:sendMIDIMessage(event)
+							self.lastPlayedEventIDs[i] = j
+						else
+							break
+						end
+					end
+				else
+					for j = self.lastPlayedEventIDs[i], 1, -1 do
+						local event = track:getRawEvent(j)
+						
+						if time <= event:getTime() then
+							self.lastPlayedEventIDs[i] = j - 1
 						else
 							break
 						end
@@ -76,15 +102,30 @@ class "Player" {
 		for trackID = 1, #tracks do
 			local pitchBends = tracks[trackID]:getPitchBends()
 			
-			for pbID = self.currentPitchBendIDInTracks[trackID], #pitchBends do
-				local pitchBend = pitchBends[pbID]
+			if self.isMovingForward then
+				for pbID = self.currentPitchBendIDInTracks[trackID], #pitchBends do
+					local pitchBend = pitchBends[pbID]
+					
+					local pbTime = pitchBend:getTime()
+					
+					if time >= pbTime then
+						self.currentPitchBendIDInTracks[trackID] = pbID
+					else
+						break
+					end
+				end
+			else
 				
-				local pbTime = pitchBend:getTime()
-				
-				if time >= pbTime then
-					self.currentPitchBendIDInTracks[trackID] = pbID
-				else
-					break
+				for pbID = self.currentPitchBendIDInTracks[trackID]-1, 1, -1 do
+					local pitchBend = pitchBends[pbID]
+					
+					local pbTime = pitchBend:getTime()
+					
+					if time <= pbTime then
+						self.currentPitchBendIDInTracks[trackID] = pbID
+					else
+						break
+					end
 				end
 			end
 			
@@ -94,34 +135,34 @@ class "Player" {
 				
 				self.currentPitchBendValueInTracks[trackID] = curPB:getSignedValue()
 			end
-			
-			-- Check whether the pitchbend value is increasing or decreasing
-			-- local difference = self.currentPitchBendValueInTracks[trackID] - self.previousPitchBendValueInTracks[trackID]
-			-- if math.abs(difference) > 0.1 then
-				-- if difference > 0 then
-					-- self.isPitchBendValueInTracksIncreasing[trackID] = 1
-				-- else
-					-- self.isPitchBendValueInTracksIncreasing[trackID] = -1
-				-- end
-			-- else
-				-- self.isPitchBendValueInTracksIncreasing[trackID] = 0
-			-- end
-			-- -- print(self.previousPitchBendValueInTracks[trackID],self.currentPitchBendValueInTracks[trackID],self.currentPitchBendValueInTracks[trackID] > self.previousPitchBendValueInTracks[trackID])
-			
-			-- self.previousPitchBendValueInTracks[trackID] = self.currentPitchBendValueInTracks[trackID]
 		end
 		
 		------------- Update first non-played note ID of each track
 		for trackID = 1, #tracks do
 			local notes = tracks[trackID]:getNotes()
-			for noteID = self.firstNonPlayedNoteIDInTracks[trackID], #notes do
-				local note = notes[noteID]
-				local noteTime = note:getTime()
-				
-				if noteTime <= time then
-					self.firstNonPlayedNoteIDInTracks[trackID] = math.max(noteID+1, self.firstNonPlayedNoteIDInTracks[trackID])
-				else
-					break
+			
+			if self.isMovingForward then
+				for noteID = self.firstNonPlayedNoteIDInTracks[trackID], #notes do
+					local note = notes[noteID]
+					local noteTime = note:getTime()
+					
+					if noteTime <= time then
+						self.firstNonPlayedNoteIDInTracks[trackID] = math.max(noteID+1, self.firstNonPlayedNoteIDInTracks[trackID])
+					else
+						break
+					end
+				end
+			else
+			
+				for noteID = self.firstNonPlayedNoteIDInTracks[trackID]-1, 1, -1 do
+					local note = notes[noteID]
+					local noteTime = note:getTime()
+					
+					if noteTime >= time then
+						self.firstNonPlayedNoteIDInTracks[trackID] = noteID
+					else
+						break
+					end
 				end
 			end
 		end
@@ -129,16 +170,33 @@ class "Player" {
 		------------- Update first non-finished note ID of each track
 		for trackID = 1, #tracks do
 			local notes = tracks[trackID]:getNotes()
-			for noteID = self.firstNonFinishedNoteIDInTracks[trackID], #notes do
-				local note = notes[noteID]
+			
+			if self.isMovingForward then
+				for noteID = self.firstNonFinishedNoteIDInTracks[trackID], #notes do
+					local note = notes[noteID]
+						
+					local noteTime = note:getTime()
+					local noteLength = note:getLength() or 0
 					
-				local noteTime = note:getTime()
-				local noteLength = note:getLength() or 0
-				
-				if noteTime + noteLength <= time then
-					self.firstNonFinishedNoteIDInTracks[trackID] = math.max(noteID+1, self.firstNonFinishedNoteIDInTracks[trackID])
-				else
-					break
+					if noteTime + noteLength <= time then
+						self.firstNonFinishedNoteIDInTracks[trackID] = math.max(noteID+1, self.firstNonFinishedNoteIDInTracks[trackID])
+					else
+						break
+					end
+				end
+			else
+			
+				for noteID = self.firstNonFinishedNoteIDInTracks[trackID]-1, 1, -1 do
+					local note = notes[noteID]
+						
+					local noteTime = note:getTime()
+					local noteLength = note:getLength() or 0
+					
+					if noteTime + noteLength >= time then
+						self.firstNonFinishedNoteIDInTracks[trackID] = noteID
+					else
+						break
+					end
 				end
 			end
 		end
@@ -146,11 +204,21 @@ class "Player" {
 		---------- Update lastStartedMeasure
 		local measures = song:getMeasures()
 		
-		self.firstNonStartedMeasureID = #measures + 1
-		for measureID = self.firstNonStartedMeasureID, #measures do
-			if time < measures[measureID]:getTime() then
-				self.firstNonStartedMeasureID = measureID
-				break
+		if self.isMovingForward then
+			for measureID = self.firstNonStartedMeasureID, #measures do
+				if time < measures[measureID]:getTime() then
+					self.firstNonStartedMeasureID = measureID
+					break
+				end
+			end
+		else
+			
+			for measureID = self.firstNonStartedMeasureID, 1, -1 do
+				if time < measures[measureID]:getTime() then
+					self.firstNonStartedMeasureID = measureID
+				else
+					break
+				end
 			end
 		end
 		
@@ -211,6 +279,21 @@ class "Player" {
 		end
 	end,
 	
+	finalizeStates = function (self)
+		local tracks = self.song:getTracks()
+		
+		for i = 1, #tracks do
+			self.lastPlayedEventIDs[i] = #self.song:getTrack(i):getRawEvents()
+			self.firstNonPlayedNoteIDInTracks[i] = #self.song:getTrack(i):getNotes() + 1
+			self.firstNonFinishedNoteIDInTracks[i] = #self.song:getTrack(i):getNotes() + 1
+			self.currentPitchBendIDInTracks[i] = math.max(#self.song:getTrack(i):getPitchBends(), 1)
+			self.previousPitchBendValueInTracks[i] = 0	-- TODO: Need to revise if this state will be used in the future
+			self.currentPitchBendValueInTracks[i] = 0	-- TODO: Need to revise if this state will be used in the future
+			self.isPitchBendValueInTracksIncreasing[i] = 0	-- TODO: Need to revise if this state will be used in the future
+			self.firstNonStartedMeasureID = math.max(#self.song:getMeasures(), 1)
+		end
+	end,
+	
 	pause = function (self)
 		self.paused = true
 		self:mute()
@@ -218,6 +301,7 @@ class "Player" {
 	
 	resume = function (self)
 		self.paused = false
+		self.isMovingForward = true
 	end,
 	
 	pauseOrResume = function (self)
@@ -236,24 +320,18 @@ class "Player" {
 	
 	moveToBeginning = function (self)
 		self:moveToTime(self.initialTime)
+		self:initialzeStates()
 	end,
 	
 	moveToEnd = function (self)
 		self:moveToTime(self.endTime)
+		self:finalizeStates()
 	end,
 	
 	moveToTime = function(self, time)
-		local needToResetStates = false
-		
-		if time < self.timeManager:getTime() then
-			needToResetStates = true
-		end
-		
+		self:pause()
+		self.isMovingForward = ( time >= self.timeManager:getTime() )
 		self.timeManager:setTime(time)
-		
-		if needToResetStates then
-			self:initialzeStates()
-		end
 	end,
 	
 	getInitialTime = function (self)

@@ -1,7 +1,7 @@
 class "TimeManager" {
 	new = function (self, player)
 		self.player = player
-		self.time = 0
+		self.time = player:getInitialTime()
 		self.currentTempoChangeID = 1
 	end,
 
@@ -38,6 +38,35 @@ class "TimeManager" {
 	
 	-- TODO: remove this method later, it is for debug only
 	setTime = function (self, time)
+		local song = self.player:getSong()
+		local tempoChanges = song:getTempoChanges()
+		
+		
+		
+		if time >= self.time then
+			for i = self.currentTempoChangeID+1, #tempoChanges do
+				local nextTempoChangeTime = tempoChanges[i]:getTime()
+				
+				if time >= nextTempoChangeTime then
+					self.currentTempoChangeID = i
+				else
+					break
+				end
+			end
+		else
+			
+			for i = self.currentTempoChangeID, 1, -1 do
+				local previousTempoChangeTime = tempoChanges[i]:getTime()
+				
+				if time >= previousTempoChangeTime then
+					self.currentTempoChangeID = i
+					break
+				end
+			end
+		end
+		
+		
+		
 		self.time = time
 	end,
 	

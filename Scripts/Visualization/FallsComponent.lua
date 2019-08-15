@@ -16,7 +16,7 @@ class "FallsComponent" {
 		self.rainbowcolorSaturation = 0.8
 		self.rainbowcolorValue = 0.8
 		
-		self.fadingOutSpeed = 0.8
+		self.fadingOutSpeed = 1.0
 		
 		self.useDefaultTheme = true
 		self.sprite = Sprite(
@@ -43,7 +43,6 @@ class "FallsComponent" {
 		local time = player:getTimeManager():getTime()
 		
 		local timeDivision = song:getTimeDivision()
-		local tempo = player:getTimeManager():getTempo()
 		
 		if self.orientation == 1 or self.orientation == 3 then
 			if self.orientation == 1 then
@@ -76,6 +75,8 @@ class "FallsComponent" {
 		local firstNonPlayedNoteIDInTracks = player:getFirstNonPlayedNoteIDInTracks()
 		
 		--//////// Main Section ////////
+		love.graphics.translate(0, screenHeight*self.y)
+		
 		love.graphics.translate(0, absoluteKeyGap/2)
 		
 		for i, track in ipairs(sortedTracks) do
@@ -114,7 +115,7 @@ class "FallsComponent" {
 							h,s,v = unpack(track:getCustomcolorHSV())
 						end
 						
-						a = self.colorAlpha * math.clamp(1 - self.fadingOutSpeed * tempo * ((time - (noteTime+noteLength)) / timeDivision) / 100, 0, 1)
+						a = self.colorAlpha * math.clamp(1 - self.fadingOutSpeed * 100 * ((time - (noteTime+noteLength)) / timeDivision) / 100, 0, 1)
 						
 						love.graphics.setColor(vivid.HSVtoRGB(h,s,v,a))
 						

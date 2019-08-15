@@ -35,7 +35,6 @@ class "HitAnimationComponent" {
 		local time = player:getTimeManager():getTime()
 		
 		local timeDivision = song:getTimeDivision()
-		local tempo = player:getTimeManager():getTempo()
 		
 		if self.orientation == 1 or self.orientation == 3 then
 			if self.orientation == 1 then
@@ -62,6 +61,8 @@ class "HitAnimationComponent" {
 		local firstNonPlayedNoteIDInTracks = player:getFirstNonPlayedNoteIDInTracks()
 		
 		--//////// Main Section ////////
+		love.graphics.translate(0, screenHeight*self.y)
+		
 		love.graphics.translate(0, absoluteKeyGap/2)
 		
 		love.graphics.setScissor(leftBoundary, 0, rightBoundary-leftBoundary, screenHeight)
@@ -90,7 +91,7 @@ class "HitAnimationComponent" {
 							h,s,v = unpack(track:getCustomcolorHSV())
 						end
 						
-						local displacement = self.fadingOutSpeed * tempo * (time - noteTime) / timeDivision / 2
+						local displacement = self.fadingOutSpeed * 100 * (time - noteTime) / timeDivision / 2
 						
 						local t = math.max(displacement, 0)
 						local size

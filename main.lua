@@ -79,12 +79,12 @@ require "Scripts/UI/SettingsMenu"
 require "Scripts/UI/PlayerControl"
 require "Scripts/UI/UIManager"
 
--- local song = MIDIParser:parse(love.filesystem.read("Assets/overlap.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/debug.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
-local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
--- local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Ultimate_Tetris_Remix.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/進化系Colors.mid"))
@@ -133,6 +133,8 @@ function love.draw()
 	-- for k,v in ipairs(player.song.tracks) do
 		-- love.graphics.print(tostring(player.firstNonPlayedNoteIDInTracks[k]), 0, 50+20*k,0,2)
 	-- end
+	
+	love.graphics.print(tostring(player.timeManager.currentTempoChangeID),0,100)
 end
 
 function love.quit()

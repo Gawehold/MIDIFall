@@ -102,6 +102,8 @@ class "KeyboardComponent" {
 		
 		love.graphics.translate(0, absoluteKeyGap/2)
 		
+		love.graphics.translate(0, screenHeight*self.y)
+		
 		for i = lowestKey, highestKey do
 			local keyY = (highestKey-i) * spaceForEachKey
 			local keyHeight = keyHeightRatio*spaceForEachKey
