@@ -15,13 +15,13 @@ class "UIDropdown" {
 		closeIcon = love.graphics.newImage("Assets/Arrow right icon 4.png"),
 	},
 	
-	new = function (self, x,y,width,height, choices, defaultChoiceID)
-		self:super(x,y,width,height, nil, nil, UIDropdown.toggleMenu)
+	new = function (self, x,y,width,height, choices, defaultChoiceID, choiceSelectedFunc)
+		UIButton.instanceMethods.new(self, x,y,width,height, choices[defaultChoiceID], nil, UIDropdown.toggleMenu)
 		
 		self.choices = choices
 		self.choiceID = defaultChoiceID
 		
-		self.text = self.choices[self.choiceID]
+		self.choiceSelectedFunc = choiceSelectedFunc
 		
 		self.addedMenuToParent = false	-- The parent object is created AFTER this object is created, so we cannot add the menu as a child right now
 		
@@ -82,6 +82,10 @@ class "UIDropdown" {
 	
 	choiceSelected = function (self, choiceID)
 		self.choiceID = choiceID
-		self.text = self.choices[self.choiceID]
+		self.text:setText(self.choices[self.choiceID])
+		
+		if self.choiceSelectedFunc then
+			self:choiceSelectedFunc(choiceID)
+		end
 	end,
 }

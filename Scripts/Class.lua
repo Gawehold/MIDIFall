@@ -10,7 +10,7 @@ local objectMetaTable = {
 		end
 		
 		if type(field) == "table" and rawget(field, "class") and rawget(field, "class").name == "Follower" then
-			return field:func()
+			return field.access()
 		end
 		
 		if method == nil then
@@ -30,6 +30,12 @@ local objectMetaTable = {
 		
 		if type(field) == "table" and rawget(field, "class") and rawget(field, "class").name == "Alias" then
 			rawget(field, "fields").table[field.key] = value
+			
+			return
+		end
+		
+		if type(field) == "table" and rawget(field, "class") and rawget(field, "class").name == "Follower" and field.assign then
+			field.assign(value)
 			
 			return
 		end
@@ -185,8 +191,9 @@ class "Alias" {
 }
 
 class "Follower" {
-	new = function (self, func)
-		self.func = func
+	new = function (self, access, assign)
+		self.access = access
+		self.assign = assign
 	end,
 }
 

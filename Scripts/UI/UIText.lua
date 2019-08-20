@@ -70,6 +70,10 @@ class "UIText" {
 			self.scale = math.min(self.scale, boxHeight / (#lines * fontHeight))
 		end
 		
+		if not self.isParagraph and lines[1] then
+			self.scale = math.min(self.scale, boxWidth / font:getWidth(lines[1]))
+		end
+		
 		local linesHeight = #lines * self.scale * fontHeight
 		
 		love.graphics.push()
@@ -128,6 +132,10 @@ class "UIText" {
 	
 	getFont = function (self)
 		return self.font
+	end,
+	
+	setIsParagraph = function (self, isParagraph)
+		self.isParagraph = isParagraph
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)

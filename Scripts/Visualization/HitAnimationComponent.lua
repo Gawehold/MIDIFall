@@ -5,10 +5,11 @@ class "HitAnimationComponent" {
 	new = function (self, x,y, width,height)
 		self:super(x,y, width,height)
 		
-		self.useRainbowcolor = false
-		self.rainbowcolorHueShift = 0.5
-		self.rainbowcolorSaturation = 0.8
-		self.rainbowcolorValue = 0.8
+		self.useRainbowColor = false
+		self.rainbowColorHueShift = 0.5
+		self.rainbowColorSaturation = 0.8
+		self.rainbowColorValue = 0.8
+		self.colorAlpha = 0.8
 		
 		self.fadingOutSpeed = 1.0
 		self.lengthScale = 1.0
@@ -26,6 +27,10 @@ class "HitAnimationComponent" {
 	
 	-- Implement
 	draw = function (self, screenWidth,screenHeight, lowestKey, highestKey, keyGap)
+		if not self.enabled then
+			return
+		end
+		
 		love.graphics.push()
 		
 		--//////// Common Infomation ////////
@@ -65,7 +70,16 @@ class "HitAnimationComponent" {
 		
 		love.graphics.translate(0, absoluteKeyGap/2)
 		
-		love.graphics.setScissor(leftBoundary, 0, rightBoundary-leftBoundary, screenHeight)
+		local scissorWidth = math.clamp(rightBoundary-leftBoundary, 0,screenWidth)
+		if self.orientation == 0 then
+			love.graphics.setScissor(leftBoundary, 0, scissorWidth, screenHeight)
+		elseif self.orientation == 1 then
+			love.graphics.setScissor(0, screenWidth-rightBoundary, screenWidth, scissorWidth)
+		elseif self.orientation == 2 then
+			love.graphics.setScissor(screenWidth-rightBoundary, 0, scissorWidth, screenHeight)
+		elseif self.orientation == 3 then
+			love.graphics.setScissor(0, leftBoundary, screenHeight, scissorWidth)
+		end
 		
 		for i, track in ipairs(sortedTracks) do
 			local trackID = track:getID()
@@ -85,8 +99,8 @@ class "HitAnimationComponent" {
 						local noteHeight = math.max(((self.height*screenHeight) / (highestKey-lowestKey+1))*keyHeightRatio, 0)
 						
 						local h,s,v,a
-						if self.useRainbowcolor then
-							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowcolorHueShift) % 1, self.rainbowcolorSaturation, self.rainbowcolorValue
+						if self.useRainbowColor then
+							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowColorHueShift) % 1, self.rainbowColorSaturation, self.rainbowColorValue
 						else
 							h,s,v = unpack(track:getCustomcolorHSV())
 						end
@@ -101,7 +115,7 @@ class "HitAnimationComponent" {
 							break
 						end
 						
-						love.graphics.setColor(vivid.HSVtoRGB(h,s,v,a))
+						love.graphics.setColor(vivid.HSVtoRGB(h,s,v,self.colorAlpha*a))
 						
 						love.graphics.push()
 							love.graphics.translate(rightBoundary,noteY)

@@ -11,6 +11,7 @@ class "Player" {
 		self.timeManager = TimeManager(self)
 		
 		self.playbackSpeed = 1
+		self.muted = false
 		
 		self.lastPlayedEventIDs = {}
 		self.firstNonPlayedNoteIDInTracks = {}
@@ -21,6 +22,9 @@ class "Player" {
 		self.isPitchBendValueInTracksIncreasing = {}
 		self.firstNonStartedMeasureID = nil
 		
+		self.midiPort = nil
+		self:setMIDIPort(0)
+		
 		self:initialzeStates()
 	end,
 	
@@ -29,9 +33,9 @@ class "Player" {
 		
 		self:pause()
 		self.song = MIDIParser:parse(file:read(file:getSize()))
-		self.timeManager = TimeManager(self)
 		self.initialTime = 0
 		self.endTime = self.song:getEndTime()
+		self.timeManager = TimeManager(self)
 		self:initialzeStates()
 		self:moveToBeginning()
 		
@@ -39,7 +43,72 @@ class "Player" {
 	end,
 	
 	loadSongFromPath = function (self, path)
-		-- local file = io.open(path, "rb")
+		local file = io.open(path, "rb")
+		
+		self:pause()
+		self.song = MIDIParser:parse(file:read("*a"))
+		self.initialTime = 0
+		self.endTime = self.song:getEndTime()
+		self.timeManager = TimeManager(self)
+		self:initialzeStates()
+		self:moveToBeginning()
+		
+		file:close()
+	end,
+	
+	getMIDIPortList = function (self)
+		-- local t = {}
+		-- for k,v in pairs (midi.enumerateoutports()) do
+			-- t = i
+		-- end
+		return midi.enumerateoutports()
+	end,
+	
+	-- Get the list of midi ports with index start from 1 instead of 0
+	getMIDIPortListFrom1 = function (self)
+		local t = {}
+		for i,portName in pairs (midi.enumerateoutports()) do
+			t[i+1] = portName
+		end
+		
+		return t
+	end,
+	
+	getMIDIPort = function (self)
+		-- port ID start from 0
+		
+		return self.midiPort
+	end,
+	
+	setMIDIPort = function (self, portID)
+		-- port ID start from 0
+		self:pause()
+		self:mute()
+		self:releaseMIDIPort()
+		self.midiPort = portID
+		self:initialzeStates()
+		-- midi.openout(portID)
+		-- midi.sendMessage(portID,0,0,0)	-- for activate the midi device, it takes a little bit time, if we don't do this, the playback of first MIDI event will be flicked
+	end,
+	
+	releaseMIDIPort = function (self)
+		midi.gc()
+	end,
+	
+	mute = function (self)
+		-- Send note off events to all channels
+		for ch = 0, 15 do
+			for pitch = 0, 127 do
+				midi.sendMessage(self.midiPort, 0x80+ch, pitch, 0)
+			end
+		end
+	end,
+	
+	setMuted = function (self, muted)
+		self.muted = muted
+		if muted then
+			self:mute()
+		end
 	end,
 	
 	sendMIDIMessage = function (self, event)
@@ -51,7 +120,9 @@ class "Player" {
 				
 				local eventType = event:getType()
 				if not (self.paused and eventType >= 0x80 and eventType <= 0x9F) then
-					midi.sendMessage(0, eventType, event:getMsg1(), event:getMsg2() or 0)
+					if not self.muted or (self.muted and not (eventType >= 0x80 and eventType <= 0x9F)) then
+						midi.sendMessage(self.midiPort, eventType, event:getMsg1(), event:getMsg2() or 0)
+					end
 				end
 			end
 		end

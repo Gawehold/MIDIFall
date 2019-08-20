@@ -11,10 +11,10 @@ class "FallsComponent" {
 		
 		self.colorAlpha = 0.8
 		
-		self.useRainbowcolor = false
-		self.rainbowcolorHueShift = 0.45
-		self.rainbowcolorSaturation = 0.8
-		self.rainbowcolorValue = 0.8
+		self.useRainbowColor = false
+		self.rainbowColorHueShift = 0.45
+		self.rainbowColorSaturation = 0.8
+		self.rainbowColorValue = 0.8
 		
 		self.fadingOutSpeed = 1.0
 		
@@ -34,6 +34,10 @@ class "FallsComponent" {
 	
 	-- Implement
 	draw = function (self, screenWidth,screenHeight, lowestKey, highestKey, keyGap)
+		if not self.enabled then
+			return
+		end
+		
 		love.graphics.push()
 		
 		--//////// Common Infomation ////////
@@ -63,11 +67,13 @@ class "FallsComponent" {
 		
 		local spaceForEachKey = (self.height*screenHeight) / (highestKey-lowestKey+1)
 		local keyHeightRatio = 1 - keyGap
-		local noteLengthOffset = resolutionRatio * self.noteScale*128 * self.noteLengthOffset	-- 1.0 = a crotchet
+		
 		local absoluteKeyGap = keyGap*spaceForEachKey
 		
 		local noteScale = ( screenWidth / 1920 ) * ( self.noteScale*128/song:getTimeDivision() )
 		local pixelMoved = math.floor(noteScale*(time-song:getInitialTime()))
+		
+		local noteLengthOffset = self.noteLengthOffset * song:getTimeDivision()
 		
 		local leftBoundary = math.floor(self.x * screenWidth)
 		local rightBoundary = leftBoundary + math.floor(self.width * screenWidth)
@@ -93,13 +99,13 @@ class "FallsComponent" {
 					local notePitch = note:getPitch()
 					
 					if notePitch >= lowestKey and notePitch <= highestKey then
-						local noteX = math.floor(screenWidth*(self.x+self.width) + noteScale * (noteTime-time))
+						local noteX = math.floor(screenWidth*(self.x+self.width) + noteScale * (noteTime-time + noteLengthOffset))
 						local noteY = (highestKey-notePitch) * spaceForEachKey
 						
 						-- Here math.max seems to be unnecessary since it would be culled out before.
 						-- However, the precision problem may cause a very small negative number.
 						-- Hence, to prevent a note being shown outside the boundary, using a math.max is better.
-						local noteWidth = math.ceil(math.max(noteScale*noteLength - noteScale*noteLength*self.noteLengthOffset, 0))
+						local noteWidth = math.ceil(math.max(noteScale * (noteLength - noteLengthOffset), 0))
 						local noteHeight = math.max(((self.height*screenHeight) / (highestKey-lowestKey+1))*keyHeightRatio, 0)
 						noteWidth = math.max(math.min(rightBoundary - noteX, noteWidth), 0)	-- Cull out the note width outside the right boundary
 						
@@ -109,8 +115,8 @@ class "FallsComponent" {
 						end
 						
 						local h,s,v,a
-						if self.useRainbowcolor then
-							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowcolorHueShift) % 1, self.rainbowcolorSaturation, self.rainbowcolorValue
+						if self.useRainbowColor then
+							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowColorHueShift) % 1, self.rainbowColorSaturation, self.rainbowColorValue
 						else
 							h,s,v = unpack(track:getCustomcolorHSV())
 						end

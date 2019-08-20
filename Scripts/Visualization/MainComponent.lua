@@ -31,32 +31,35 @@ class "MainComponent" {
 		
 		local keyboardPositionAlias = Alias(self, "keyboardPosition")
 		local keyboardLengthAlias = Alias(self, "keyboardLength")
+		local keyboardHeightAlias = Alias(self, "keyboardHeight")
+		
 		local notesPositionFollower = Follower(function () return self.keyboardPosition + self.keyboardLength end)
+		local keyboardYFollower = Follower(function () return (1-self.keyboardHeight)/2 end)
 		
 		self.backgroundComponent = BackgroundComponent(
 			0,0,
 			1,1
 		)
 		self.notesComponent = NotesComponent(
-			notesPositionFollower,(1-self.keyboardHeight)/2,
-			1,self.keyboardHeight
+			notesPositionFollower,keyboardYFollower,
+			1,keyboardHeightAlias
 		)
 		self.keyboardComponent = KeyboardComponent(
-			keyboardPositionAlias,(1-self.keyboardHeight)/2,
-			keyboardLengthAlias,self.keyboardHeight
+			keyboardPositionAlias,keyboardYFollower,
+			keyboardLengthAlias,keyboardHeightAlias
 		)
 		self.fallsComponent = FallsComponent(
-			0,(1-self.keyboardHeight)/2,
-			keyboardPositionAlias,self.keyboardHeight
+			0,keyboardYFollower,
+			keyboardPositionAlias,keyboardHeightAlias
 		)
 		self.hitAnimationComponent = HitAnimationComponent(
-			0,(1-self.keyboardHeight)/2,
-			keyboardPositionAlias,self.keyboardHeight
+			0,keyboardYFollower,
+			keyboardPositionAlias,keyboardHeightAlias
 		)
 		self.measuresComponent = MeasuresComponent(
 			notesPositionFollower,0,
 			0,1,
-			self.keyboardHeight
+			keyboardHeightAlias
 		)
 		self.statisticComponent = StatisticComponent()
 		
@@ -115,5 +118,6 @@ class "MainComponent" {
 		self.fallsComponent:setOrientation(orientation)
 		self.hitAnimationComponent:setOrientation(orientation)
 		self.measuresComponent:setOrientation(orientation)
+		self.statisticComponent:setOrientation(orientation)
 	end,
 }

@@ -21,12 +21,16 @@ class "StatisticComponent" {
 	
 	-- Implement
 	draw = function (self, screenWidth,screenHeight)
+		if not self.enabled then
+			return
+		end
+		
 		local previousFont = love.graphics.getFont()
 		
 		local text =
 			"FPS: " .. love.timer.getFPS() .. "\n" ..
-			"Time: " .. player:getTimeManager():getTime() .. "\n" ..
-			"Tempo: " .. player:getSong():getTempoChanges()[player:getTimeManager().currentTempoChangeID]:getTempo()
+			"Time: " .. string.format("%.2f", player:getTimeManager():getTime()) .. "\n" ..
+			"Tempo: " .. string.format("%.2f", player:getSong():getTempoChanges()[player:getTimeManager().currentTempoChangeID]:getTempo())
 		
 		love.graphics.setColor(self.colorHSVA)
 		love.graphics.setFont(self.font)
@@ -35,6 +39,9 @@ class "StatisticComponent" {
 		
 		love.graphics.setFont(previousFont)
 		
+		if self.orientation == 1 or self.orientation == 3 then
+			screenWidth, screenHeight = screenHeight, screenWidth
+		end
 		self:loadFontIfNecessary(screenHeight)
 	end,
 	

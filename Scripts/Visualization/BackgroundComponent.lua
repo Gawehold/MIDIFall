@@ -22,6 +22,9 @@ class "BackgroundComponent" {
 	
 	-- Implement
 	draw = function (self, screenWidth,screenHeight)
+		if not self.enabled then
+			return
+		end
 		
 		-- Find out the display scales of the background image
 		local scales = {self.scales[1], self.scales[2]}

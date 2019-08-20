@@ -1,10 +1,15 @@
 class "UIInputBox" {
 	extends "UIObject",
 	
-	new = function (self, x,y,width,height, valueAlias)
+	new = function (self, x,y,width,height, valueAlias, isNumber)
 		self:super(x,y, width,height)
 		
 		self.value = valueAlias
+		if isNumber ~= nil then
+			self.isNumber = isNumber
+		else
+			self.isNumber = true
+		end
 		
 		self.isFocusing = false
 		self.cursorPosition = 0
@@ -62,6 +67,10 @@ class "UIInputBox" {
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
+		if not self.transform then
+			return
+		end
+		
 		local textObj = self.text
 		local text = self.text:getText()
 		
@@ -99,7 +108,11 @@ class "UIInputBox" {
 	enter = function (self)
 		self.isFocusing = false
 		
-		self.value = tonumber(self.text:getText()) or self.value
+		if self.isNumber then
+			self.value = tonumber(self.text:getText()) or self.value
+		else
+			self.value = self.text:getText()
+		end
 	end,
 	
 	mouseMoved = function (self, x, y, dx, dy, istouch )

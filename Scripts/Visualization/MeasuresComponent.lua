@@ -5,7 +5,7 @@ class "MeasuresComponent" {
 	new = function (self, x,y, width,height)
 		self:super(x,y, width,height)
 		
-		self.measurecolorHSV = {0,0,0}
+		self.measureColorHSV = {0,0,0}
 		self.measureAlpha = 0.8
 		self.measureConcentrationRate = 0.08
 		
@@ -22,6 +22,10 @@ class "MeasuresComponent" {
 	
 	-- Implement
 	draw = function (self, screenWidth,screenHeight, noteScale)
+		if not self.enabled then
+			return
+		end
+		
 		love.graphics.push()
 		
 		local song = player:getSong()
@@ -102,16 +106,16 @@ class "MeasuresComponent" {
 					end
 				end
 				
-				local r,g,b = vivid.HSVtoRGB(self.measurecolorHSV)
+				local r,g,b = vivid.HSVtoRGB(self.measureColorHSV)
 				local a = math.max(self.measureAlpha * (1 - self.measureConcentrationRate * math.abs(timeUntilMeasureStart+measureLength*0.25) / timeDivision), 0)	-- maximum alpha at the 25% position of the measure
 				
 				love.graphics.setColor(r,g,b,a)
 				if self.orientation == 0 then
 					love.graphics.rectangle("fill", measureX,0, measureWidth,screenHeight)
 				elseif self.orientation == 1 then
-					love.graphics.rectangle("fill", 0,screenHeight-measureX, screenHeight,measureWidth)
+					love.graphics.rectangle("fill", 0,screenWidth-measureX-measureWidth, screenHeight,measureWidth)
 				elseif self.orientation == 2 then
-					love.graphics.rectangle("fill", measureWidth-measureX,0, measureWidth,screenHeight)
+					love.graphics.rectangle("fill", screenWidth-measureX-measureWidth,0, measureWidth,screenHeight)
 				elseif self.orientation == 3 then
 					love.graphics.rectangle("fill", 0,measureX, screenHeight,measureWidth)
 				end
@@ -126,9 +130,9 @@ class "MeasuresComponent" {
 				if self.orientation == 0 then
 					love.graphics.print(measureID, measureX,0)
 				elseif self.orientation == 1 then
-					love.graphics.print(measureID, 0,screenHeight-measureX)
+					love.graphics.print(measureID, 0,screenWidth-measureX-measureWidth)
 				elseif self.orientation == 2 then
-					love.graphics.print(measureID, measureWidth-measureX,0)
+					love.graphics.print(measureID, screenWidth-measureX-measureWidth,0)
 				elseif self.orientation == 3 then
 					love.graphics.print(measureID, 0,measureX)
 				end

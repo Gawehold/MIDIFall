@@ -12,6 +12,7 @@ class "DisplayComponent" {
 		self.height = height
 		self.isVerticalView = false
 		self.orientation = 0
+		self.enabled = true
 	end,
 	
 	update = abstract,

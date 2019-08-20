@@ -26,7 +26,7 @@ void free(void *ptr);
 char* openFileDialog();
 ]]
 
-clib = ffi.load("D:\\MIDIFall_Project\\MIDIFall\\Scripts\\openFileDialog.dll")
+clib = ffi.load(love.filesystem.getSource().."/Scripts/openFileDialog.dll")
 
 -- Define global variables
 -- NULL = {}
@@ -70,14 +70,16 @@ require "Scripts/UI/UISlider"
 require "Scripts/UI/UIRangeSlider"
 require "Scripts/UI/UIInputBox"
 require "Scripts/UI/UIDropdown"
+require "Scripts/UI/UISliderSuite"
 require "Scripts/UI/UIPalette"
 require "Scripts/UI/UIColorBlock"
 require "Scripts/UI/UIColorPicker"
 require "Scripts/UI/UIColorPickerToggle"
-require "Scripts/UI/UISliderSuite"
 require "Scripts/UI/SettingsMenu"
 require "Scripts/UI/PlayerControl"
 require "Scripts/UI/UIManager"
+
+require "Scripts/PropertiesManager"
 
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/debug.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
@@ -99,14 +101,6 @@ local uiManager = UIManager()
 displayComponentsRenderer = DisplayComponentsRenderer()
 
 function love.load()
-	-- table.foreach(midi.enumerateinports(), print)
-	-- print( 'Receiving on device: ', luamidi.getInPortName(0))
-	-- local port = midi.openout(0)
-	-- port:sendMessage(0x90, 52, 127)
-	-- port:noteOn(60,127, 0)
-	-- port:noteOff(60,5, 0)
-	
-	midi.sendMessage(0,0,0,0)	-- for activate the midi device, it takes a little bit time, if we don't do this, the playback of first MIDI event will be flicked
 end
 
 function love.update(dt)
@@ -134,11 +128,11 @@ function love.draw()
 		-- love.graphics.print(tostring(player.firstNonPlayedNoteIDInTracks[k]), 0, 50+20*k,0,2)
 	-- end
 	
-	love.graphics.print(tostring(player.timeManager.currentTempoChangeID),0,100)
+	-- love.graphics.print(tostring(player.firstNonStartedMeasureID),0,100)
 end
 
 function love.quit()
-	midi.gc()
+	player:releaseMIDIPort()
 	-- TODO: free memory allocated by ffi.C.malloc()
 end
 
@@ -183,6 +177,8 @@ function love.keypressed(key)
 	
 	if key == "r" then
 		displayComponentsRenderer:startToRender(1920, 1080, 60)
+	elseif key == "m" then
+		player:mute()
 	end
 end
 
