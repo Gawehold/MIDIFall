@@ -152,16 +152,12 @@ class "SettingsMenu" {
 				}
 			),
 			
-			tracks = UIPanel(self.x,self.y, self.width,self.height,
-				{
-					
-				}
-			),
+			tracks = UIPanel(self.x,self.y, self.width,self.height, {}),
 			
 			display = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UIText(-0.05,0.0, 1.0,0.05, "Orientation", 1, false,true),
-					UIDropdown(0.0,0.06, 1.0,0.05,
+					UIText(0.0,0.0, 1.0,0.05, "Orientation", 0.7, false,true),
+					UIDropdown(0.45,0.0, 0.55,0.05,
 						{
 							"Horizontal",
 							"Vertical",
@@ -174,15 +170,36 @@ class "SettingsMenu" {
 						end
 					),
 					
-					UIText(-0.05,0.15, 1.0,0.05, "Theme", 1, false,true),
-					UICheckbox(0,0.2, 1.0,0.05, "Enabled", false),
-					UIButton(0.55,0.2, 0.45,0.05,"Load", nil, 
+					UIText(0.0,0.1, 1.0,0.05, "Theme", 0.7, false,true),
+					UIButton(0.35,0.1, 0.3,0.05,"Load", nil, 
 						function (obj)
-							local path = ffi.string(clib.openFileDialog())
-							if path then
-								player:loadSongFromPath(path)
+							local pathCharPtr = clib.openFileDialog()
+							
+							if pathCharPtr[0] ~= 0 then
+								local path = ffi.string(pathCharPtr)
+								
+								if not pcall(mainComponent:getThemeManager().loadTheme, self, path) then
+									love.window.showMessageBox("Error", "It is not a valid theme configuration file.", "error")
+								end
 							end
 						end
+					),
+					UIButton(0.7,0.1, 0.3,0.05,"Reset", nil, 
+						function (obj)
+							mainComponent:getThemeManager():reset()
+						end
+					),
+					
+					UIText(0.0,0.15, 1.0,0.05,
+						Follower(
+							function ()
+								local environment = mainComponent.themeManager
+								return string.format(
+									"%s (v%.2f) by %s", environment.name, environment.version, environment.author
+								)
+							end
+						),
+						0.7, false,true
 					),
 					
 					UICheckbox(0,0.3, 1.0,0.05, "", Alias(mainComponent.backgroundComponent, "enabled")),
@@ -221,7 +238,7 @@ class "SettingsMenu" {
 					),
 					
 					UICheckbox(0,0.8, 1.0,0.05, "", Alias(mainComponent.measuresComponent, "enabled")),
-					UIButton(0.2,0.8, 0.8,0.05,"Measure", nil, 
+					UIButton(0.2,0.8, 0.8,0.05,"Measures", nil, 
 						function (obj)
 							obj.parent:changePage(7)
 						end
@@ -283,26 +300,28 @@ class "SettingsMenu" {
 					
 					UISliderSuite(0.0,0.4, 1.0,0.07, "Height", Alias(mainComponent, "keyboardHeight"), 0,1, 0.0001),
 					
-					UIText(0.0,0.55, 0.5,0.05, "Black Keys Colour", 0.7, false,true),
-					UIColorPickerToggle(0.55,0.55, 0.45,0.05,
+					UISliderSuite(0.0,0.5, 1.0,0.07, "Key Gap", Alias(mainComponent, "keyGap"), 0,1, 0.0001),
+					
+					UIText(0.0,0.65, 0.5,0.05, "Black Keys Colour", 0.7, false,true),
+					UIColorPickerToggle(0.55,0.65, 0.45,0.05,
 						Alias(mainComponent.keyboardComponent.blackKeyColorHSV, 1),
 						Alias(mainComponent.keyboardComponent.blackKeyColorHSV, 2),
 						Alias(mainComponent.keyboardComponent.blackKeyColorHSV, 3),
 						Alias(mainComponent.keyboardComponent, "blackKeyAlpha")
 					),
 					
-					UIText(0.0,0.62, 0.5,0.05, "White Keys Colour", 0.7, false,true),
-					UIColorPickerToggle(0.55,0.62, 0.45,0.05,
+					UIText(0.0,0.72, 0.5,0.05, "White Keys Colour", 0.7, false,true),
+					UIColorPickerToggle(0.55,0.72, 0.45,0.05,
 						Alias(mainComponent.keyboardComponent.whiteKeyColorHSV, 1),
 						Alias(mainComponent.keyboardComponent.whiteKeyColorHSV, 2),
 						Alias(mainComponent.keyboardComponent.whiteKeyColorHSV, 3),
 						Alias(mainComponent.keyboardComponent, "whiteKeyAlpha")
 					),
 					
-					UICheckbox(0.0,0.74, 1.0,0.04, "Rainbow Highlight Colour", Alias(mainComponent.keyboardComponent, "useRainbowColor")),
+					UICheckbox(0.0,0.84, 1.0,0.04, "Rainbow Highlight Colour", Alias(mainComponent.keyboardComponent, "useRainbowColor")),
 					
-					UIText(0.0,0.8, 0.5,0.05, "Highlight Colour", 0.7, false,true),
-					UIColorPickerToggle(0.55,0.8, 0.45,0.05,
+					UIText(0.0,0.9, 0.5,0.05, "Highlight Colour", 0.7, false,true),
+					UIColorPickerToggle(0.55,0.9, 0.45,0.05,
 						Alias(mainComponent.keyboardComponent, "rainbowHueShift"),
 						Alias(mainComponent.keyboardComponent.brightKeyColorHSV, 2),
 						Alias(mainComponent.keyboardComponent.brightKeyColorHSV, 3),
@@ -385,12 +404,6 @@ class "SettingsMenu" {
 					
 					UISliderSuite(0.0,0.1, 1.0,0.07, "Concentration", Alias(mainComponent.measuresComponent, "measureConcentrationRate"), 0,1, 0.0001),
 					
-					-- UISliderSuite(0.0,0.2, 1.0,0.07, "Size Scale", Alias(mainComponent.hitAnimationComponent, "sizeScale"), 0,10, 0.0001),
-					
-					-- UISliderSuite(0.0,0.3, 1.0,0.07, "Fade-out Speed", Alias(mainComponent.hitAnimationComponent, "fadingOutSpeed"), 0,10, 0.0001),
-					
-					-- UICheckbox(0.0,0.45, 1.0,0.04, "Rainbow Colour", Alias(mainComponent.hitAnimationComponent, "useRainbowColor")),
-					
 					UIText(0,0.2, 0.5,0.05, "Measure Colour", 0.7, false,true),
 					UIColorPickerToggle(0.55,0.2, 0.45,0.05,
 						Alias(mainComponent.measuresComponent.measureColorHSV, 1),
@@ -399,46 +412,124 @@ class "SettingsMenu" {
 						Alias(mainComponent.measuresComponent, "measureAlpha")
 					),
 					
-					UIText(0,0.35, 0.5,0.05, "Font", 0.7, false,true),
-					UIButton(0.55,0.35, 0.45,0.05,"Import", nil, 
+					UIText(0,0.32, 0.5,0.05, "Font", 0.7, false,true),
+					UIButton(0.55,0.32, 0.45,0.05,"Import", nil, 
 						function (obj)
 							ffi.string(clib.openFileDialog())
 						end
 					),
 					
-					UISliderSuite(0.0,0.45, 1.0,0.07, "Text Size", Alias(mainComponent.measuresComponent, "measureTextScale"), 0.01,1, 0.0001),
+					UISliderSuite(0.0,0.4, 1.0,0.07, "Text Size", Alias(mainComponent.measuresComponent, "measureTextScale"), 0.01,1, 0.0001),
+					
+					UIText(0,0.5, 0.5,0.05, "Text Colour", 0.7, false,true),
+					UIColorPickerToggle(0.55,0.5, 0.45,0.05,
+						Alias(mainComponent.measuresComponent.measureTextColorHSVA, 1),
+						Alias(mainComponent.measuresComponent.measureTextColorHSVA, 2),
+						Alias(mainComponent.measuresComponent.measureTextColorHSVA, 3),
+						Alias(mainComponent.measuresComponent.measureTextColorHSVA, 4)
+					),
 				},
 				
 				{
 					UIText(0.0,0.0, 1.0,0.05, "Statistic", 1, true,true),
 					
-					-- UISliderSuite(0.0,0.1, 1.0,0.07, "Concentration", Alias(mainComponent.measuresComponent, "measureConcentrationRate"), 0,1, 0.0001),
+					UIText(0,0.1, 0.5,0.05, "Font", 0.7, false,true),
+					UIButton(0.55,0.1, 0.45,0.05,"Import", nil, 
+						function (obj)
+							ffi.string(clib.openFileDialog())
+						end
+					),
 					
-					-- UISliderSuite(0.0,0.2, 1.0,0.07, "Size Scale", Alias(mainComponent.hitAnimationComponent, "sizeScale"), 0,10, 0.0001),
+					UISliderSuite(0.0,0.18, 1.0,0.07, "Text Size", Alias(mainComponent.statisticComponent, "textScale"), 0.01,1, 0.0001),
 					
-					-- UISliderSuite(0.0,0.3, 1.0,0.07, "Fade-out Speed", Alias(mainComponent.hitAnimationComponent, "fadingOutSpeed"), 0,10, 0.0001),
-					
-					-- UICheckbox(0.0,0.45, 1.0,0.04, "Rainbow Colour", Alias(mainComponent.hitAnimationComponent, "useRainbowColor")),
-					
-					-- UIText(0,0.5, 0.5,0.05, "Colour", 0.7, false,true),
-					-- UIColorPickerToggle(0.55,0.5, 0.45,0.05,
-						-- Alias(mainComponent.hitAnimationComponent, "rainbowColorHueShift"),
-						-- Alias(mainComponent.hitAnimationComponent, "rainbowColorSaturation"),
-						-- Alias(mainComponent.hitAnimationComponent, "rainbowColorValue"),
-						-- Alias(mainComponent.hitAnimationComponent, "colorAlpha")
-					-- ),
+					UIText(0,0.28, 0.5,0.05, "Text Colour", 0.7, false,true),
+					UIColorPickerToggle(0.55,0.28, 0.45,0.05,
+						Alias(mainComponent.statisticComponent.colorHSVA, 1),
+						Alias(mainComponent.statisticComponent.colorHSVA, 2),
+						Alias(mainComponent.statisticComponent.colorHSVA, 3),
+						Alias(mainComponent.statisticComponent.colorHSVA, 4)
+					),
 				}
 			),
 			
 			videoExport = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UIText(0.0,0.0, 1.0,0.05, "Not yet implemented", 1, true,true, nil, true)
+					UIText(0.0,0.0, 1.0,0.05, "Video Export", 1, true,true),
+					
+					UISliderSuite(0.0,0.1, 1.0,0.07, "Framerate", Alias(displayComponentsRenderer, "exportingFramerate"), 1,240, 1),
+					
+					UIText(0.0,0.2, 1.0,0.05, "Resolution", 0.7, false,true),
+					UISliderSuite(0.0,0.25, 1.0,0.07, "Width", Alias(displayComponentsRenderer, "exportingWidth"), 2,10000, 2),
+					UISliderSuite(0.0,0.35, 1.0,0.07, "Height", Alias(displayComponentsRenderer, "exportingHeight"), 2,10000, 2),
+					
+					UIButton(0.0,0.45, 1.0,0.05,"Resize to the screen size", nil, 
+						function (obj)
+							displayComponentsRenderer:setExportingResolution(love.window.getMode())
+						end
+					),
+					
+					UICheckbox(0.0,0.55, 1.0,0.04, "Preserve Transparency (Disable x264)", Alias(displayComponentsRenderer, "exportingTransparency")),
+					
+					UIText(0.0,0.65, 1.0,0.05, "x264 Settings", 0.7, false,true),
+					UISliderSuite(0.0,0.7, 1.0,0.07, "CRF", Alias(displayComponentsRenderer, "exportingCRF"), 0,51, 1),
+					
+					UIText(0.0,0.8, 1.0,0.05, "Speed", 0.7, false,true),
+					UIDropdown(0.55,0.8, 0.45,0.05,
+						displayComponentsRenderer.exportingPresets,
+						displayComponentsRenderer.exportingPresetID,
+						function (obj, choiceID)
+							displayComponentsRenderer:setExportingPresetID(choiceID)
+						end
+					),
+					
+					UIButton(0.0,0.95, 0.45,0.05,"Export", nil, 
+						function (obj)
+							displayComponentsRenderer:startToRender()
+						end
+					),
 				}
 			),
 			
 			update = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UIText(0.0,0.0, 1.0,0.05, "Not yet implemented", 1, true,true, nil, true)
+					UIText(0.0,0.0, 1.0,0.05, "Update", 1, true,true, nil, true),
+					
+					UIText(0.0,0.1, 1.0,0.05,
+						"Current Version",
+						0.7, false,true
+					),
+					
+					UIText(0.6,0.1, 1.0,0.05,
+						string.format("v%.1f", VERSION),
+						0.7, false,true
+					),
+					
+					UIText(0.0,0.15, 1.0,0.05,
+						"Latest Version",
+						0.7, false,true
+					),
+					
+					UIText(0.6,0.15, 1.0,0.05,
+						"",
+						0.7, false,true
+					),
+					
+					UIButton(0.6,0.15, 0.4,0.05,"Check", nil, 
+						function (obj)
+							updateManager:fetch(
+								function (version)
+									self.pages.update.children[5]:setText(string.format("v%.1f", version))
+									table.remove(self.pages.update.children, 6)
+								end
+							)
+						end
+					),
+					
+					UIButton(0.0,0.25, 0.45,0.05,"Download", nil, 
+						function (obj)
+							love.system.openURL("http://gawehold.weebly.com/midifall.html")
+						end
+					),
 				}
 			),
 			
@@ -450,11 +541,56 @@ class "SettingsMenu" {
 			),
 		}
 		
+		-- Linking the UI Objects
+		self.pages.videoExport.children[9].slider.isFrozen = Alias(self.pages.videoExport.children[7], "isChecked")
+		self.pages.videoExport.children[9].inputBox.isFrozen = Alias(self.pages.videoExport.children[7], "isChecked")
+		self.pages.videoExport.children[11].isFrozen = Alias(self.pages.videoExport.children[7], "isChecked")
+		
+		self:initializeTracksPanel()
+		
 		self.currentPage = self.pages.homepage
 		self.currentPage = self.pages.display
-		self.pages.display:changePage(7)
+		-- self.pages.display:changePage(7)
 		
 		self:open()
+	end,
+	
+	initializeTracksPanel = function (self)
+		local tracksPageChildren = {
+			UIText(0.0,0.0, 1.0,0.05, "Tracks", 1, true,true, nil, true),
+			UIButton(0.0,0.1, 1.0,0.05,"Reset All Colours", nil, 
+				function (obj)
+					player:getSong():resetTracksColor()
+				end
+			),
+		}
+		
+		for i, track in ipairs(player:getSong():getTracks()) do
+			local y = (i-1)/20 + 0.2
+			
+			table.insert(tracksPageChildren, 
+				UICheckbox(0.0,y, 1.0,0.04, "", Alias(track, "enabled"))
+			)
+			
+			table.insert(tracksPageChildren, 
+				UICheckbox(0.12,y, 1.0,0.04, "Track "..i, Alias(track, "isDiamond"),
+					nil,nil,
+					love.graphics.newImage("Assets/Diamond mark 1.png"),
+					love.graphics.newImage("Assets/Diamond mark 2.png")
+				)
+			)
+			
+			table.insert(tracksPageChildren, 
+				UIColorPickerToggle(0.65,y, 0.35,0.04, 
+					Alias(track.customColorHSV, 1),
+					Alias(track.customColorHSV, 2),
+					Alias(track.customColorHSV, 3),
+					nil
+				)
+			)
+		end
+		
+		self.pages.tracks:setPages(tracksPageChildren)
 	end,
 	
 	update = function (self, dt)
@@ -562,5 +698,9 @@ class "SettingsMenu" {
 	
 	getIsFocusing = function (self)
 		return self.currentPage:getIsFocusing()
+	end,
+	
+	getIsClicking = function (self)
+		return self.currentPage:getIsClicking()
 	end,
 }

@@ -10,22 +10,15 @@ class "UIPanel" {
 		self.shift = 0
 		self.shiftStep = 0.05
 		
-		self.pages = {}
-		for i = 1, select("#", ...) do
-			local page = select(i, ...)
-			self.pages[i] = page
-			
-			for k,v in ipairs(page) do
-				v:setParent(self)
-			end
-		end
-		
 		self.paddings = {0.1,0.05,0.1,0.05}
 		
-		self.homepageID = 1
-		self.homepage = self.pages[self.homepageID]
+		self.pages = nil
+		self.homepageID = nil
+		self.homepage = nil
+		self.children = nil
+		self:setPages(...)
 		
-		self.children = self.pages[self.homepageID] or {}
+		self.cornerRadiuses = {0,0}
 		
 		self.childrenTransform = love.math.newTransform()
 		
@@ -53,6 +46,23 @@ class "UIPanel" {
 				-- return averagedcolor * color;
 			-- }
 		-- ]])
+	end,
+	
+	setPages = function (self, ...)
+		self.pages = {}
+		for i = 1, select("#", ...) do
+			local page = select(i, ...)
+			self.pages[i] = page
+			
+			for k,v in ipairs(page) do
+				v:setParent(self)
+			end
+		end
+		
+		self.homepageID = 1
+		self.homepage = self.pages[self.homepageID]
+		
+		self.children = self.pages[self.homepageID] or {}
 	end,
 	
 	update = function (self, dt, transform)
@@ -92,7 +102,7 @@ class "UIPanel" {
 			end
 			
 			love.graphics.setColor(0,0,0,0.8)
-			love.graphics.rectangle("fill", self.x,self.y, self.width,self.height)
+			love.graphics.rectangle("fill", self.x,self.y, self.width,self.height,self.cornerRadiuses[1],self.cornerRadiuses[2])
 		
 		love.graphics.pop()
 		
@@ -114,6 +124,10 @@ class "UIPanel" {
 			return
 		end
 		
+		if self:getIsInside() and button == 1 then
+			self.isClicking = true
+		end
+		
 		for k,v in ipairs(self.children) do
 			v:mousePressed(mouseX, mouseY, button, istouch, presses)
 		end
@@ -123,6 +137,8 @@ class "UIPanel" {
 		if not self.isOpened then
 			return
 		end
+		
+		self.isClicking = false
 		
 		for k,v in ipairs(self.children) do
 			v:mouseReleased(mouseX, mouseY, istouch, presses)
@@ -229,6 +245,16 @@ class "UIPanel" {
 		return false
 	end,
 	
+	getIsClicking = function (self)
+		local isClicking = self.isClicking
+		
+		for k,v in ipairs(self.children) do
+			isClicking = isClicking or v:getIsClicking()
+		end
+		
+		return isClicking
+	end,
+	
 	addChild = function (self, child)
 		table.insert(self.children, child)
 		child:setParent(self)
@@ -273,7 +299,20 @@ class "UIPanel" {
 		end
 	end,
 	
+	closeChildrenPanels = function (self)
+		for k,v in ipairs(self.children) do
+			if v.closeTopPanels and v:getIsOpened() then	-- v.closeTopPanels is to check if it is a Panel/descendant object of Panel
+				openedChildPanel = v
+				v:closeTopPanels()
+			end
+		end
+	end,
+	
 	toggle = function (self)
+		if not self.isOpened then
+			-- Close sibling panels
+			self.parent:closeChildrenPanels()
+		end
 		self.isOpened = not self.isOpened
 	end,
 	

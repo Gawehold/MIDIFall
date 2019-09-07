@@ -55,7 +55,11 @@ class "UIButton" {
 			love.graphics.setLineWidth((boxWidth+boxHeight) / 128)
 			love.graphics.rectangle("line", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 		else
-			love.graphics.setColor(0,0.5,1,0.8)
+			if self.isFrozen then
+				love.graphics.setColor(0.5,0.5,0.5,0.8)
+			else
+				love.graphics.setColor(0,0.5,1,0.8)
+			end
 			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 		end
 		
@@ -82,12 +86,20 @@ class "UIButton" {
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
+		if self.isFrozen then
+			return
+		end
+		
 		if self.isInside and self.clicked and button == 1 then
 			self:clicked()
 		end
 	end,
 	
 	mouseMoved = function (self, x, y, dx, dy, istouch )
+		if self.isFrozen then
+			return
+		end
+		
 		if self:findIsInside(x,y) then
 			self:mouseEntered()
 		else

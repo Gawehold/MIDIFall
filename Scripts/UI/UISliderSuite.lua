@@ -24,6 +24,12 @@ class "UISliderSuite" {
 		self.slider:draw()
 	end,
 	
+	setIsFrozen = function (self, isFrozen)
+		self.text:setIsForzen(isFrozen)
+		self.inputBox:setIsForzen(isFrozen)
+		self.slider:setIsForzen(isFrozen)
+	end,
+	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
 		self.text:mousePressed(mouseX, mouseY, button, istouch, presses)
 		self.inputBox:mousePressed(mouseX, mouseY, button, istouch, presses)

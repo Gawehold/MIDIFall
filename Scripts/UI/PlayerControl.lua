@@ -11,6 +11,10 @@ class "PlayerControl" {
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
+		if self:getIsInside() and button == 1 then
+			self.isClicking = true
+		end
+		
 		if button == 1 then
 			local mouseClickedTime = love.timer.getTime()
 			
@@ -26,6 +30,7 @@ class "PlayerControl" {
 	end,
 	
 	mouseReleased = function (self, mouseX, mouseY, istouch, presses)
+		self.isClicking = false
 	end,
 
 	mouseMoved = function (self, x, y, dx, dy, istouch)
@@ -113,6 +118,8 @@ class "PlayerControl" {
 		
 		if extension == ".mid" then
 			player:loadSongFromFile(file)
+			uiManager:getComponents()[1]:initializeTracksPanel()
+			
 		elseif extension == ".jpg" or extension == ".png" or extension == ".bmp" or extension == ".jpeg" then
 			local data
 			if file:open("r") then
@@ -136,5 +143,9 @@ class "PlayerControl" {
 	
 	getIsFocusing = function (self)
 		return false
+	end,
+	
+	getIsClicking = function (self)
+		return self.isClicking
 	end,
 }

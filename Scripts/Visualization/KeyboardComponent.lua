@@ -34,13 +34,7 @@ class "KeyboardComponent" {
 		self.useDefaultTheme = true
 		self.sprites = {}
 		for i = 1, 12 do
-			self.sprites[i] = Sprite(
-				love.graphics.newImage("Assets/key"..tostring(i)..".png"),
-				{50,50, 780,220},
-				{0.2,0.2},
-				{0.9,0.5},
-				{0.1,0}
-			)
+			self.sprites[i] = Sprite()
 		end
 	end,
 	
@@ -142,7 +136,7 @@ class "KeyboardComponent" {
 				
 			else
 				self:setKeyColor(i, lowestKey, highestKey, self:checkIsBlackKey(i))
-				self.sprites[semitoneInOctave+1]:draw(keyboardX,keyY, keyboardWidth,keyHeight)
+				self.sprites[semitoneInOctave+1]:draw(keyboardX,keyY, keyboardWidth,keyHeight, screenWidth,screenHeight)
 			end
 		end
 		
@@ -165,7 +159,7 @@ class "KeyboardComponent" {
 			if self.useRainbowColor then
 				h = ((i-lowestKey) / highestKey + self.rainbowHueShift) % 1
 			elseif self.isPlayingKeys[i] then
-				h = player:getSong():getTracks()[self.isPlayingKeys[i]]:getCustomcolorHSV()
+				h = player:getSong():getTracks()[self.isPlayingKeys[i]]:getCustomColorHSV()
 			end
 		end
 				

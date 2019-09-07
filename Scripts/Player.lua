@@ -32,7 +32,12 @@ class "Player" {
 		file:open("r")
 		
 		self:pause()
-		self.song = MIDIParser:parse(file:read(file:getSize()))
+		local success, song = pcall( MIDIParser.parse, MIDIParser, file:read(file:getSize()) )
+		if success then
+			self.song = song
+		else
+			love.window.showMessageBox("Error", "It is not a valid/supported MIDI file.", "error")
+		end
 		self.initialTime = 0
 		self.endTime = self.song:getEndTime()
 		self.timeManager = TimeManager(self)
@@ -46,7 +51,12 @@ class "Player" {
 		local file = io.open(path, "rb")
 		
 		self:pause()
-		self.song = MIDIParser:parse(file:read("*a"))
+		local success, song = pcall( MIDIParser.parse, MIDIParser, file:read("*a") )
+		if success then
+			self.song = song
+		else
+			love.window.showMessageBox("Error", "It is not a valid/supported MIDI file.", "error")
+		end
 		self.initialTime = 0
 		self.endTime = self.song:getEndTime()
 		self.timeManager = TimeManager(self)

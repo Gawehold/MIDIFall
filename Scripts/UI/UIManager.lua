@@ -18,11 +18,15 @@ class "UIManager" {
 		end
 	end,
 	
+	getComponents = function (self)
+		return self.components
+	end,
+	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
 		for k,v in ipairs(self.components) do
 			v:mousePressed(mouseX, mouseY, button, istouch, presses)
 			
-			if v:getIsInside() then
+			if v:getIsInside() or v:getIsClicking() then
 				break
 			end
 		end
@@ -32,7 +36,7 @@ class "UIManager" {
 		for k,v in ipairs(self.components) do
 			v:mouseReleased(mouseX, mouseY, istouch, presses)
 			
-			if v:getIsInside() then
+			if v:getIsInside() or v:getIsClicking() then
 				break
 			end
 		end
@@ -42,7 +46,7 @@ class "UIManager" {
 		for k,v in ipairs(self.components) do
 			v:mouseMoved(x, y, dx, dy, istouch)
 			
-			if v:getIsInside() then
+			if v:getIsClicking() then
 				break
 			end
 		end

@@ -3,7 +3,11 @@ class "UIText" {
 	
 	new = function (self, x,y,width,height, text, maxScale, horizontallyCentered, verticallyCentered, colorRGBA, isParagraph)
 		self:super(x,y, width,height)
+		
+		self.text = nil
+		self.words = nil
 		self:setText(text or "")
+		
 		self.maxScale = maxScale or 1
 		self.scale = self.maxScale
 		self.verticallyCentered = verticallyCentered or false
@@ -16,6 +20,11 @@ class "UIText" {
 	
 	update = function (self, dt, transform)
 		self.transform = transform
+		
+		self.words = {}
+		for word in self.text:gmatch("[^%s]+") do
+			table.insert(self.words, word)
+		end
 	end,
 	
 	draw = function (self)
@@ -98,10 +107,10 @@ class "UIText" {
 	
 	setText = function (self, text)
 		self.text = text
-		self.words = {}
-		for word in self.text:gmatch("[^%s]+") do
-			table.insert(self.words, word)
-		end
+		-- self.words = {}
+		-- for word in self.text:gmatch("[^%s]+") do
+			-- table.insert(self.words, word)
+		-- end
 	end,
 	
 	getText = function (self)

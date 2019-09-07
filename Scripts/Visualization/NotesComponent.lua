@@ -23,12 +23,7 @@ class "NotesComponent" {
 		self.pitchBendSemitone = 12
 		
 		self.useDefaultTheme = true
-		self.regularNoteSprite = Sprite(
-			love.graphics.newImage("Assets/note.png"),
-			{50,50, 780,220},
-			{0.2,0.2},
-			{0.8,0.5}
-		)
+		self.regularNoteSprite = Sprite()
 		self.diamondNoteSprite = Sprite(
 			love.graphics.newImage("Assets/Arrow left icon 4.png")
 		)
@@ -80,7 +75,7 @@ class "NotesComponent" {
 		
 		local noteLengthOffset = self.noteLengthOffset * song:getTimeDivision()
 		
-		local leftBoundary = math.floor(self.x * screenWidth)
+		local leftBoundary = math.max( math.floor(self.x * screenWidth), 0 )
 		
 		local firstNonFinishedNoteIDInTracks = player:getFirstNonFinishedNoteIDInTracks()
 		local currentPitchBendValueInTracks = player:getCurrentPitchBendValueInTracks()
@@ -130,7 +125,7 @@ class "NotesComponent" {
 						if self.useRainbowColor then
 							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowColorHueShift) % 1, self.rainbowColorSaturation, self.rainbowColorValue
 						else
-							h,s,v = unpack(track:getCustomcolorHSV())
+							h,s,v = unpack(track:getCustomColorHSV())
 						end
 						
 						-- Brighten up the key while playing
@@ -179,7 +174,7 @@ class "NotesComponent" {
 								if self.useDefaultTheme then
 									love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY+pbShift, math.max(noteWidth-noteCulledWidth, 0),noteHeight)
 								else
-									self.regularNoteSprite:draw(noteX,noteY, noteWidth,noteHeight)
+									self.regularNoteSprite:draw(noteX,noteY, noteWidth,noteHeight, screenWidth,screenHeight)
 								end
 							else
 								-- love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, noteWidth-noteCulledWidth,noteHeight, noteHeight/2,noteHeight/2)
@@ -187,7 +182,7 @@ class "NotesComponent" {
 								if self.useDefaultTheme then
 									love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, math.max(noteWidth-noteCulledWidth, 0),noteHeight)
 								else
-									self.regularNoteSprite:draw(noteX,noteY, noteWidth,noteHeight)
+									self.regularNoteSprite:draw(noteX,noteY, noteWidth,noteHeight, screenWidth,screenHeight)
 								end
 								
 								-- love.graphics.setColor(0,0,0)

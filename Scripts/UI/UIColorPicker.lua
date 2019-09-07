@@ -11,13 +11,25 @@ class "UIColorPicker" {
 		local palette = UIPalette(0,0,0.5,0.25, colorHueAlias,colorSaturationAlias,colorValueAlias)
 		local colorBlock = UIColorBlock(0.5,0,0.5,0.25, colorHueAlias,colorSaturationAlias,colorValueAlias,1)
 		
-		local colorHueSlider = UISliderSuite(0.0,0.3, 1.0,0.1, "Hue", colorHueAlias, 0,1, 0.0001)
+		local colorHueSlider = UISliderSuite(0.0,0.3, 1.0,0.1, "Hue", colorHueAlias or 0, 0,1, 0.0001)
+		if colorHueAlias == nil then
+			colorHueSlider:setIsFrozen(true)
+		end
 		
-		local colorSaturationSlider = UISliderSuite(0.0,0.45, 1.0,0.1, "Saturation", colorSaturationAlias, 0,1, 0.0001)
+		local colorSaturationSlider = UISliderSuite(0.0,0.45, 1.0,0.1, "Saturation", colorSaturationAlias or 0, 0,1, 0.0001)
+		if colorSaturationAlias == nil then
+			colorSaturationSlider:setIsFrozen(true)
+		end
 		
-		local colorValueSlider = UISliderSuite(0.0,0.6, 1.0,0.1, "Value", colorValueAlias, 0,1, 0.0001)
+		local colorValueSlider = UISliderSuite(0.0,0.6, 1.0,0.1, "Value", colorValueAlias or 0, 0,1, 0.0001)
+		if colorValueAlias == nil then
+			colorValueSlider:setIsFrozen(true)
+		end
 		
-		local colorAlphaSlider = UISliderSuite(0.0,0.75, 1.0,0.1, "Alpha", colorAlphaAlias, 0,1, 0.0001)
+		local colorAlphaSlider = UISliderSuite(0.0,0.75, 1.0,0.1, "Alpha", colorAlphaAlias or 0, 0,1, 0.0001)
+		if colorAlphaAlias == nil then
+			colorAlphaSlider:setIsFrozen(true)
+		end
 		
 		local hexCodeText = UIText(0,0.95, 0.5,0.05, "Hex Code", 0.7, false,true)
 		local hexCodeInputBox = UIInputBox(0.5,0.95, 0.5,0.05, Follower(
@@ -41,6 +53,8 @@ class "UIColorPicker" {
 			hexCodeText,
 			hexCodeInputBox,
 		})
+		
+		self.cornerRadiuses = {0.05, 0.02}
 	end,
 	
 	hexToHSV = function (self, hexCode)
@@ -66,26 +80,5 @@ class "UIColorPicker" {
 		local hexCode = string.format("#%.2X%.2X%.2X", r,g,b)
 		
 		return hexCode
-	end,
-	
-	draw = function (self)
-		if not self.isOpened then
-			return
-		end
-		
-		love.graphics.push()
-		
-			if self.transform then
-				love.graphics.applyTransform(self.transform)
-			end
-			
-			love.graphics.setColor(0,0,0,0.8)
-			love.graphics.rectangle("fill", self.x,self.y, self.width,self.height, 0.07, 0.03)
-		
-		love.graphics.pop()
-		
-		for k,v in ipairs(self.children) do
-			v:draw()
-		end
 	end,
 }

@@ -27,10 +27,25 @@ class "UIDropdown" {
 		
 		local meunButtons = {}
 		for i,text in ipairs(choices) do
-			meunButtons[i] = UIButton(0,(i-1)*(1/#choices-0.1)+0.14,1.0,1/#choices-0.1,text,nil, function() self:choiceSelected(i) end)
+			meunButtons[i] = UIButton(
+				0,		(i-1)*(1/#choices) + 0.1/#choices,
+				1.0,	0.8*(1/#choices),
+				text,
+				nil,
+				function() self:choiceSelected(i) end
+			)
 		end
 		
-		self.menu = UIPanel(-0.9,(1-(0.05*#choices+0.1))/2, 0.8,0.05*#choices+0.1, meunButtons)
+		local menuHeight = 0.06*#choices
+		local menuY = self.y + self.height/2 - menuHeight/2
+		menuY = math.clamp(menuY, 0, 1-menuHeight)
+		
+		self.menu = UIPanel(-1.2,menuY, 1.0,menuHeight, meunButtons)
+		self.menu.paddings[1] = 0.05
+		self.menu.paddings[2] = 0.015 / self.menu.height
+		self.menu.paddings[3] = 0.05
+		self.menu.paddings[4] = 0.015 / self.menu.height
+		self.menu.cornerRadiuses = {0.04, 0.02}
 		self.menu:close()
 	end,
 	

@@ -16,9 +16,7 @@ class "HitAnimationComponent" {
 		self.sizeScale = 1.0
 		
 		self.useDefaultTheme = true
-		self.sprite = Sprite(
-			love.graphics.newImage("Assets/Arrow left icon 4.png")
-		)
+		self.sprite = Sprite()
 	end,
 	
 	-- Implement
@@ -68,7 +66,7 @@ class "HitAnimationComponent" {
 		--//////// Main Section ////////
 		love.graphics.translate(0, screenHeight*self.y)
 		
-		love.graphics.translate(0, absoluteKeyGap/2)
+		-- love.graphics.translate(0, absoluteKeyGap/2)
 		
 		local scissorWidth = math.clamp(rightBoundary-leftBoundary, 0,screenWidth)
 		if self.orientation == 0 then
@@ -102,7 +100,7 @@ class "HitAnimationComponent" {
 						if self.useRainbowColor then
 							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowColorHueShift) % 1, self.rainbowColorSaturation, self.rainbowColorValue
 						else
-							h,s,v = unpack(track:getCustomcolorHSV())
+							h,s,v = unpack(track:getCustomColorHSV())
 						end
 						
 						local displacement = self.fadingOutSpeed * 100 * (time - noteTime) / timeDivision / 2
@@ -139,17 +137,17 @@ class "HitAnimationComponent" {
 							else
 								size = spaceForEachKey*t/50
 								size = size * self.sizeScale
-								self.sprite:draw(-size/2 -t*4 * self.lengthScale*spaceForEachKey/16, -size/2 + spaceForEachKey/2, size, size)
+								self.sprite:draw(-size/2 -t*4 * self.lengthScale*spaceForEachKey/16, -size/2 + spaceForEachKey/2, size, size, screenWidth,screenHeight)
 								
 								love.graphics.push()
 									size = spaceForEachKey*t/40
 									size = size * self.sizeScale
-									self.sprite:draw(-size/2 -t*3 * self.lengthScale*spaceForEachKey/16, -size/2 + spaceForEachKey/2-(t^2)/200, size, size)
+									self.sprite:draw(-size/2 -t*3 * self.lengthScale*spaceForEachKey/16, -size/2 + spaceForEachKey/2-(t^2)/200, size, size, screenWidth,screenHeight)
 								love.graphics.pop()
 								
 								size = spaceForEachKey*t/30
 								size = size * self.sizeScale
-								self.sprite:draw(-size/2 -t*2 * self.lengthScale*spaceForEachKey/16, -size/2 + spaceForEachKey/2+(t^2)/200, size, size, 0.2)
+								self.sprite:draw(-size/2 -t*2 * self.lengthScale*spaceForEachKey/16, -size/2 + spaceForEachKey/2+(t^2)/200, size, size, 0.2, screenWidth,screenHeight)
 							end
 						love.graphics.pop()
 					end

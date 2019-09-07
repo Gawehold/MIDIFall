@@ -19,12 +19,7 @@ class "FallsComponent" {
 		self.fadingOutSpeed = 1.0
 		
 		self.useDefaultTheme = true
-		self.sprite = Sprite(
-			love.graphics.newImage("Assets/note.png"),
-			{50,50, 780,220},
-			{0.2,0.2},
-			{1.0,0.5}
-		)
+		self.sprite = Sprite()
 	end,
 
 	-- Implement
@@ -118,7 +113,7 @@ class "FallsComponent" {
 						if self.useRainbowColor then
 							h,s,v = ((notePitch-lowestKey) / highestKey + self.rainbowColorHueShift) % 1, self.rainbowColorSaturation, self.rainbowColorValue
 						else
-							h,s,v = unpack(track:getCustomcolorHSV())
+							h,s,v = unpack(track:getCustomColorHSV())
 						end
 						
 						a = self.colorAlpha * math.clamp(1 - self.fadingOutSpeed * 100 * ((time - (noteTime+noteLength)) / timeDivision) / 100, 0, 1)
@@ -128,7 +123,7 @@ class "FallsComponent" {
 						if self.useDefaultTheme then
 							love.graphics.rectangle("fill", noteX,noteY, noteWidth,noteHeight)
 						else
-							self.sprite:draw(noteX,noteY, noteWidth,noteHeight)
+							self.sprite:draw(noteX,noteY, noteWidth,noteHeight, screenWidth,screenHeight)
 						end
 						
 					end

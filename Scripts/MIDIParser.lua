@@ -16,7 +16,7 @@ class "MIDIParser" {
 		
 			-- Check if it is a proper MIDI file
 			if string.sub(dataStr, 1, 4) ~= "MThd" then
-				-- assert(false, "It is not a proper MIDI file.")
+				error("It is not a proper MIDI file.")
 			end
 			
 			-- Save the header information 
@@ -27,7 +27,7 @@ class "MIDIParser" {
 			
 			-- Check if the format type is 2
 			if formatType == 2 then
-				-- assert(false, "Format 2 files are not supported.")
+				error("Format 2 file is not supported.")
 			end
 			
 			-- Create the MIDISong
@@ -172,7 +172,7 @@ class "MIDIParser" {
 			end
 			
 			-- Check if the track amount announced in the header chunk match with the actual tracks found
-			-- assert(trackAmount == #midiSong:getTracks(), "Track amount not match with the .mid file header")
+			assert(trackAmount == #midiSong:getTracks(), "Track amount not match with the .mid file header")
 			
 			-- Debug
 			-- print("Header Size: " .. headerSize)

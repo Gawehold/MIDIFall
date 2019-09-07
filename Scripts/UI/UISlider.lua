@@ -6,7 +6,6 @@ class "UISlider" {
 		self.value = valueAlias
 		self.minValue = minValue
 		self.maxValue = maxValue
-		self.isClicking = false
 		self.valueStep = valueStep
 		self.isVertical = isVertical or false	-- TODO
 	end,
@@ -28,6 +27,10 @@ class "UISlider" {
 				love.graphics.setColor(1,1,1,0.8)
 			end
 			
+			if self.isFrozen then
+				love.graphics.setColor(0.5,0.5,0.5,0.8)
+			end
+			
 			love.graphics.rectangle("fill", self.x,self.y+self.height/4, self.width,self.height/2)
 			
 		love.graphics.pop()
@@ -46,6 +49,10 @@ class "UISlider" {
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
+		if self.isFrozen then
+			return
+		end
+		
 		if self.isInside and button == 1 then
 			self.isClicking = true
 			

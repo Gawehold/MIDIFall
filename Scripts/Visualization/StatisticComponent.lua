@@ -5,7 +5,7 @@ class "StatisticComponent" {
 	new = function (self)
 		DisplayComponent.instanceMethods.new(self)
 		
-		self.colorHSVA = {1,1,1,1}
+		self.colorHSVA = {1,0,1,1}
 		
 		self.textScale = 0.03
 		self.textOffsets = {0.005,0.01}
@@ -32,7 +32,7 @@ class "StatisticComponent" {
 			"Time: " .. string.format("%.2f", player:getTimeManager():getTime()) .. "\n" ..
 			"Tempo: " .. string.format("%.2f", player:getSong():getTempoChanges()[player:getTimeManager().currentTempoChangeID]:getTempo())
 		
-		love.graphics.setColor(self.colorHSVA)
+		love.graphics.setColor(vivid.HSVtoRGB(self.colorHSVA))
 		love.graphics.setFont(self.font)
 		
 		love.graphics.print(text, screenWidth*self.textOffsets[1], screenHeight*self.textOffsets[2])

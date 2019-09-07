@@ -42,7 +42,11 @@ class "UIInputBox" {
 			love.graphics.setLineWidth((boxWidth+boxHeight) / 128)
 			love.graphics.rectangle("line", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 		else
-			love.graphics.setColor(1,1,1,0.8)
+			if self.isFrozen then
+				love.graphics.setColor(0.5,0.5,0.5,0.8)
+			else
+				love.graphics.setColor(1,1,1,0.8)
+			end
 			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 		end
 		
@@ -102,10 +106,18 @@ class "UIInputBox" {
 	end,
 	
 	focus = function (self)
+		if self.isFrozen then
+			return
+		end
+		
 		self.isFocusing = true
 	end,
 	
 	enter = function (self)
+		if self.isFrozen then
+			return
+		end
+		
 		self.isFocusing = false
 		
 		if self.isNumber then

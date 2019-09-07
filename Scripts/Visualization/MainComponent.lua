@@ -64,6 +64,8 @@ class "MainComponent" {
 		self.statisticComponent = StatisticComponent()
 		
 		self:setOrientation(0)
+		
+		self.themeManager = ThemeManager()
 	end,
 	
 	-- Implement
@@ -119,5 +121,9 @@ class "MainComponent" {
 		self.hitAnimationComponent:setOrientation(orientation)
 		self.measuresComponent:setOrientation(orientation)
 		self.statisticComponent:setOrientation(orientation)
+	end,
+	
+	getThemeManager = function (self)
+		return self.themeManager
 	end,
 }

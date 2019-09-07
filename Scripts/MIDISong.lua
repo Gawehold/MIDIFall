@@ -73,6 +73,12 @@ class "MIDISong" {
 		return self.endTime
 	end,
 	
+	resetTracksColor = function (self)
+		for i, track in ipairs(self:getTracks()) do
+			track:setCustomColorHSV( (i-1)/(#self:getTracks()-1), 0.8, 0.8 )
+		end
+	end,
+	
 	intialize = function (self)
 		-- Search for the last event and set it as the end time of the song
 		for i = 1, #self:getTracks() do
@@ -110,10 +116,10 @@ class "MIDISong" {
 					end
 				end
 			end
-			
-			-- Set the default tracks color
-			track.customcolorHSV = {(i-1)/(#self:getTracks()-1),0.8,0.8}
 		end
+		
+		-- Set the default tracks color
+		self:resetTracksColor()
 		
 		-- Initialize the measures
 		local currentMeasureTime = 0

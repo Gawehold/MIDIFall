@@ -6,12 +6,15 @@ class "UICheckbox" {
 		checkedIcon = love.graphics.newImage("Assets/Free check mark icon 2.png"),
 	},
 	
-	new = function (self, x,y,width,height, text, valueAlias, checkBehaviour,uncheckBehaviour)
+	new = function (self, x,y,width,height, text, valueAlias, checkBehaviour,uncheckBehaviour, checkedIcon, uncheckedIcon)
 		self:super(x,y, width,height)
-		self.text = UIText(x+0.15,y,width-0.15,height,text,0.8,false,true)
+		self.text = UIText(x+0.12,y,width-0.12,height,text,0.8,false,true)
 		self.checkBehaviour = checkBehaviour
 		self.uncheckBehaviour = uncheckBehaviour
 		self.isChecked = valueAlias or false
+		
+		self.checkedIcon = checkedIcon or UICheckbox.checkedIcon
+		self.uncheckedIcon = uncheckedIcon or UICheckbox.uncheckedIcon
 	end,
 	
 	update = function (self, dt, transform)
@@ -36,11 +39,11 @@ class "UICheckbox" {
 				
 				local iconX, iconY = self.transform:transformPoint(self.x,self.y)
 				if self.isChecked then
-					local iconScale = transformedSize / self.class.checkedIcon:getHeight()
-					love.graphics.draw(self.class.checkedIcon, iconX,iconY, 0, iconScale)
+					local iconScale = transformedSize / self.checkedIcon:getHeight()
+					love.graphics.draw(self.checkedIcon, iconX,iconY, 0, iconScale)
 				else
-					local iconScale = transformedSize / self.class.uncheckedIcon:getHeight()
-					love.graphics.draw(self.class.uncheckedIcon, iconX,iconY, 0, iconScale)
+					local iconScale = transformedSize / self.uncheckedIcon:getHeight()
+					love.graphics.draw(self.uncheckedIcon, iconX,iconY, 0, iconScale)
 				end
 			end
 			

@@ -1,3 +1,6 @@
+-- Global Constants
+VERSION = 3.0
+
 -- Heper functions
 math.clamp = function (x,a,b)
 	return math.max(math.min(x,b),a)
@@ -26,7 +29,7 @@ void free(void *ptr);
 char* openFileDialog();
 ]]
 
-clib = ffi.load(love.filesystem.getSource().."/Scripts/openFileDialog.dll")
+clib = ffi.load(love.filesystem.getSource().."/Scripts/clib.dll")
 
 -- Define global variables
 -- NULL = {}
@@ -60,6 +63,7 @@ require "Scripts/Visualization/StatisticComponent"
 require "Scripts/Visualization/Sprite"
 require "Scripts/Visualization/MainComponent"
 require "Scripts/Visualization/DisplayComponentsRenderer"
+require "Scripts/Visualization/ThemeManager"
 
 require "Scripts/UI/UIObject"
 require "Scripts/UI/UIPanel"
@@ -80,25 +84,23 @@ require "Scripts/UI/PlayerControl"
 require "Scripts/UI/UIManager"
 
 require "Scripts/PropertiesManager"
+require "Scripts/UpdateManager"
 
--- local song = MIDIParser:parse(love.filesystem.read("Assets/debug.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/Debug2.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/DELTARUNE_-_Chapter_1_-_Lantern_-_ShinkoNetCavy.mid"))
-local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Assets/Megalomachia2 - Track 6 - SUPER-REFLEX - ShinkoNetCavy.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Toumei Elegy [2d erin & Kanade].mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Ultimate_Tetris_Remix.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/進化系Colors.mid"))
 
+displayComponentsRenderer = DisplayComponentsRenderer()
 player = Player(song)
 mainComponent = MainComponent(0,0,0,0)
-
-local defaultFont = love.graphics.newFont()
-
-local uiManager = UIManager()
-
-displayComponentsRenderer = DisplayComponentsRenderer()
+updateManager = UpdateManager()
+uiManager = UIManager()
 
 function love.load()
 end
@@ -109,6 +111,8 @@ function love.update(dt)
 	displayComponentsRenderer:update(dt, 
 		player
 	)
+	
+	updateManager:update(dt)
 end
 
 function love.draw()
@@ -117,6 +121,8 @@ function love.draw()
 	)
 	
 	uiManager:draw()
+	
+	updateManager:draw()
 	
 	-- love.graphics.setColor(1,1,1,1)
 	-- love.graphics.setFont(defaultFont)
@@ -176,7 +182,7 @@ function love.keypressed(key)
 	uiManager:keyPressed(key)
 	
 	if key == "r" then
-		displayComponentsRenderer:startToRender(1920, 1080, 60)
+		displayComponentsRenderer:startToRender()
 	elseif key == "m" then
 		player:mute()
 	end

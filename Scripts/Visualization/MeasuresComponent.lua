@@ -13,6 +13,7 @@ class "MeasuresComponent" {
 		self.font = nil
 		self.measureTextOffsets = {0.02, 0.025}
 		self.measureTextScale = 0.05
+		self.measureTextColorHSVA = {1,0,1,0.8}
 		self:loadFontIfNecessary(love.graphics.getHeight())
 	end,
 	
@@ -120,7 +121,7 @@ class "MeasuresComponent" {
 					love.graphics.rectangle("fill", 0,measureX, screenHeight,measureWidth)
 				end
 				
-				love.graphics.setColor(1,1,1,0.8)
+				love.graphics.setColor(vivid.HSVtoRGB(self.measureTextColorHSVA))
 				love.graphics.setFont(self.font)
 				
 				local textOffsets = {self.measureTextOffsets[1] * screenHeight, self.measureTextOffsets[2] * screenHeight}

@@ -5,18 +5,31 @@ class "DisplayComponentsRenderer" {
 		self.canvas = nil
 		self.pipe = nil
 		
+		self.exportingTransparency = false
+		
+		self.exportingWidth = self:getWidth()
+		self.exportingHeight = self:getHeight()
 		self.exportingFramerate = 60
+		self.exportingCRF = 18
+		self.exportingPresets = {"ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow"}
+		self.exportingPresetID = 6
 		self.exportingThread = love.thread.newThread([[
 			require "love.image"
 			require "love.event"
 			
-			-- local pipe = io.popen(
-				-- string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -vf colormatrix=bt601:bt709 -pix_fmt yuv420p -c:v libx264 -crf %d -preset:v %s -y %s", ...), "wb"
-			-- )
+			local pipe
 			
-			local pipe = io.popen(
-				string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -c:v png -y %s", ...), "wb"
-			)
+			if select("#", ...) >= 7 then
+				-- If it is using H.264 encoding, it sends more parameters
+				
+				pipe = io.popen(
+					string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -vf colormatrix=bt601:bt709 -pix_fmt yuv420p -c:v libx264 -crf %d -preset:v %s -y %s", ...), "wb"
+				)
+			else
+				pipe = io.popen(
+					string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -c:v png -y %s", ...), "wb"
+				)
+			end
 			
 			while not love.thread.getChannel("renderingStopped"):peek() or love.thread.getChannel("imageData"):getCount() > 0 do
 				
@@ -24,6 +37,8 @@ class "DisplayComponentsRenderer" {
 				
 				if imageData then
 					pipe:write(imageData:getString())
+					
+					imageData:release()
 				end
 			end
 			
@@ -66,7 +81,7 @@ class "DisplayComponentsRenderer" {
 		if self.isRenderingVideo then
 			love.graphics.setCanvas()
 			
-			local imageData = self.canvas:newImageData(0,1, 0,0, self.canvas:getWidth(),self.canvas:getHeight())
+			local imageData = self.canvas:newImageData(0,1, 0,0, self.exportingWidth,self.exportingHeight)
 			
 			-- if love.thread.getChannel("imageData"):getCount() >= 3 then
 				-- while love.thread.getChannel("imageData"):getCount() > 0 do end
@@ -94,13 +109,39 @@ class "DisplayComponentsRenderer" {
 		end
 	end,
 	
-	startToRender = function (self, width, height, framerate)
+	setExportingPresetID = function (self, id)
+		self.exportingPresetID = id
+	end,
+	
+	startToRender = function (self)
+		local width = self.exportingWidth
+		local height = self.exportingHeight
+		local framerate = self.exportingFramerate
+		local crf = self.exportingCRF
+		local preset = self.exportingPresets[self.exportingPresetID]
+		
+		player:pause()
+		
 		self.isRenderingVideo = true
 		self.isEncodingVideo = true
 		self.canvas = love.graphics.newCanvas(width, height)
-		-- self.exportingThread:start(framerate, width, height, 4*width*height, 0,"veryfast", string.format("../../%s.mp4", os.date("%Y%m%d-%H%M%S")))
-		self.exportingThread:start(framerate, width, height, 4*width*height, string.format("../../%s.mp4", os.date("%Y%m%d-%H%M%S")))
-		self.exportingFramerate = framerate
+		
+		if not self.exportingTransparency then
+			self.exportingThread:start(
+				framerate,
+				width, height,
+				4*width*height,
+				crf, preset,
+				string.format("%s/%s.mp4", love.filesystem.getSource(), os.date("%Y%m%d-%H%M%S"))
+			)
+		else
+			self.exportingThread:start(
+				framerate,
+				width, height,
+				4*width*height,
+				string.format("%s/%s.mov", love.filesystem.getSource(), os.date("%Y%m%d-%H%M%S"))
+			)
+		end
 		
 		player:moveToBeginning()
 		player:resume()
@@ -117,9 +158,14 @@ class "DisplayComponentsRenderer" {
 		self.isEncodingVideo = false
 	end,
 	
+	setExportingResolution = function (self, width, height)
+		self.exportingWidth = width
+		self.exportingHeight = height
+	end,
+	
 	getWidth = function (self)
 		if self.isRenderingVideo then
-			return self.canvas:getWidth()
+			return self.exportingWidth
 		else
 			return love.graphics.getWidth()
 		end
@@ -127,7 +173,7 @@ class "DisplayComponentsRenderer" {
 	
 	getHeight = function (self)
 		if self.isRenderingVideo then
-			return self.canvas:getHeight()
+			return self.exportingHeight
 		else
 			return love.graphics.getHeight()
 		end

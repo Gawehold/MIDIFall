@@ -8,6 +8,8 @@ class "UIObject" {
 		self.parent = nil
 		self.isHovering = false
 		self.isInside = false
+		self.isClicking = false
+		self.isFrozen = false
 	end,
 	
 	update = function (self, dt, transform)
@@ -27,6 +29,14 @@ class "UIObject" {
 	
 	getIsInside = function (self)
 		return self.isInside
+	end,
+	
+	getIsClicking = function (self)
+		return self.isClicking
+	end,
+	
+	setIsForzen = function (self, isFrozen)
+		self.isFrozen = isFrozen
 	end,
 	
 	findIsInside = function (self, x,y)

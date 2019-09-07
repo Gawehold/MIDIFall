@@ -16,7 +16,6 @@ class "UIPalette" {
 		self.colorSaturation = colorSaturationAlias
 		self.colorValue = colorValueAlias
 		self.canvas = nil
-		self.isClicking = false
 	end,
 	
 	update = function (self, dt, transform)
