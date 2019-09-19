@@ -6,30 +6,36 @@ class "TimeManager" {
 	end,
 
 	update = function (self, dt)
-		local song = self.player:getSong()
-		local tempoChanges = song:getTempoChanges()
-		local timeDivision = song:getTimeDivision()
+		local endTime = self.player:getEndTime()
 		
-		local newTime = self.time + (self.player:getPlaybackSpeed() * dt * tempoChanges[self.currentTempoChangeID]:getTempo() * timeDivision / 60)	-- 60 means 60 seconds
-		
-		-- The time between the original time and new time may be passed some tempo change events
-		for i = self.currentTempoChangeID+1, #tempoChanges do
-			local nextTempoChangeTime = tempoChanges[i]:getTime()
+		if self.time < endTime then
+			local song = self.player:getSong()
+			local tempoChanges = song:getTempoChanges()
+			local timeDivision = song:getTimeDivision()
 			
-			if newTime < tempoChanges[i]:getTime() then
-				break
-			else
-				local previousTempoTimeRegion = nextTempoChangeTime - self.time
-				local newTempoTimeRegion = newTime - nextTempoChangeTime
-				local newPerPrevTempoRatio = tempoChanges[i]:getTempo() / tempoChanges[i-1]:getTempo()
-				newTime = self.time + previousTempoTimeRegion + newPerPrevTempoRatio * newTempoTimeRegion
+			local newTime = self.time + (self.player:getPlaybackSpeed() * dt * tempoChanges[self.currentTempoChangeID]:getTempo() * timeDivision / 60)	-- 60 means 60 seconds
+			
+			-- The time between the original time and new time may be passed some tempo change events
+			for i = self.currentTempoChangeID+1, #tempoChanges do
+				local nextTempoChangeTime = tempoChanges[i]:getTime()
 				
-				self.currentTempoChangeID = i
-				self.time = newTime
+				if newTime < tempoChanges[i]:getTime() then
+					break
+				else
+					local previousTempoTimeRegion = nextTempoChangeTime - self.time
+					local newTempoTimeRegion = newTime - nextTempoChangeTime
+					local newPerPrevTempoRatio = tempoChanges[i]:getTempo() / tempoChanges[i-1]:getTempo()
+					newTime = self.time + previousTempoTimeRegion + newPerPrevTempoRatio * newTempoTimeRegion
+					
+					self.currentTempoChangeID = i
+					self.time = newTime
+				end
 			end
+			
+			self.time = newTime
+		else
+			self.time = endTime
 		end
-		
-		self.time = newTime
 	end,
 
 	getTime = function (self)

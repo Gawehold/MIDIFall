@@ -59,7 +59,7 @@ class "DisplayComponentsRenderer" {
 			select(i, ...):update(dt)
 		end
 		
-		if self.isRenderingVideo and player:getTimeManager():getTime() > player:getEndTime() then
+		if self.isRenderingVideo and player:getTimeManager():getTime() >= player:getEndTime() then
 			self:finishRendering()
 		end
 		

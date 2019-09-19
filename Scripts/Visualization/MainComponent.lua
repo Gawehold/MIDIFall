@@ -27,7 +27,7 @@ class "MainComponent" {
 				return texcolor * color;
 			}
 		]])
-		self.canvas = love.graphics.newCanvas(5120, 2880)
+		self.canvas = love.graphics.newCanvas(love.graphics.getDimensions())
 		
 		local keyboardPositionAlias = Alias(self, "keyboardPosition")
 		local keyboardLengthAlias = Alias(self, "keyboardLength")
@@ -125,5 +125,16 @@ class "MainComponent" {
 	
 	getThemeManager = function (self)
 		return self.themeManager
+	end,
+	
+	resize = function (self, w, h)
+		self.canvas = love.graphics.newCanvas(w, h)
+		-- self.backgroundComponent:resize(w, h)
+		-- self.notesComponent:resize(w, h)
+		-- self.keyboardComponent:resize(w, h)
+		-- self.fallsComponent:resize(w, h)
+		-- self.hitAnimationComponent:resize(w, h)
+		-- self.measuresComponent:resize(w, h)
+		-- self.statisticComponent:resize(w, h)
 	end,
 }

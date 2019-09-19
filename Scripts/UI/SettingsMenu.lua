@@ -67,15 +67,17 @@ class "SettingsMenu" {
 			
 			system = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UIText(-0.05,0.00, 1.0,0.05, "Properties", 1, false,true),
+					UIText(-0.05,0.00, 1.0,0.05, "Display Properties", 1, false,true),
 					UIButton(0.0,0.06, 0.45,0.05,"Import", nil, 
 						function (obj)
-							ffi.string(clib.openFileDialog())
+							-- ffi.string(clib.openFileDialog())
+							propertiesManager:load(love.filesystem.getSource().."/properties.txt")
 						end
 					),
 					UIButton(0.55,0.06,0.45,0.05,"Export", nil, 
 						function (obj)
-							ffi.string(clib.openFileDialog())
+							-- ffi.string(clib.openFileDialog())
+							propertiesManager:save(love.filesystem.getSource().."/properties.txt")
 						end
 					),
 					
@@ -122,8 +124,10 @@ class "SettingsMenu" {
 					UIText(-0.05,0.00, 1.0,0.05, "MIDI File", 1, false,true),
 					UIButton(0.55,0.00, 0.45,0.05,"Load", nil, 
 						function (obj)
-							local path = ffi.string(clib.openFileDialog())
-							if path then
+							local pathCharPtr = clib.openFileDialog()
+							
+							if pathCharPtr[0] ~= 0 then
+								local path = ffi.string(pathCharPtr)
 								player:loadSongFromPath(path)
 							end
 						end
@@ -436,7 +440,7 @@ class "SettingsMenu" {
 					UIText(0,0.1, 0.5,0.05, "Font", 0.7, false,true),
 					UIButton(0.55,0.1, 0.45,0.05,"Import", nil, 
 						function (obj)
-							ffi.string(clib.openFileDialog())
+							-- ffi.string(clib.openFileDialog())
 						end
 					),
 					
@@ -549,7 +553,7 @@ class "SettingsMenu" {
 		self:initializeTracksPanel()
 		
 		self.currentPage = self.pages.homepage
-		self.currentPage = self.pages.display
+		self.currentPage = self.pages.system
 		-- self.pages.display:changePage(7)
 		
 		self:open()
@@ -581,11 +585,27 @@ class "SettingsMenu" {
 			)
 			
 			table.insert(tracksPageChildren, 
-				UIColorPickerToggle(0.65,y, 0.35,0.04, 
+				UIColorPickerToggle(0.9,y, 0.1,0.04, 
 					Alias(track.customColorHSV, 1),
 					Alias(track.customColorHSV, 2),
 					Alias(track.customColorHSV, 3),
-					nil
+					nil,
+					""
+				)
+			)
+			
+			table.insert(tracksPageChildren, 
+				UIInputBox(0.65,y, 0.2,0.04, 
+					Follower(
+						function ()
+							return track:getPriority()
+						end,
+						
+						function (value)
+							track:setPriority(value)
+							player:getSong():sortTracks()
+						end
+					)
 				)
 			)
 		end

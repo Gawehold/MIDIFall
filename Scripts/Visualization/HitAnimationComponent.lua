@@ -41,7 +41,7 @@ class "HitAnimationComponent" {
 		
 		if self.orientation == 1 or self.orientation == 3 then
 			if self.orientation == 1 then
-				love.graphics.translate(0,self.height*screenHeight)
+				love.graphics.translate(0,screenHeight)
 				love.graphics.scale(1,-1)
 			end
 			love.graphics.translate(screenWidth, 0)
@@ -68,16 +68,16 @@ class "HitAnimationComponent" {
 		
 		-- love.graphics.translate(0, absoluteKeyGap/2)
 		
-		local scissorWidth = math.clamp(rightBoundary-leftBoundary, 0,screenWidth)
-		if self.orientation == 0 then
-			love.graphics.setScissor(leftBoundary, 0, scissorWidth, screenHeight)
-		elseif self.orientation == 1 then
-			love.graphics.setScissor(0, screenWidth-rightBoundary, screenWidth, scissorWidth)
-		elseif self.orientation == 2 then
-			love.graphics.setScissor(screenWidth-rightBoundary, 0, scissorWidth, screenHeight)
-		elseif self.orientation == 3 then
-			love.graphics.setScissor(0, leftBoundary, screenHeight, scissorWidth)
-		end
+		-- local scissorWidth = math.clamp(rightBoundary-leftBoundary, 0,screenWidth)
+		-- if self.orientation == 0 then
+			-- love.graphics.setScissor(leftBoundary, 0, scissorWidth, screenHeight)
+		-- elseif self.orientation == 1 then
+			-- love.graphics.setScissor(0, screenWidth-rightBoundary, screenWidth, scissorWidth)
+		-- elseif self.orientation == 2 then
+			-- love.graphics.setScissor(screenWidth-rightBoundary, 0, scissorWidth, screenHeight)
+		-- elseif self.orientation == 3 then
+			-- love.graphics.setScissor(0, leftBoundary, screenHeight, scissorWidth)
+		-- end
 		
 		for i, track in ipairs(sortedTracks) do
 			local trackID = track:getID()

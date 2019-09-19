@@ -45,7 +45,7 @@ class "FallsComponent" {
 		
 		if self.orientation == 1 or self.orientation == 3 then
 			if self.orientation == 1 then
-				love.graphics.translate(0,self.height*screenHeight)
+				love.graphics.translate(0,screenHeight)
 				love.graphics.scale(1,-1)
 			end
 			love.graphics.translate(screenWidth, 0)
@@ -66,7 +66,7 @@ class "FallsComponent" {
 		local absoluteKeyGap = keyGap*spaceForEachKey
 		
 		local noteScale = ( screenWidth / 1920 ) * ( self.noteScale*128/song:getTimeDivision() )
-		local pixelMoved = math.floor(noteScale*(time-song:getInitialTime()))
+		local pixelMoved = math.floor(noteScale*(time-player:getInitialTime()))
 		
 		local noteLengthOffset = self.noteLengthOffset * song:getTimeDivision()
 		

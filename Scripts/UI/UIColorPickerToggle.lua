@@ -15,8 +15,8 @@ class "UIColorPickerToggle" {
 		closeIcon = love.graphics.newImage("Assets/Arrow right icon 4.png"),
 	},
 	
-	new = function (self, x,y,width,height, colorHueAlias,colorSaturationAlias,colorValueAlias,colorAlphaAlias)
-		UIButton.instanceMethods.new(self, x,y,width,height, "Change", nil, UIColorPickerToggle.toggleMenu)
+	new = function (self, x,y,width,height, colorHueAlias,colorSaturationAlias,colorValueAlias,colorAlphaAlias, text)
+		UIButton.instanceMethods.new(self, x,y,width,height, text or "Change", nil, UIColorPickerToggle.toggleMenu)
 		
 		self.choices = choices
 		self.choiceID = defaultChoiceID

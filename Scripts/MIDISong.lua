@@ -9,8 +9,7 @@ class "MIDISong" {
 		self.timeSignatures = {}
 		self.measures = {}
 		
-		self.initialTime = 0
-		self.endTime = 0
+		self.length = 0
 	end,
 	
 	getFormatType = function (self)
@@ -65,12 +64,8 @@ class "MIDISong" {
 		return self.measures
 	end,
 	
-	getInitialTime = function (self)
-		return self.initialTime
-	end,
-	
-	getEndTime = function (self)
-		return self.endTime
+	getLength = function (self)
+		return self.length
 	end,
 	
 	resetTracksColor = function (self)
@@ -83,8 +78,8 @@ class "MIDISong" {
 		-- Search for the last event and set it as the end time of the song
 		for i = 1, #self:getTracks() do
 			local lastEventTime = self:getTrack(i):getRawEvent(#self:getTrack(i):getRawEvents()):getTime()
-			if  lastEventTime > self.endTime then
-				self.endTime = lastEventTime
+			if  lastEventTime > self.length then
+				self.length = lastEventTime
 			end
 		end
 		
@@ -142,7 +137,7 @@ class "MIDISong" {
 			
 			currentMeasureTime = currentMeasureTime + currentMeasureLength
 			
-			if currentMeasureTime > self.endTime then
+			if currentMeasureTime > self.length then
 				break
 			end
 		end

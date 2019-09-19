@@ -86,7 +86,7 @@ require "Scripts/UI/UIManager"
 require "Scripts/PropertiesManager"
 require "Scripts/UpdateManager"
 
-local song = MIDIParser:parse(love.filesystem.read("Assets/Debug2.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/乙女どもよ。.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
@@ -101,6 +101,7 @@ player = Player(song)
 mainComponent = MainComponent(0,0,0,0)
 updateManager = UpdateManager()
 uiManager = UIManager()
+propertiesManager = PropertiesManager()
 
 function love.load()
 end
@@ -123,7 +124,7 @@ function love.draw()
 	uiManager:draw()
 	
 	updateManager:draw()
-	
+	-- love.graphics.print(player:getCurrentPitchBendValueInTracks()[2],0,200)
 	-- love.graphics.setColor(1,1,1,1)
 	-- love.graphics.setFont(defaultFont)
 	-- love.graphics.print(love.timer.getFPS() ,0,0 ,0, 2)
@@ -210,6 +211,7 @@ end
 
 function love.resize(w, h)
 	uiManager:resize(w, h)
+	mainComponent:resize(w, h)
 end
 
 function love.threaderror(thread, errorstr)

@@ -5,8 +5,18 @@ class "Player" {
 		self.paused = true
 		self.isMovingForward = true
 		
-		self.initialTime = 0
-		self.endTime = self.song:getEndTime()
+		local timeDivision = self.song:getTimeDivision()
+		local timeSignatures = self.song:getTimeSignatures()
+		local firstMeasureLength = 4 * timeDivision * (timeSignatures[1]:getNumerator() / timeSignatures[1]:getDenominator())
+		local lastMeasureLength = 4 * timeDivision * (timeSignatures[#timeSignatures]:getNumerator() / timeSignatures[#timeSignatures]:getDenominator())
+		local songLength = self.song:getLength()
+		local fillingLength = 0		-- for measure alignment
+		if songLength % lastMeasureLength > 0 then
+			fillingLength = (lastMeasureLength - (songLength % lastMeasureLength) )
+		end
+		
+		self.initialTime = -firstMeasureLength
+		self.endTime = songLength + fillingLength + lastMeasureLength
 		
 		self.timeManager = TimeManager(self)
 		
@@ -38,11 +48,8 @@ class "Player" {
 		else
 			love.window.showMessageBox("Error", "It is not a valid/supported MIDI file.", "error")
 		end
-		self.initialTime = 0
-		self.endTime = self.song:getEndTime()
-		self.timeManager = TimeManager(self)
-		self:initialzeStates()
-		self:moveToBeginning()
+		
+		self:new(song)
 		
 		file:close()
 	end,
@@ -57,11 +64,8 @@ class "Player" {
 		else
 			love.window.showMessageBox("Error", "It is not a valid/supported MIDI file.", "error")
 		end
-		self.initialTime = 0
-		self.endTime = self.song:getEndTime()
-		self.timeManager = TimeManager(self)
-		self:initialzeStates()
-		self:moveToBeginning()
+		
+		self:new(song)
 		
 		file:close()
 	end,
