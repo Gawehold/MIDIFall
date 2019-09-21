@@ -1,5 +1,7 @@
 class "PropertiesManager" {
 	new = function (self)
+		self.header = "-- MIDIFall Properties File"
+		self.extension = ".mfp"
 		self.properties = {
 			"mainComponent", "lowestKey",			false,
 			"mainComponent", "highestKey",			false,
@@ -98,9 +100,14 @@ class "PropertiesManager" {
 	end,
 	
 	save = function (self, path)
-		local file = io.open(path, "w")
+		local extension = self.extension
+		if string.match(path, "%.[^%.]+$") then
+			extension = ""
+		end
+	
+		local file = io.open(path..extension, "w")
 		
-		file:write("-- MIDIFall Properties File\n\n")
+		file:write(self.header .. "\n\n")
 		
 		for i = 1, #self.properties, 3 do
 			local tableName = self.properties[i]
@@ -115,7 +122,12 @@ class "PropertiesManager" {
 	load = function (self, path)
 		local file = io.open(path, "r")
 		
-		loadstring( file:read("*a") )()
+		if file:read("*line") == self.header then		
+			loadstring( file:read("*a") )()
+			player:getSong():sortTracks()
+		else
+			love.window.showMessageBox( "Error", "Invalid properties savefile.", "error" )
+		end
 		
 		file:close()
 	end,

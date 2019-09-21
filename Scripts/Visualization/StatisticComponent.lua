@@ -11,8 +11,10 @@ class "StatisticComponent" {
 		self.textOffsets = {0.005,0.01}
 		
 		self.fontSize = 0
+		self.fontPath = love.filesystem.getSource() .. "/Assets/MODERNE SANS.ttf"
 		self.font = love.graphics.getFont()
-		self:loadFontIfNecessary(love.graphics.getHeight())
+		
+		self.needToUpdateFont = true
 	end,
 	
 	-- Implement
@@ -45,15 +47,26 @@ class "StatisticComponent" {
 		self:loadFontIfNecessary(screenHeight)
 	end,
 	
-	setFont = function (self, font)
-		self.font = font
-	end,
+	-- setFont = function (self, font)
+		-- self.font = font
+	-- end,
 	
 	loadFontIfNecessary = function (self, screenHeight)
 		local newFontSize = self.textScale * screenHeight
-		if self.fontSize ~= newFontSize then
+		if self.needToUpdateFont or self.fontSize ~= newFontSize then
 			self.fontSize = newFontSize
-			self.font = love.graphics.newFont("Assets/MODERNE SANS.ttf", self.fontSize)
+		
+			local file = io.open(self.fontPath, "rb")
+			local fileData = love.filesystem.newFileData(file:read("*a"), "")
+			self.font = love.graphics.newFont(fileData, self.fontSize)
+			file:close()
+			
+			self.needToUpdateFont = false
 		end
+	end,
+	
+	setFontPath  = function (self, fontPath)
+		self.fontPath = fontPath
+		self.needToUpdateFont = true
 	end,
 }

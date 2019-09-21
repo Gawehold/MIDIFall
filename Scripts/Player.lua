@@ -35,6 +35,8 @@ class "Player" {
 		self.midiPort = nil
 		self:setMIDIPort(0)
 		
+		self:moveToBeginning()
+		
 		self:initialzeStates()
 	end,
 	

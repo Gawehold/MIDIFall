@@ -26,7 +26,7 @@ tick = require "Libraries/tick/tick"
 ffi.cdef[[
 char *malloc(size_t size);
 void free(void *ptr);
-char* openFileDialog();
+char* openFileDialog(const char* dialogType, const char* fileType);
 ]]
 
 clib = ffi.load(love.filesystem.getSource().."/Scripts/clib.dll")

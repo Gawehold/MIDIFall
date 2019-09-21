@@ -70,14 +70,20 @@ class "SettingsMenu" {
 					UIText(-0.05,0.00, 1.0,0.05, "Display Properties", 1, false,true),
 					UIButton(0.0,0.06, 0.45,0.05,"Import", nil, 
 						function (obj)
-							-- ffi.string(clib.openFileDialog())
-							propertiesManager:load(love.filesystem.getSource().."/properties.txt")
+							local path = ffi.string(clib.openFileDialog("open", "MIDIFall Properties Files (*.mfp)\0*.mfp\0All Files (*.*)\0*.*\0\0"))
+							if path ~= "" then
+								propertiesManager:load(path)
+							end
+							-- propertiesManager:load(love.filesystem.getSource().."/properties.txt")
 						end
 					),
 					UIButton(0.55,0.06,0.45,0.05,"Export", nil, 
 						function (obj)
-							-- ffi.string(clib.openFileDialog())
-							propertiesManager:save(love.filesystem.getSource().."/properties.txt")
+							local path = ffi.string(clib.openFileDialog("save", "MIDIFall Properties Files (*.mfp)\0*.mfp\0All Files (*.*)\0*.*\0\0"))
+							if path ~= "" then
+								propertiesManager:save(path)
+							end
+							-- propertiesManager:save(love.filesystem.getSource().."/properties.txt")
 						end
 					),
 					
@@ -92,6 +98,8 @@ class "SettingsMenu" {
 							flags.x = nil
 							flags.y = nil
 							love.window.setMode(self.proposedResolution[1], self.proposedResolution[2], flags)
+							
+							love.resize(self.proposedResolution[1], self.proposedResolution[2])
 						end
 					),
 					
@@ -124,11 +132,10 @@ class "SettingsMenu" {
 					UIText(-0.05,0.00, 1.0,0.05, "MIDI File", 1, false,true),
 					UIButton(0.55,0.00, 0.45,0.05,"Load", nil, 
 						function (obj)
-							local pathCharPtr = clib.openFileDialog()
-							
-							if pathCharPtr[0] ~= 0 then
-								local path = ffi.string(pathCharPtr)
+							local path = ffi.string(clib.openFileDialog("open", "MIDI Files (*.mid)\0*.mid\0All Files (*.*)\0*.*\0\0"))
+							if path ~= "" then
 								player:loadSongFromPath(path)
+								uiManager:getComponents()[1]:initializeTracksPanel()
 							end
 						end
 					),
@@ -177,11 +184,9 @@ class "SettingsMenu" {
 					UIText(0.0,0.1, 1.0,0.05, "Theme", 0.7, false,true),
 					UIButton(0.35,0.1, 0.3,0.05,"Load", nil, 
 						function (obj)
-							local pathCharPtr = clib.openFileDialog()
+							local path = ffi.string(clib.openFileDialog("open", "MIDIFall Theme Configuration File (*.txt)\0*.txt\0All Files (*.*)\0*.*\0\0"))
 							
-							if pathCharPtr[0] ~= 0 then
-								local path = ffi.string(pathCharPtr)
-								
+							if path ~= "" then
 								if not pcall(mainComponent:getThemeManager().loadTheme, self, path) then
 									love.window.showMessageBox("Error", "It is not a valid theme configuration file.", "error")
 								end
@@ -262,7 +267,14 @@ class "SettingsMenu" {
 					UIText(0.0,0.1, 1.0,0.05, "Image", 0.8),
 					UIButton(0.55,0.1, 0.45,0.05,"Load", nil, 
 						function (obj)
-							mainComponent.backgroundComponent:setImage(tostring(ffi.string(clib.openFileDialog())))
+							local path = ffi.string(clib.openFileDialog("open",
+									"Images (*.bmp;*.jpg;*.jpeg;*.png)\0*.bmp;*.jpg;*.jpeg;*.png\0All Files(*.*)\0*.*\0\0"
+								)
+							)
+							
+							if path ~= "" then
+								mainComponent.backgroundComponent:setImage(path)
+							end
 						end
 					),
 					
@@ -419,14 +431,25 @@ class "SettingsMenu" {
 					UIText(0,0.32, 0.5,0.05, "Font", 0.7, false,true),
 					UIButton(0.55,0.32, 0.45,0.05,"Import", nil, 
 						function (obj)
-							ffi.string(clib.openFileDialog())
+							local path = ffi.string(clib.openFileDialog("open",
+									"Images (*.otf;*.ttf)\0*.otf;*.ttf\0All Files(*.*)\0*.*\0\0"
+								)
+							)
+							
+							if path ~= "" then
+								mainComponent.measuresComponent:setFontPath(path)
+							end
 						end
 					),
 					
-					UISliderSuite(0.0,0.4, 1.0,0.07, "Text Size", Alias(mainComponent.measuresComponent, "measureTextScale"), 0.01,1, 0.0001),
+					UISliderSuite(0.0,0.4, 1.0,0.07, "Text Offset X", Alias(mainComponent.measuresComponent.measureTextOffsets, 1), -1,1, 0.0001),
 					
-					UIText(0,0.5, 0.5,0.05, "Text Colour", 0.7, false,true),
-					UIColorPickerToggle(0.55,0.5, 0.45,0.05,
+					UISliderSuite(0.0,0.48, 1.0,0.07, "Text Offset Y", Alias(mainComponent.measuresComponent.measureTextOffsets, 2), -1,1, 0.0001),
+					
+					UISliderSuite(0.0,0.6, 1.0,0.07, "Text Size", Alias(mainComponent.measuresComponent, "measureTextScale"), 0.01,1, 0.0001),
+					
+					UIText(0,0.7, 0.5,0.05, "Text Colour", 0.7, false,true),
+					UIColorPickerToggle(0.55,0.7, 0.45,0.05,
 						Alias(mainComponent.measuresComponent.measureTextColorHSVA, 1),
 						Alias(mainComponent.measuresComponent.measureTextColorHSVA, 2),
 						Alias(mainComponent.measuresComponent.measureTextColorHSVA, 3),
@@ -440,14 +463,25 @@ class "SettingsMenu" {
 					UIText(0,0.1, 0.5,0.05, "Font", 0.7, false,true),
 					UIButton(0.55,0.1, 0.45,0.05,"Import", nil, 
 						function (obj)
-							-- ffi.string(clib.openFileDialog())
+							local path = ffi.string(clib.openFileDialog("open",
+									"Images (*.otf;*.ttf)\0*.otf;*.ttf\0All Files(*.*)\0*.*\0\0"
+								)
+							)
+							
+							if path ~= "" then
+								mainComponent.statisticComponent:setFontPath(path)
+							end
 						end
 					),
 					
-					UISliderSuite(0.0,0.18, 1.0,0.07, "Text Size", Alias(mainComponent.statisticComponent, "textScale"), 0.01,1, 0.0001),
+					UISliderSuite(0.0,0.2, 1.0,0.07, "Text Offset X", Alias(mainComponent.statisticComponent.textOffsets, 1), -1,1, 0.0001),
 					
-					UIText(0,0.28, 0.5,0.05, "Text Colour", 0.7, false,true),
-					UIColorPickerToggle(0.55,0.28, 0.45,0.05,
+					UISliderSuite(0.0,0.28, 1.0,0.07, "Text Offset Y", Alias(mainComponent.statisticComponent.textOffsets, 2), -1,1, 0.0001),
+					
+					UISliderSuite(0.0,0.4, 1.0,0.07, "Text Size Scale", Alias(mainComponent.statisticComponent, "textScale"), 0.01,1, 0.0001),
+					
+					UIText(0,0.5, 0.5,0.05, "Text Colour", 0.7, false,true),
+					UIColorPickerToggle(0.55,0.5, 0.45,0.05,
 						Alias(mainComponent.statisticComponent.colorHSVA, 1),
 						Alias(mainComponent.statisticComponent.colorHSVA, 2),
 						Alias(mainComponent.statisticComponent.colorHSVA, 3),
@@ -553,8 +587,8 @@ class "SettingsMenu" {
 		self:initializeTracksPanel()
 		
 		self.currentPage = self.pages.homepage
-		self.currentPage = self.pages.system
-		-- self.pages.display:changePage(7)
+		self.currentPage = self.pages.display
+		self.pages.display:changePage(7)
 		
 		self:open()
 	end,

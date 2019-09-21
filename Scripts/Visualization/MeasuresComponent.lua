@@ -10,11 +10,13 @@ class "MeasuresComponent" {
 		self.measureConcentrationRate = 0.08
 		
 		self.fontSize = 0
+		self.fontPath = love.filesystem.getSource() .. "/Assets/MODERNE SANS.ttf"
 		self.font = nil
-		self.measureTextOffsets = {0.02, 0.025}
+		self.measureTextOffsets = {0.075, 0.025}
 		self.measureTextScale = 0.05
 		self.measureTextColorHSVA = {1,0,1,0.8}
-		self:loadFontIfNecessary(love.graphics.getHeight())
+		
+		self.needToUpdateFont = true
 	end,
 	
 	-- Implement
@@ -124,7 +126,7 @@ class "MeasuresComponent" {
 				love.graphics.setColor(vivid.HSVtoRGB(self.measureTextColorHSVA))
 				love.graphics.setFont(self.font)
 				
-				local textOffsets = {self.measureTextOffsets[1] * screenHeight, self.measureTextOffsets[2] * screenHeight}
+				local textOffsets = {self.measureTextOffsets[1] * measureWidth, self.measureTextOffsets[2] * screenHeight}
 				love.graphics.push()
 				love.graphics.translate(textOffsets[1], textOffsets[2])
 				
@@ -153,9 +155,20 @@ class "MeasuresComponent" {
 	
 	loadFontIfNecessary = function (self, screenHeight)
 		local newFontSize = self.measureTextScale * screenHeight
-		if self.fontSize ~= newFontSize then
+		if self.needToUpdateFont or self.fontSize ~= newFontSize then
 			self.fontSize = newFontSize
-			self.font = love.graphics.newFont("Assets/MODERNE SANS.ttf", self.fontSize)
+		
+			local file = io.open(self.fontPath, "rb")
+			local fileData = love.filesystem.newFileData(file:read("*a"), "")
+			self.font = love.graphics.newFont(fileData, self.fontSize)
+			file:close()
+			
+			self.needToUpdateFont = false
 		end
+	end,
+	
+	setFontPath  = function (self, fontPath)
+		self.fontPath = fontPath
+		self.needToUpdateFont = true
 	end,
 }
