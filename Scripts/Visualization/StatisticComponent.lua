@@ -5,13 +5,17 @@ class "StatisticComponent" {
 	new = function (self)
 		DisplayComponent.instanceMethods.new(self)
 		
+		-- self.enabled = false
+		
 		self.colorHSVA = {1,0,1,1}
 		
 		self.textScale = 0.03
 		self.textOffsets = {0.005,0.01}
 		
 		self.fontSize = 0
-		self.fontPath = love.filesystem.getSource() .. "/Assets/MODERNE SANS.ttf"
+		self.usingDefaultFont = true
+		self.defaultFontPath = "Assets/MODERNE SANS.ttf"
+		self.fontPath = ""
 		self.font = love.graphics.getFont()
 		
 		self.needToUpdateFont = true
@@ -56,10 +60,15 @@ class "StatisticComponent" {
 		if self.needToUpdateFont or self.fontSize ~= newFontSize then
 			self.fontSize = newFontSize
 		
-			local file = io.open(self.fontPath, "rb")
-			local fileData = love.filesystem.newFileData(file:read("*a"), "")
-			self.font = love.graphics.newFont(fileData, self.fontSize)
-			file:close()
+			if self.usingDefaultFont then
+				local fileData = love.filesystem.newFileData(self.defaultFontPath)
+				self.font = love.graphics.newFont(fileData, self.fontSize)
+			else
+				local file = io.open(self.fontPath, "rb")
+				local fileData = love.filesystem.newFileData(file:read("*a"), "")
+				self.font = love.graphics.newFont(fileData, self.fontSize)
+				file:close()
+			end
 			
 			self.needToUpdateFont = false
 		end
@@ -67,6 +76,12 @@ class "StatisticComponent" {
 	
 	setFontPath  = function (self, fontPath)
 		self.fontPath = fontPath
+		self.usingDefaultFont = false
+		self.needToUpdateFont = true
+	end,
+	
+	useDefaultFont = function (self)
+		self.usingDefaultFont = true
 		self.needToUpdateFont = true
 	end,
 }

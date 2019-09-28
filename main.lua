@@ -1,6 +1,3 @@
--- Global Constants
-VERSION = 3.0
-
 -- Heper functions
 math.clamp = function (x,a,b)
 	return math.max(math.min(x,b),a)
@@ -16,12 +13,20 @@ math.round = function (x, n)	-- n is the step
 	end
 end
 
+function getDirectory(self)
+	local path = love.filesystem.getSource()
+	if string.find(path, "%.") then
+		path = love.filesystem.getSourceBaseDirectory()
+	end
+	
+	return path
+end
+
 -- Load global libraries
 bit = require "bit"
 ffi = require "ffi"
 vivid = require "Libraries/vivid/vivid"
 midi = require "luamidi"
-tick = require "Libraries/tick/tick"
 
 ffi.cdef[[
 char *malloc(size_t size);
@@ -29,7 +34,45 @@ void free(void *ptr);
 char* openFileDialog(const char* dialogType, const char* fileType);
 ]]
 
-clib = ffi.load(love.filesystem.getSource().."/Scripts/clib.dll")
+clib = ffi.load(getDirectory().."/clib.dll")
+
+function openFileDialog(dialogType, fileType)
+	local path = ffi.string( clib.openFileDialog(dialogType, fileType) )
+	
+	if path ~= "" then
+		local file
+		if dialogType == "open" then
+			file = io.open(path, "rb")
+		elseif dialogType == "save" then
+			file = io.open(path, "wb")
+		else
+			error("Incorrect dialog type.")
+		end
+		
+		if file then
+			file:close()
+			
+			if dialogType == "save" then
+				os.remove(path)
+			end
+			
+			return path
+		else
+			love.window.showMessageBox("Error", "Cannot load the file.\nIt may be caused by filepath with unicode characters.", "error")
+			return ""
+		end
+	else
+		return path
+	end
+end
+
+-- local cstr = clib.openFileDialog("open", "*.*\0*.*")
+-- local i = 0
+-- while cstr[i] ~= 0 do
+	-- print(string.format("%x", cstr[i]))
+	-- i = i + 1
+-- end
+-- love.event.quit()
 
 -- Define global variables
 -- NULL = {}
@@ -86,7 +129,7 @@ require "Scripts/UI/UIManager"
 require "Scripts/PropertiesManager"
 require "Scripts/UpdateManager"
 
-local song = MIDIParser:parse(love.filesystem.read("Assets/乙女どもよ。.mid"))
+local song = MIDIParser:parse(love.filesystem.read("Assets/empty.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
@@ -103,7 +146,7 @@ updateManager = UpdateManager()
 uiManager = UIManager()
 propertiesManager = PropertiesManager()
 
-function love.load()
+function love.load(args)
 end
 
 function love.update(dt)
@@ -136,11 +179,19 @@ function love.draw()
 	-- end
 	
 	-- love.graphics.print(tostring(player.firstNonStartedMeasureID),0,100)
+	-- love.graphics.print(tostring(getDirectory()),0,100)
 end
 
 function love.quit()
+	if displayComponentsRenderer:getIsExportingVideo() then
+		displayComponentsRenderer:terminateVideoExport()
+		return true
+	end
+	
 	player:releaseMIDIPort()
 	-- TODO: free memory allocated by ffi.C.malloc()
+	
+	return false
 end
 
 function love.mousepressed(mouseX, mouseY, button, istouch, presses)
@@ -217,13 +268,4 @@ end
 function love.threaderror(thread, errorstr)
 	print("Thread error!\n"..errorstr)
 	-- thread:getError() will return the same error string now.
-end
-
-function love.quit()
-	if displayComponentsRenderer:getIsExportingVideo() then
-		displayComponentsRenderer:terminateVideoExport()
-		return true
-	end
-	
-	return false
 end

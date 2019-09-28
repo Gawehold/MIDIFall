@@ -161,7 +161,7 @@ class "NotesComponent" {
 								
 								love.graphics.pop()
 							else
-								self.diamondNoteSprite:draw(noteX-halfSize,noteY, size,size)
+								self.diamondNoteSprite:draw(noteX-halfSize,noteY, size,size, screenWidth,screenHeight)
 							end
 							
 						else

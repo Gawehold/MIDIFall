@@ -19,15 +19,15 @@ class "DisplayComponentsRenderer" {
 			
 			local pipe
 			
-			if select("#", ...) >= 7 then
+			if select("#", ...) >= 8 then
 				-- If it is using H.264 encoding, it sends more parameters
 				
 				pipe = io.popen(
-					string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -vf colormatrix=bt601:bt709 -pix_fmt yuv420p -c:v libx264 -crf %d -preset:v %s -y %s", ...), "wb"
+					string.format("\"\"%s\" -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -vf colormatrix=bt601:bt709 -pix_fmt yuv420p -c:v libx264 -crf %d -preset:v %s -y \"%s\"\"", ...), "wb"
 				)
 			else
 				pipe = io.popen(
-					string.format("D:/MIDIFall_Project/MIDIFall/ffmpeg.exe -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -c:v png -y %s", ...), "wb"
+					string.format("\"\"%s\" -f image2pipe -r %d -s %dx%d -c:v rawvideo -pix_fmt rgba -frame_size %d -i - -c:v png -y \"%s\"\"", ...), "wb"
 				)
 			end
 			
@@ -64,6 +64,7 @@ class "DisplayComponentsRenderer" {
 		end
 		
 		if self.isEncodingVideo and not self.exportingThread:isRunning() then
+			love.window.showMessageBox("Video Export", "The video has been exported.", "info")
 			self:finishEncoding()
 		end
 	end,
@@ -114,6 +115,15 @@ class "DisplayComponentsRenderer" {
 	end,
 	
 	startToRender = function (self)
+		local ffmpegPath = getDirectory() .. "/ffmpeg.exe"
+		local ffmpeg = io.open(ffmpegPath, "r")
+		if ffmpeg then
+			ffmpeg:close()
+		else
+			love.window.showMessageBox("Error", "FFmpeg not found. Please download FFmpeg binary and place \"ffmpeg.exe\" under the MIDIFall folder.", "info")
+			return
+		end
+		
 		local width = self.exportingWidth
 		local height = self.exportingHeight
 		local framerate = self.exportingFramerate
@@ -128,18 +138,20 @@ class "DisplayComponentsRenderer" {
 		
 		if not self.exportingTransparency then
 			self.exportingThread:start(
+				ffmpegPath,
 				framerate,
 				width, height,
 				4*width*height,
 				crf, preset,
-				string.format("%s/%s.mp4", love.filesystem.getSource(), os.date("%Y%m%d-%H%M%S"))
+				string.format("%s/Videos/%s.mp4", getDirectory(), os.date("%Y%m%d-%H%M%S"))
 			)
 		else
 			self.exportingThread:start(
+				ffmpegPath,
 				framerate,
 				width, height,
 				4*width*height,
-				string.format("%s/%s.mov", love.filesystem.getSource(), os.date("%Y%m%d-%H%M%S"))
+				string.format("%s/Videos/%s.mov", getDirectory(), os.date("%Y%m%d-%H%M%S"))
 			)
 		end
 		
@@ -187,6 +199,6 @@ class "DisplayComponentsRenderer" {
 		self:finishRendering()
 		self:finishEncoding()
 		
-		-- PRINT TERMINATED
+		love.window.showMessageBox("Video Export", "The video export process has been terminated.", "info")
 	end,
 }

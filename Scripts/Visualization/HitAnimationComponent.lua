@@ -147,7 +147,7 @@ class "HitAnimationComponent" {
 								
 								size = spaceForEachKey*t/30
 								size = size * self.sizeScale
-								self.sprite:draw(-size/2 -t*2 * self.lengthScale*spaceForEachKey/16, -size/2 + spaceForEachKey/2+(t^2)/200, size, size, 0.2, screenWidth,screenHeight)
+								self.sprite:draw(-size/2 -t*2 * self.lengthScale*spaceForEachKey/16, -size/2 + spaceForEachKey/2+(t^2)/200, size, size, screenWidth,screenHeight)
 							end
 						love.graphics.pop()
 					end

@@ -10,12 +10,13 @@ class "ThemeManager" {
 	
 	loadTheme = function (self, path)
 		path = string.gsub(path, "\\", "/")
-		local file = io.open(path, "r")
-		local directory = string.match(path, "/(.+)/")
-		directory = string.match(directory , "/([^/]+)$")
+		local configFile = io.open(path, "r")
+		local directory = string.match(path, "^(.+)/")
+		-- local directory = string.match(path, "/(.+)/")
+		-- directory = string.match(directory , "/([^/]+)$")
 		
 		local environment
-		for line in file:lines() do
+		for line in configFile:lines() do
 			if line == "@MIDIFall Theme Configuration File" then
 				environment = self
 			
@@ -52,12 +53,17 @@ class "ThemeManager" {
 			
 			else
 				if string.match(line, "^[%s]*imagePath[%s]*=.*") then
-					local imagePathenvironment = {}
+					local imagePathEnvironment = {}
 					local func = loadstring(line)
-					setfenv(func, imagePathenvironment)
+					setfenv(func, imagePathEnvironment)
 					func()
 					
-					environment.image = love.graphics.newImage(string.format("Themes/%s/%s", directory, imagePathenvironment.imagePath))
+					local imageFile = io.open(directory.."/"..imagePathEnvironment.imagePath, "rb")
+					local fileData = love.filesystem.newFileData(imageFile:read("*a"), imagePathEnvironment.imagePath)
+					local imageData = love.image.newImageData(fileData)
+					
+					environment.image = love.graphics.newImage(imageData)
+					imageFile:close()
 				else			
 					local func = loadstring(line)
 					setfenv(func, environment)
@@ -66,7 +72,7 @@ class "ThemeManager" {
 			end
 		end
 		
-		file:close()
+		configFile:close()
 	end,
 	
 	reset = function (self)

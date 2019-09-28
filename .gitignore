@@ -46,10 +46,10 @@ Libraries
 # Folder for doing experiments
 Lab
 Docs
-Assets
 Themes
 *.mp4
 *.mov
 *.avi
 *.jar
 Savefiles
+Test Assets

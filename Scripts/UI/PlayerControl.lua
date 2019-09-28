@@ -131,6 +131,11 @@ class "PlayerControl" {
 			local imageData = love.image.newImageData(dataFile)
 
 			mainComponent.backgroundComponent.image = love.graphics.newImage(imageData)
+		
+		elseif extension == ".mfp" then
+			propertiesManager:load(file:getFilename())
+		elseif extension == ".mftc" then
+			mainComponent:getThemeManager():loadTheme(file:getFilename())
 		end
 	end,
 	

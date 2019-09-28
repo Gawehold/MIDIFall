@@ -10,7 +10,9 @@ class "MeasuresComponent" {
 		self.measureConcentrationRate = 0.08
 		
 		self.fontSize = 0
-		self.fontPath = love.filesystem.getSource() .. "/Assets/MODERNE SANS.ttf"
+		self.usingDefaultFont = true
+		self.defaultFontPath = "Assets/MODERNE SANS.ttf"
+		self.fontPath = ""
 		self.font = nil
 		self.measureTextOffsets = {0.075, 0.025}
 		self.measureTextScale = 0.05
@@ -49,8 +51,15 @@ class "MeasuresComponent" {
 		
 		self:loadFontIfNecessary(screenHeight)
 		
-		local firstMeasureLength = measures[2]:getTime() - measures[1]:getTime()
-		local lastMeasureLength = measures[#measures]:getTime() - measures[#measures-1]:getTime()
+		local firstMeasureLength
+		local lastMeasureLength
+		if #measures > 1 then
+			firstMeasureLength = measures[2]:getTime() - measures[1]:getTime()
+			lastMeasureLength  = measures[#measures]:getTime() - measures[#measures-1]:getTime()
+		else
+			firstMeasureLength = 4*song:getTimeDivision()
+			lastMeasureLength  = firstMeasureLength
+		end
 		
 		for i = 0, 1 do
 			-- There are two culling direction, so draw forward first, then backward
@@ -158,17 +167,28 @@ class "MeasuresComponent" {
 		if self.needToUpdateFont or self.fontSize ~= newFontSize then
 			self.fontSize = newFontSize
 		
-			local file = io.open(self.fontPath, "rb")
-			local fileData = love.filesystem.newFileData(file:read("*a"), "")
-			self.font = love.graphics.newFont(fileData, self.fontSize)
-			file:close()
+			if self.usingDefaultFont then
+				local fileData = love.filesystem.newFileData(self.defaultFontPath)
+				self.font = love.graphics.newFont(fileData, self.fontSize)
+			else
+				local file = io.open(self.fontPath, "rb")
+				local fileData = love.filesystem.newFileData(file:read("*a"), "")
+				self.font = love.graphics.newFont(fileData, self.fontSize)
+				file:close()
+			end
 			
 			self.needToUpdateFont = false
 		end
 	end,
 	
-	setFontPath  = function (self, fontPath)
+	setFontPath = function (self, fontPath)
 		self.fontPath = fontPath
+		self.usingDefaultFont = false
+		self.needToUpdateFont = true
+	end,
+	
+	useDefaultFont = function (self)
+		self.usingDefaultFont = true
 		self.needToUpdateFont = true
 	end,
 }

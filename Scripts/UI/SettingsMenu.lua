@@ -70,20 +70,20 @@ class "SettingsMenu" {
 					UIText(-0.05,0.00, 1.0,0.05, "Display Properties", 1, false,true),
 					UIButton(0.0,0.06, 0.45,0.05,"Import", nil, 
 						function (obj)
-							local path = ffi.string(clib.openFileDialog("open", "MIDIFall Properties Files (*.mfp)\0*.mfp\0All Files (*.*)\0*.*\0\0"))
+							local path = ffi.string(openFileDialog("open", "MIDIFall Properties Files (*.mfp)\0*.mfp\0All Files (*.*)\0*.*\0\0"))
 							if path ~= "" then
 								propertiesManager:load(path)
 							end
-							-- propertiesManager:load(love.filesystem.getSource().."/properties.txt")
+							-- propertiesManager:load(getDirectory().."/properties.txt")
 						end
 					),
 					UIButton(0.55,0.06,0.45,0.05,"Export", nil, 
 						function (obj)
-							local path = ffi.string(clib.openFileDialog("save", "MIDIFall Properties Files (*.mfp)\0*.mfp\0All Files (*.*)\0*.*\0\0"))
+							local path = ffi.string(openFileDialog("save", "MIDIFall Properties Files (*.mfp)\0*.mfp\0All Files (*.*)\0*.*\0\0"))
 							if path ~= "" then
 								propertiesManager:save(path)
 							end
-							-- propertiesManager:save(love.filesystem.getSource().."/properties.txt")
+							-- propertiesManager:save(getDirectory().."/properties.txt")
 						end
 					),
 					
@@ -132,7 +132,7 @@ class "SettingsMenu" {
 					UIText(-0.05,0.00, 1.0,0.05, "MIDI File", 1, false,true),
 					UIButton(0.55,0.00, 0.45,0.05,"Load", nil, 
 						function (obj)
-							local path = ffi.string(clib.openFileDialog("open", "MIDI Files (*.mid)\0*.mid\0All Files (*.*)\0*.*\0\0"))
+							local path = ffi.string(openFileDialog("open", "MIDI Files (*.mid)\0*.mid\0All Files (*.*)\0*.*\0\0"))
 							if path ~= "" then
 								player:loadSongFromPath(path)
 								uiManager:getComponents()[1]:initializeTracksPanel()
@@ -184,12 +184,13 @@ class "SettingsMenu" {
 					UIText(0.0,0.1, 1.0,0.05, "Theme", 0.7, false,true),
 					UIButton(0.35,0.1, 0.3,0.05,"Load", nil, 
 						function (obj)
-							local path = ffi.string(clib.openFileDialog("open", "MIDIFall Theme Configuration File (*.txt)\0*.txt\0All Files (*.*)\0*.*\0\0"))
+							local path = ffi.string(openFileDialog("open", "MIDIFall Theme Configuration File (*.mftc)\0*.mftc\0All Files (*.*)\0*.*\0\0"))
 							
 							if path ~= "" then
-								if not pcall(mainComponent:getThemeManager().loadTheme, self, path) then
-									love.window.showMessageBox("Error", "It is not a valid theme configuration file.", "error")
-								end
+								mainComponent:getThemeManager():loadTheme(path)
+								-- if not pcall(mainComponent:getThemeManager().loadTheme, self, path) then
+									-- love.window.showMessageBox("Error", "It is not a valid theme configuration file.", "error")
+								-- end
 							end
 						end
 					),
@@ -267,7 +268,7 @@ class "SettingsMenu" {
 					UIText(0.0,0.1, 1.0,0.05, "Image", 0.8),
 					UIButton(0.55,0.1, 0.45,0.05,"Load", nil, 
 						function (obj)
-							local path = ffi.string(clib.openFileDialog("open",
+							local path = ffi.string(openFileDialog("open",
 									"Images (*.bmp;*.jpg;*.jpeg;*.png)\0*.bmp;*.jpg;*.jpeg;*.png\0All Files(*.*)\0*.*\0\0"
 								)
 							)
@@ -429,9 +430,9 @@ class "SettingsMenu" {
 					),
 					
 					UIText(0,0.32, 0.5,0.05, "Font", 0.7, false,true),
-					UIButton(0.55,0.32, 0.45,0.05,"Import", nil, 
+					UIButton(0.35,0.32, 0.3,0.05,"Import", nil, 
 						function (obj)
-							local path = ffi.string(clib.openFileDialog("open",
+							local path = ffi.string(openFileDialog("open",
 									"Images (*.otf;*.ttf)\0*.otf;*.ttf\0All Files(*.*)\0*.*\0\0"
 								)
 							)
@@ -439,6 +440,11 @@ class "SettingsMenu" {
 							if path ~= "" then
 								mainComponent.measuresComponent:setFontPath(path)
 							end
+						end
+					),
+					UIButton(0.7,0.32, 0.3,0.05,"Reset", nil, 
+						function (obj)
+							mainComponent.measuresComponent:useDefaultFont()
 						end
 					),
 					
@@ -461,9 +467,9 @@ class "SettingsMenu" {
 					UIText(0.0,0.0, 1.0,0.05, "Statistic", 1, true,true),
 					
 					UIText(0,0.1, 0.5,0.05, "Font", 0.7, false,true),
-					UIButton(0.55,0.1, 0.45,0.05,"Import", nil, 
+					UIButton(0.35,0.1, 0.3,0.05,"Import", nil, 
 						function (obj)
-							local path = ffi.string(clib.openFileDialog("open",
+							local path = ffi.string(openFileDialog("open",
 									"Images (*.otf;*.ttf)\0*.otf;*.ttf\0All Files(*.*)\0*.*\0\0"
 								)
 							)
@@ -471,6 +477,11 @@ class "SettingsMenu" {
 							if path ~= "" then
 								mainComponent.statisticComponent:setFontPath(path)
 							end
+						end
+					),
+					UIButton(0.7,0.1, 0.3,0.05,"Reset", nil, 
+						function (obj)
+							mainComponent.statisticComponent:useDefaultFont()
 						end
 					),
 					
@@ -573,8 +584,13 @@ class "SettingsMenu" {
 			
 			about = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UIText(0.0,0.0, 1.0,0.05, "MIDIFall 3.0 (WIP)", 1, true,true),
+					UIText(0.0,0.0, 1.0,0.05, "MIDIFall 3.0 Alpha 1", 1, true,true),
 					UIText(0.0,0.05, 1.0,0.05, "Gawehold", 1, true,true),
+					UIButton(0.25,0.15, 0.5,0.05,"Website", nil, 
+						function (obj)
+							love.system.openURL("http://gawehold.weebly.com/midifall.html")
+						end
+					),
 				}
 			),
 		}
@@ -587,10 +603,10 @@ class "SettingsMenu" {
 		self:initializeTracksPanel()
 		
 		self.currentPage = self.pages.homepage
-		self.currentPage = self.pages.display
-		self.pages.display:changePage(7)
+		-- self.currentPage = self.pages.display
+		-- self.pages.display:changePage(7)
 		
-		self:open()
+		-- self:open()
 	end,
 	
 	initializeTracksPanel = function (self)

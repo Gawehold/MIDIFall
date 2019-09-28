@@ -1,4 +1,7 @@
 function love.conf(t)
+	VERSION = 3.0
+	AUTHOR = "Gawehold"
+
 	t.identity = nil                    -- The name of the save directory (string)
     t.appendidentity = false            -- Search files in source directory before save directory (boolean)
     t.version = "11.2"                  -- The LÖVE version this game was made for (string)
@@ -9,7 +12,7 @@ function love.conf(t)
  
     t.audio.mixwithsystem = true        -- Keep background music playing when opening LOVE (boolean, iOS and Android only)
  
-    t.window.title = "Untitled"         -- The window title (string)
+    t.window.title = "MIDIFall 3.0 Alpha 1"         -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
     t.window.width = 1920               -- The window width (number)
     t.window.height = 1080              -- The window height (number)

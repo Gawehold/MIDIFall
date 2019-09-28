@@ -5,7 +5,7 @@ class "UpdateManager" {
 		self.func = nil
 		self.checkBeforeStart = true
 		self.threadCode = [[
-		local fp = io.popen("java -jar " ..love.filesystem.getSource().. "/MIDIFall_UpdateChecker.jar")
+		local fp = io.popen("java -jar " .."\""..select(1, ...).."\"")
 		local result = nil
 		
 		local str = fp:lines()()
@@ -31,7 +31,7 @@ class "UpdateManager" {
 			self.checking = true
 			
 			local thread = love.thread.newThread(self.threadCode)
-			thread:start()
+			thread:start( getDirectory().."/MIDIFall_UpdateChecker.jar" )
 		end
 	end,
 

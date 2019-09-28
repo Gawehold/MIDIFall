@@ -77,26 +77,6 @@ class "PropertiesManager" {
 			"mainComponent.statisticComponent", "textOffsets",	false,
 			"mainComponent.statisticComponent", "fontSize",		false,
 		}
-		
-		for i, track in ipairs(player:getSong():getTracks()) do
-			local tableName = "player:getSong():getTracks()".."["..i.."]"
-			
-			table.insert(self.properties, tableName)
-			table.insert(self.properties, "priority")
-			table.insert(self.properties, false)
-			
-			table.insert(self.properties, tableName)
-			table.insert(self.properties, "enabled")
-			table.insert(self.properties, false)
-			
-			table.insert(self.properties, tableName)
-			table.insert(self.properties, "customColorHSV")
-			table.insert(self.properties, false)
-			
-			table.insert(self.properties, tableName)
-			table.insert(self.properties, "isDiamond")
-			table.insert(self.properties, false)
-		end
 	end,
 	
 	save = function (self, path)
@@ -114,6 +94,14 @@ class "PropertiesManager" {
 			local key = self.properties[i+1]
 			local useSetter = self.properties[i+2]
 			file:write(self:encodeVariable(tableName, key, useSetter))
+		end
+		
+		for i, track in ipairs(player:getSong():getTracks()) do
+			local tableName = "player:getSong():getTracks()".."["..i.."]"
+			file:write(self:encodeVariable(tableName, "priority", false))
+			file:write(self:encodeVariable(tableName, "enabled", false))
+			file:write(self:encodeVariable(tableName, "customColorHSV", false))
+			file:write(self:encodeVariable(tableName, "isDiamond", false))
 		end
 		
 		file:close()

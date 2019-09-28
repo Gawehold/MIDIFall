@@ -5,8 +5,15 @@ class "MIDISong" {
 		
 		self.tracks = {}
 		self.sortedTracks = {}
-		self.tempoChanges = {}
-		self.timeSignatures = {}
+		self.tempoChanges = {
+			-- Default tempo
+			TempoChange( 0, 0x51, string.char(0x07)..string.char(0xA1)..string.char(0x20) )
+		}
+		
+		self.timeSignatures = {
+			-- Default time signature
+			TimeSignature( 0, 0x58, string.char(4) .. string.char( math.log(4) / math.log(2) ) )
+		}
 		self.measures = {}
 		
 		self.length = 0

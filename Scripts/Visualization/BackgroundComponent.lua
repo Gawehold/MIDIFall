@@ -5,7 +5,7 @@ class "BackgroundComponent" {
 	new = function (self, left,right,top,bottom)
 		self:super(left,right,top,bottom)
 		
-		self.image = nil
+		self.image = love.graphics.newImage("Assets/background.png")
 		self.fits = {true, true}
 		self.scales = {1, 1}
 		self.offsets = {0, 0}
@@ -13,7 +13,6 @@ class "BackgroundComponent" {
 		self.colorHSVA = {1,0,1,1}
 		
 		-- self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/transparent.png")
-		self:setImage("D:/MIDIFall_Project/MIDIFall/Assets/no_character.png")
 	end,
 	
 	-- Implement
