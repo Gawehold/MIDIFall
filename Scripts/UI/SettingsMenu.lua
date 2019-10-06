@@ -13,6 +13,8 @@ class "SettingsMenu" {
 		self.isOpened = false
 		self.isClosing = false
 		
+		self.currentPage = nil
+		
 		self.proposedResolution = {1920, 1080}
 		
 		self.font = love.graphics.newFont("Assets/NotoSansCJKtc-Medium_1.otf", 36)
@@ -172,7 +174,7 @@ class "SettingsMenu" {
 						{
 							"Horizontal",
 							"Vertical",
-							"Horizaontal (Mirrored)",
+							"Horizontal (Mirrored)",
 							"Vertical (Mirrored)"
 						},
 						mainComponent.orientation+1,
@@ -289,7 +291,7 @@ class "SettingsMenu" {
 					
 					UICheckbox(0.0,0.3, 1.0,0.04, "Align Center", Alias(mainComponent.backgroundComponent, "isAligncenter")),
 					
-					UICheckbox(0.0,0.35, 1.0,0.04, "Horizaontally Fit", Alias(mainComponent.backgroundComponent.fits, 1)),
+					UICheckbox(0.0,0.35, 1.0,0.04, "Horizontally Fit", Alias(mainComponent.backgroundComponent.fits, 1)),
 					
 					UICheckbox(0.0,0.4, 1.0,0.04, "Vertically Fit", Alias(mainComponent.backgroundComponent.fits, 2)),
 					
@@ -533,6 +535,9 @@ class "SettingsMenu" {
 					
 					UIButton(0.0,0.95, 0.45,0.05,"Export", nil, 
 						function (obj)
+							while not self.currentPage:closeTopPanels() do end
+							self.currentPage = self.pages.homepage
+							self:close()
 							displayComponentsRenderer:startToRender()
 						end
 					),

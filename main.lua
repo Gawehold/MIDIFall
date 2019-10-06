@@ -180,6 +180,8 @@ function love.draw()
 	
 	-- love.graphics.print(tostring(player.firstNonStartedMeasureID),0,100)
 	-- love.graphics.print(tostring(getDirectory()),0,100)
+	
+	-- love.graphics.print(tostring(player.timeManager.currentTempoChangeID), 200 ,200)
 end
 
 function love.quit()
@@ -190,6 +192,11 @@ function love.quit()
 	
 	player:releaseMIDIPort()
 	-- TODO: free memory allocated by ffi.C.malloc()
+	
+	love.filesystem.write(
+		"config.ini",
+		string.format("width = %d\nheight = %d", love.window.getMode())
+	)
 	
 	return false
 end

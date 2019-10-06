@@ -47,8 +47,6 @@ class "TimeManager" {
 		local song = self.player:getSong()
 		local tempoChanges = song:getTempoChanges()
 		
-		
-		
 		if time >= self.time then
 			for i = self.currentTempoChangeID+1, #tempoChanges do
 				local nextTempoChangeTime = tempoChanges[i]:getTime()
@@ -60,8 +58,10 @@ class "TimeManager" {
 				end
 			end
 		else
+			local currentTempoChangeID = self.currentTempoChangeID
+			self.currentTempoChangeID = 1
 			
-			for i = self.currentTempoChangeID, 1, -1 do
+			for i = currentTempoChangeID, 1, -1 do
 				local previousTempoChangeTime = tempoChanges[i]:getTime()
 				
 				if time >= previousTempoChangeTime then
@@ -70,8 +70,6 @@ class "TimeManager" {
 				end
 			end
 		end
-		
-		
 		
 		self.time = time
 	end,

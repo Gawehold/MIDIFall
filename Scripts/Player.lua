@@ -311,7 +311,7 @@ class "Player" {
 		
 		------------ Update the time --------
 		if not self.paused then
-			self.timeManager:update(dt)
+			self.timeManager:update(dt, isMovingForward)
 		end
 	end,
 

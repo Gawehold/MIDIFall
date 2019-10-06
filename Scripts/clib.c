@@ -20,7 +20,7 @@ char* openFileDialog(const char* dialogType, const char* fileType) {
     ofn.lpstrFileTitle = NULL;
     ofn.nMaxFileTitle = 0;
     ofn.lpstrInitialDir = NULL;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
  
     // if (GetOpenFileName(&ofn) == TRUE) {
         

@@ -1,4 +1,11 @@
 function love.conf(t)
+	if love.filesystem.getInfo("config.ini") then
+        setfenv(love.filesystem.load("config.ini"), t.window)()
+    else
+        t.window.width = 1920               -- The window width (number)
+		t.window.height = 1080              -- The window height (number)
+    end
+	
 	VERSION = 3.0
 	AUTHOR = "Gawehold"
 
@@ -14,8 +21,7 @@ function love.conf(t)
  
     t.window.title = "MIDIFall 3.0 Alpha 1"         -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
-    t.window.width = 1920               -- The window width (number)
-    t.window.height = 1080              -- The window height (number)
+    
     t.window.borderless = false         -- Remove all border visuals from the window (boolean)
     t.window.resizable = true           -- Let the window be user-resizable (boolean)
     t.window.minwidth = 1               -- Minimum window width if the window is resizable (number)
