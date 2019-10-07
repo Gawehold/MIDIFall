@@ -31,13 +31,13 @@ midi = require "luamidi"
 ffi.cdef[[
 char *malloc(size_t size);
 void free(void *ptr);
-char* openFileDialog(const char* dialogType, const char* fileType);
+char* openFileDialog(const char* dialogType, const char* fileType, const char* defaultFilename);
 ]]
 
 clib = ffi.load(getDirectory().."/clib.dll")
 
-function openFileDialog(dialogType, fileType)
-	local path = ffi.string( clib.openFileDialog(dialogType, fileType) )
+function openFileDialog(dialogType, fileType, defaultFilename)
+	local path = ffi.string( clib.openFileDialog(dialogType, fileType, defaultFilename or "") )
 	
 	if path ~= "" then
 		local file
@@ -130,6 +130,7 @@ require "Scripts/PropertiesManager"
 require "Scripts/UpdateManager"
 
 local song = MIDIParser:parse(love.filesystem.read("Assets/empty.mid"))
+-- local song = MIDIParser:parse(love.filesystem.read("Test Assets/hold.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/indeterminateuniverse-wip.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/tate_ed.mid"))
 -- local song = MIDIParser:parse(love.filesystem.read("Assets/Omega_Five_-_The_Glacial_Fortress_-_ShinkoNetCavy.mid"))
@@ -177,6 +178,8 @@ function love.draw()
 	-- for k,v in ipairs(player.song.tracks) do
 		-- love.graphics.print(tostring(player.firstNonPlayedNoteIDInTracks[k]), 0, 50+20*k,0,2)
 	-- end
+	
+	-- love.graphics.print(tostring(player.firstNonFinishedNoteIDInTracks[2]), 0, 200,0,2)
 	
 	-- love.graphics.print(tostring(player.firstNonStartedMeasureID),0,100)
 	-- love.graphics.print(tostring(getDirectory()),0,100)

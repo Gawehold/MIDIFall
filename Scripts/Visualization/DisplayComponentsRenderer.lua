@@ -115,6 +115,11 @@ class "DisplayComponentsRenderer" {
 	end,
 	
 	startToRender = function (self)
+		local folderName = "Videos"
+		if not love.filesystem.getInfo(folderName) then
+			os.execute(string.format("cd %s && mkdir %s", getDirectory() ,folderName))
+		end
+		
 		local ffmpegPath = getDirectory() .. "/ffmpeg.exe"
 		local ffmpeg = io.open(ffmpegPath, "r")
 		if ffmpeg then
@@ -143,7 +148,7 @@ class "DisplayComponentsRenderer" {
 				width, height,
 				4*width*height,
 				crf, preset,
-				string.format("%s/Videos/%s.mp4", getDirectory(), os.date("%Y%m%d-%H%M%S"))
+				string.format("%s/%s/%s.mp4", getDirectory(), folderName, os.date("%Y%m%d-%H%M%S"))
 			)
 		else
 			self.exportingThread:start(
@@ -151,7 +156,7 @@ class "DisplayComponentsRenderer" {
 				framerate,
 				width, height,
 				4*width*height,
-				string.format("%s/Videos/%s.mov", getDirectory(), os.date("%Y%m%d-%H%M%S"))
+				string.format("%s/%s/%s.mov", getDirectory(), folderName, os.date("%Y%m%d-%H%M%S"))
 			)
 		end
 		

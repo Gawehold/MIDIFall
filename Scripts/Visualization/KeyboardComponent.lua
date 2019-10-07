@@ -71,7 +71,7 @@ class "KeyboardComponent" {
 					
 					if noteTime > time then
 						break
-					else
+					elseif noteTime + noteLength > time then
 						self.isPlayingKeys[note:getPitch()] = trackID
 					end
 				end

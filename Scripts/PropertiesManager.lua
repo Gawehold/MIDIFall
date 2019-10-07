@@ -80,12 +80,7 @@ class "PropertiesManager" {
 	end,
 	
 	save = function (self, path)
-		local extension = self.extension
-		if string.match(path, "%.[^%.]+$") then
-			extension = ""
-		end
-	
-		local file = io.open(path..extension, "w")
+		local file = io.open(path, "w")
 		
 		file:write(self.header .. "\n\n")
 		

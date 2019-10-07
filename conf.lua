@@ -19,7 +19,7 @@ function love.conf(t)
  
     t.audio.mixwithsystem = true        -- Keep background music playing when opening LOVE (boolean, iOS and Android only)
  
-    t.window.title = "MIDIFall 3.0 Alpha 1"         -- The window title (string)
+    t.window.title = "MIDIFall 3.0 Alpha 2"         -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
     
     t.window.borderless = false         -- Remove all border visuals from the window (boolean)

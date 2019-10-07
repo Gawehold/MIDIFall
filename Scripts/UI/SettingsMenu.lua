@@ -81,7 +81,7 @@ class "SettingsMenu" {
 					),
 					UIButton(0.55,0.06,0.45,0.05,"Export", nil, 
 						function (obj)
-							local path = ffi.string(openFileDialog("save", "MIDIFall Properties Files (*.mfp)\0*.mfp\0All Files (*.*)\0*.*\0\0"))
+							local path = ffi.string(openFileDialog("save", "MIDIFall Properties Files (*.mfp)\0*.mfp\0All Files (*.*)\0*.*\0\0", string.format("%s.mfp", os.date("%Y%m%d-%H%M%S"))))
 							if path ~= "" then
 								propertiesManager:save(path)
 							end
@@ -589,7 +589,7 @@ class "SettingsMenu" {
 			
 			about = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UIText(0.0,0.0, 1.0,0.05, "MIDIFall 3.0 Alpha 1", 1, true,true),
+					UIText(0.0,0.0, 1.0,0.05, "MIDIFall 3.0 Alpha 2", 1, true,true),
 					UIText(0.0,0.05, 1.0,0.05, "Gawehold", 1, true,true),
 					UIButton(0.25,0.15, 0.5,0.05,"Website", nil, 
 						function (obj)

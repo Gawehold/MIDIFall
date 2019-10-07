@@ -56,8 +56,9 @@ class "StatisticComponent" {
 	-- end,
 	
 	loadFontIfNecessary = function (self, screenHeight)
-		local newFontSize = self.textScale * screenHeight
-		if self.needToUpdateFont or self.fontSize ~= newFontSize then
+		local newFontSize = math.round(self.textScale * screenHeight)
+		if self.needToUpdateFont or self.fontSize ~= newFontSize or self.font:getHeight() ~= newFontSize then
+			
 			self.fontSize = newFontSize
 		
 			if self.usingDefaultFont then

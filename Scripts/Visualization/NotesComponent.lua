@@ -181,6 +181,9 @@ class "NotesComponent" {
 								
 								if self.useDefaultTheme then
 									love.graphics.rectangle("fill", noteX+noteCulledWidth,noteY, math.max(noteWidth-noteCulledWidth, 0),noteHeight)
+									
+									-- love.graphics.setColor(1,1,1)
+									-- love.graphics.print(noteID, noteX+noteCulledWidth,noteY,0,0.5)
 								else
 									self.regularNoteSprite:draw(noteX,noteY, noteWidth,noteHeight, screenWidth,screenHeight)
 								end

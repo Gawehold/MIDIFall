@@ -1,8 +1,9 @@
 #include <windows.h>
 #include <Commdlg.h>
 #include <stdlib.h>
+#include <string.h>
  
-char* openFileDialog(const char* dialogType, const char* fileType) {
+char* openFileDialog(const char* dialogType, const char* fileType, const char* defaultFilename) {
     OPENFILENAME ofn;
     char szFile[1024];
     HWND hwnd = NULL;
@@ -12,8 +13,9 @@ char* openFileDialog(const char* dialogType, const char* fileType) {
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = hwnd;
     ofn.lpstrFile = szFile;
+	
+	strcpy(ofn.lpstrFile, defaultFilename);
     
-    ofn.lpstrFile[0] = '\0';
     ofn.nMaxFile = sizeof(szFile);
     ofn.lpstrFilter = fileType;
     ofn.nFilterIndex = 1;

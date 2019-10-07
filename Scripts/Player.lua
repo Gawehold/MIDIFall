@@ -255,6 +255,7 @@ class "Player" {
 		end
 		
 		------------- Update first non-finished note ID of each track
+		---- CAUTION: note1.ID < note2.ID only implies note1 starts ealier than note2, note1 can ends later!!!
 		for trackID = 1, #tracks do
 			local notes = tracks[trackID]:getNotes()
 			

@@ -163,8 +163,8 @@ class "MeasuresComponent" {
 	end,
 	
 	loadFontIfNecessary = function (self, screenHeight)
-		local newFontSize = self.measureTextScale * screenHeight
-		if self.needToUpdateFont or self.fontSize ~= newFontSize then
+		local newFontSize = math.round(self.measureTextScale * screenHeight)
+		if self.needToUpdateFont or self.fontSize ~= newFontSize or self.font:getHeight() ~= newFontSize then
 			self.fontSize = newFontSize
 		
 			if self.usingDefaultFont then
