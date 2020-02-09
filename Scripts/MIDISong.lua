@@ -76,8 +76,14 @@ class "MIDISong" {
 	end,
 	
 	resetTracksColor = function (self)
-		for i, track in ipairs(self:getTracks()) do
-			track:setCustomColorHSV( (i-1)/(#self:getTracks()-1), 0.8, 0.8 )
+		local s, v = 0.8, 0.8
+		
+		if #self:getTracks() == 1 then
+			self:getTracks()[1]:setCustomColorHSV(0, s, v)
+		else
+			for i, track in ipairs(self:getTracks()) do
+				track:setCustomColorHSV( (i-1)/(#self:getTracks()-1), s, v )
+			end
 		end
 	end,
 	

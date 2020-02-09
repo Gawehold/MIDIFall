@@ -24,43 +24,43 @@ class "SettingsMenu" {
 				{
 					UIButton(0.0,0.0, 1.0,0.06, "System", love.graphics.newImage("Assets/Free desktop PC icon.png"), 
 						function (obj)
-							self.currentPage = self.pages.system
+							self:changePage(self.pages.system)
 							self.currentPage:open()
 						end
 					),
 					UIButton(0.0,0.1, 1.0,0.06, "Playback", love.graphics.newImage("Assets/video cassette recorder icon 2.png"), 
 						function (obj)
-							self.currentPage = self.pages.playback
+							self:changePage(self.pages.playback)
 							self.currentPage:open()
 						end
 					),
 					UIButton(0.0,0.2, 1.0,0.06, "Tracks", love.graphics.newImage("Assets/mixer (music) icon 1.png"), 
 						function (obj)
-							self.currentPage = self.pages.tracks
+							self:changePage(self.pages.tracks)
 							self.currentPage:open()
 						end
 					),
 					UIButton(0.0,0.3, 1.0,0.06, "Display", love.graphics.newImage("Assets/projector.png"), 
 						function (obj)
-							self.currentPage = self.pages.display
+							self:changePage(self.pages.display)
 							self.currentPage:open()
 						end
 					),
 					UIButton(0.0,0.4, 1.0,0.06, "Video Export", love.graphics.newImage("Assets/Film projector 8.png"), 
 						function (obj)
-							self.currentPage = self.pages.videoExport
+							self:changePage(self.pages.videoExport)
 							self.currentPage:open()
 						end
 					),
 					UIButton(0.0,0.5, 1.0,0.06, "Update", love.graphics.newImage("Assets/Reload icon.png"), 
 						function (obj)
-							self.currentPage = self.pages.update
+							self:changePage(self.pages.update)
 							self.currentPage:open()
 						end
 					),
 					UIButton(0.0,0.6, 1.0,0.06, "About", love.graphics.newImage("Assets/Resume icon 6.png"), 
 						function (obj)
-							self.currentPage = self.pages.about
+							self:changePage(self.pages.about)
 							self.currentPage:open()
 						end
 					),
@@ -536,7 +536,7 @@ class "SettingsMenu" {
 					UIButton(0.0,0.95, 0.45,0.05,"Export", nil, 
 						function (obj)
 							while not self.currentPage:closeTopPanels() do end
-							self.currentPage = self.pages.homepage
+							self:changePage(self.pages.homepage)
 							self:close()
 							displayComponentsRenderer:startToRender()
 						end
@@ -607,8 +607,8 @@ class "SettingsMenu" {
 		
 		self:initializeTracksPanel()
 		
-		self.currentPage = self.pages.homepage
-		-- self.currentPage = self.pages.display
+		self:changePage(self.pages.homepage)
+		-- self:changePage(self.pages.display)
 		-- self.pages.display:changePage(7)
 		
 		-- self:open()
@@ -724,7 +724,7 @@ class "SettingsMenu" {
 				end
 			else
 				if self.currentPage:closeTopPanels() then
-					self.currentPage = self.pages.homepage
+					self:changePage(self.pages.homepage)
 				end
 			end
 		end
@@ -777,5 +777,14 @@ class "SettingsMenu" {
 	
 	getIsClicking = function (self)
 		return self.currentPage:getIsClicking()
+	end,
+	
+	changePage = function (self, page)
+		-- For preventing incorrect "isInside" information after change page without moving the mouse
+		if self.currentPage then
+			page.isInside = self.currentPage.isInside
+		end
+		
+		self.currentPage = page
 	end,
 }

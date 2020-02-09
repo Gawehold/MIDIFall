@@ -1,15 +1,19 @@
 class "UIInputBox" {
 	extends "UIObject",
 	
-	new = function (self, x,y,width,height, valueAlias, isNumber)
+	new = function (self, x,y,width,height, valueAlias, isNumber, minValue, maxValue)
 		self:super(x,y, width,height)
 		
 		self.value = valueAlias
+		
 		if isNumber ~= nil then
 			self.isNumber = isNumber
 		else
 			self.isNumber = true
 		end
+		
+		self.minValue = minValue
+		self.maxValue = maxValue
 		
 		self.isFocusing = false
 		self.cursorPosition = 0
@@ -36,7 +40,7 @@ class "UIInputBox" {
 		
 		if self.isFocusing then
 			love.graphics.setColor(1,1,1,0.8)
-			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
+			-- love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 			
 			love.graphics.setColor(0,0.5,1,1)
 			love.graphics.setLineWidth((boxWidth+boxHeight) / 128)
@@ -122,6 +126,10 @@ class "UIInputBox" {
 		
 		if self.isNumber then
 			self.value = tonumber(self.text:getText()) or self.value
+			
+			if self.minValue and self.maxValue then
+				self.value = math.clamp(self.value, self.minValue, self.maxValue)
+			end
 		else
 			self.value = self.text:getText()
 		end

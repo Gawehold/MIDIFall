@@ -5,7 +5,7 @@ class "UISliderSuite" {
 		self:super(x,y, width,height)
 		
 		self.text = UIText(x,y, width/2,height/2, text, 1, false,true, nil, false)
-		self.inputBox = UIInputBox(x+width/2,y, width/2,height/2, valueAlias)
+		self.inputBox = UIInputBox(x+width/2,y, width/2,height/2, valueAlias, true, minValue, maxValue)
 		self.slider = UISlider(x,y+3*height/4, width,height/4, valueAlias, minValue,maxValue, valueStep)
 		
 	end,

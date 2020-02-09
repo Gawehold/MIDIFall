@@ -197,6 +197,22 @@ class "Follower" {
 	end,
 }
 
+-- class "RangedAlias" {
+	-- extends "Follower",
+	
+	-- new = function (self, t, key, minValue, maxValue)
+		-- Follower.instanceMethods.new(self, 
+			-- function ()
+				-- return t[key]
+			-- end,
+			
+			-- function (value)
+				-- t[key] = math.clamp(value, minValue, maxValue)
+			-- end
+		-- )
+	-- end,
+-- }
+
 -- class "A" {
 	-- f = function (self)
 		-- print("I am A or descendant of A.")

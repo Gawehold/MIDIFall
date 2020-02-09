@@ -1,3 +1,7 @@
+local playlistIndex = 0
+local playlistPath = "D:/MIDIFall_Project/MIDIFall/Test Assets"
+local playlistLength = 3
+
 class "TimeManager" {
 	new = function (self, player)
 		self.player = player
@@ -35,6 +39,12 @@ class "TimeManager" {
 			self.time = newTime
 		else
 			self.time = endTime
+			
+			if playlistIndex < playlistLength then
+				player:loadSongFromPath( string.format(playlistPath.."/%d.mid", playlistIndex) )
+				player:resume()
+				playlistIndex = playlistIndex + 1
+			end
 		end
 	end,
 

@@ -147,7 +147,10 @@ updateManager = UpdateManager()
 uiManager = UIManager()
 propertiesManager = PropertiesManager()
 
-function love.load(args)
+function love.load(args, unfilteredArgs)
+	-- for i,v in ipairs(args) do
+		-- print(i,v)
+	-- end
 end
 
 function love.update(dt)

@@ -114,7 +114,10 @@ class "PlayerControl" {
 				break
 			end
 		end
-		assert(extension, "No extension name.")
+		
+		-- if not extension then
+			-- love.window.showMessageBox("Error", "", "error")
+		-- end
 		
 		if extension == ".mid" then
 			player:loadSongFromFile(file)
