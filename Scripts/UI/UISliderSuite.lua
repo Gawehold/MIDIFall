@@ -25,9 +25,13 @@ class "UISliderSuite" {
 	end,
 	
 	setIsFrozen = function (self, isFrozen)
-		self.text:setIsForzen(isFrozen)
-		self.inputBox:setIsForzen(isFrozen)
-		self.slider:setIsForzen(isFrozen)
+		self.text:setIsFrozen(isFrozen)
+		self.inputBox:setIsFrozen(isFrozen)
+		self.slider:setIsFrozen(isFrozen)
+	end,
+	
+	getIsFocusing = function (self)
+		return self.text:getIsFocusing() or self.inputBox:getIsFocusing() or self.slider:getIsFocusing()
 	end,
 	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)

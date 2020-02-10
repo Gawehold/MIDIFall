@@ -702,31 +702,39 @@ class "SettingsMenu" {
 	end,
 	
 	open = function (self)
-		self.isOpening = true
-	end,
-	
-	close = function (self)
-		self.isClosing = true
-		self.isOpened = false
-	end,
-	
-	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
 		if self.isOpening or self.isClosing then
 			return
 		end
 		
-		if button == 2 then
-			if self.currentPage == self.pages.homepage then
-				if self.isOpened then
-					self:close()
-				else
-					self:open()
-				end
+		self.isOpening = true
+	end,
+	
+	close = function (self)
+		if self.isOpening or self.isClosing then
+			return
+		end
+		
+		self.isClosing = true
+		self.isOpened = false
+	end,
+	
+	openOrClose = function (self)
+		if self.currentPage == self.pages.homepage then
+			if self.isOpened then
+				self:close()
 			else
-				if self.currentPage:closeTopPanels() then
-					self:changePage(self.pages.homepage)
-				end
+				self:open()
 			end
+		else
+			if self.currentPage:closeTopPanels() then
+				self:changePage(self.pages.homepage)
+			end
+		end
+	end,
+	
+	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
+		if button == 2 then
+			self:openOrClose()
 		end
 		
 		self.currentPage:mousePressed(mouseX, mouseY, button, istouch, presses)
@@ -774,6 +782,10 @@ class "SettingsMenu" {
 	getIsFocusing = function (self)
 		return self.currentPage:getIsFocusing()
 	end,
+	
+	-- findAnyFocusingDescendant = function (self)
+		-- return self.currentPage:findAnyFocusingDescendant()
+	-- end,
 	
 	getIsClicking = function (self)
 		return self.currentPage:getIsClicking()

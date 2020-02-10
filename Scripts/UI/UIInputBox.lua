@@ -38,39 +38,43 @@ class "UIInputBox" {
 		local boxWidth = boxX2 - boxX
 		local boxHeight = boxY2 - boxY
 		
-		if self.isFocusing then
-			love.graphics.setColor(1,1,1,0.8)
-			-- love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
+		if self.isFrozen then
+			love.graphics.setColor(0.5,0.5,0.5,0.8)
+			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 			
-			love.graphics.setColor(0,0.5,1,1)
-			love.graphics.setLineWidth((boxWidth+boxHeight) / 128)
-			love.graphics.rectangle("line", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
-		else
-			if self.isFrozen then
-				love.graphics.setColor(0.5,0.5,0.5,0.8)
+			self.text:setColor(0,0,0,0.8)
+			self.text:draw()
+		else	
+			if self.isFocusing then
+				love.graphics.setColor(1,1,1,0.8)
+				-- love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
+				
+				love.graphics.setColor(0,0.5,1,1)
+				love.graphics.setLineWidth((boxWidth+boxHeight) / 128)
+				love.graphics.rectangle("line", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 			else
 				love.graphics.setColor(1,1,1,0.8)
+				love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
 			end
-			love.graphics.rectangle("fill", boxX,boxY, boxWidth,boxHeight, boxHeight/8,boxHeight/8)
-		end
-		
-		if self.isFocusing then
-			self.text:setColor(0,0.5,1,1)
-		else
-			self.text:setColor(0,0,0,0.8)
-		end
-		self.text:draw()
-		
-		-- Draw cursor
-		if self.isFocusing then
-			love.graphics.setColor(0,0.5,1,1)
 			
-			local font = self.text:getFont()
+			-- Draw cursor
+			if self.isFocusing then
+				love.graphics.setColor(0,0.5,1,1)
+				
+				local font = self.text:getFont()
+				
+				local cursorX, cursorY = self.transform:transformPoint(self.x + self.padding, self.y)
+				cursorX = cursorX + self.text:getScale() * ( font:getWidth(string.sub(self.text:getText(), 1, self.cursorPosition)) + font:getWidth(" ")/2 )
+				
+				love.graphics.line(cursorX,cursorY+4*love.graphics.getLineWidth(), cursorX,boxY2-4*love.graphics.getLineWidth())
+			end
 			
-			local cursorX, cursorY = self.transform:transformPoint(self.x + self.padding, self.y)
-			cursorX = cursorX + self.text:getScale() * ( font:getWidth(string.sub(self.text:getText(), 1, self.cursorPosition)) + font:getWidth(" ")/2 )
-			
-			love.graphics.line(cursorX,cursorY+4*love.graphics.getLineWidth(), cursorX,boxY2-4*love.graphics.getLineWidth())
+			if self.isFocusing then
+				self.text:setColor(0,0.5,1,1)
+			else
+				self.text:setColor(0,0,0,0.8)
+			end
+			self.text:draw()
 		end
 	end,
 	
@@ -118,10 +122,6 @@ class "UIInputBox" {
 	end,
 	
 	enter = function (self)
-		if self.isFrozen then
-			return
-		end
-		
 		self.isFocusing = false
 		
 		if self.isNumber then
@@ -144,6 +144,10 @@ class "UIInputBox" {
 	end,
 	
 	keyPressed = function (self, key)	
+		if self.isFrozen then
+			return
+		end
+		
 		if self.isFocusing then
 			local text = self.text:getText()
 			
@@ -174,6 +178,10 @@ class "UIInputBox" {
 	end,
 	
 	textInput = function (self, ch)
+		if self.isFrozen then
+			return
+		end
+		
 		if self.isFocusing then
 			local text = self.text:getText()
 			
@@ -186,5 +194,12 @@ class "UIInputBox" {
 	
 	getIsFocusing = function (self)
 		return self.isFocusing
+	end,
+	
+	setIsFrozen = function (self, isFrozen)
+		UIObject.instanceMethods.setIsFrozen(self, isFrozen)
+		if self.isFrozen then
+			self:enter()
+		end
 	end,
 }

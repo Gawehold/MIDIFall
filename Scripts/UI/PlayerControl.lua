@@ -64,7 +64,8 @@ class "PlayerControl" {
 			mainComponent:setOrientation((mainComponent.orientation+1)%4)
 			
 		elseif key == "escape" then
-			love.event.quit()
+			-- love.event.quit()
+			uiManager:getSettingsMenu():openOrClose()
 			
 		elseif key == "f12" then
 			love.window.setFullscreen(not select(3, love.window.getMode()).fullscreen)

@@ -6,6 +6,7 @@ class "UIObject" {
 		self.height = height
 		self.transform = nil
 		self.parent = nil
+		self.isFocusing = false
 		self.isHovering = false
 		self.isInside = false
 		self.isClicking = false
@@ -35,7 +36,11 @@ class "UIObject" {
 		return self.isClicking
 	end,
 	
-	setIsForzen = function (self, isFrozen)
+	getIsFocusing = function (self)
+		return self.isFocusing
+	end,
+	
+	setIsFrozen = function (self, isFrozen)
 		self.isFrozen = isFrozen
 	end,
 	

@@ -22,6 +22,10 @@ class "UIManager" {
 		return self.components
 	end,
 	
+	getSettingsMenu = function (self)
+		return self.components[1]
+	end,
+	
 	mousePressed = function (self, mouseX, mouseY, button, istouch, presses)
 		for k,v in ipairs(self.components) do
 			v:mousePressed(mouseX, mouseY, button, istouch, presses)
