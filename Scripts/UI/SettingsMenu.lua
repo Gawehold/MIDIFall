@@ -535,9 +535,12 @@ class "SettingsMenu" {
 					
 					UIButton(0.0,0.95, 0.45,0.05,"Export", nil, 
 						function (obj)
-							while not self.currentPage:closeTopPanels() do end
-							self:changePage(self.pages.homepage)
-							self:close()
+							if displayComponentsRenderer:checkIfEncoderExist() then
+								while not self.currentPage:closeTopPanels() do end
+								self:changePage(self.pages.homepage)
+								self:close()
+							end
+							
 							displayComponentsRenderer:startToRender()
 						end
 					),

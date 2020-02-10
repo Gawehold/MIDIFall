@@ -114,17 +114,28 @@ class "DisplayComponentsRenderer" {
 		self.exportingPresetID = id
 	end,
 	
+	checkIfEncoderExist = function (self)
+		local ffmpegPath = getDirectory() .. "/ffmpeg.exe"
+		local ffmpeg = io.open(ffmpegPath, "r")
+		local exist
+		
+		if ffmpeg then
+			exist = true
+			ffmpeg:close()
+		else
+			exist = false
+		end
+		
+		return exist
+	end,
+	
 	startToRender = function (self)
 		local folderName = "Videos"
 		if not love.filesystem.getInfo(folderName) then
 			os.execute(string.format("cd %s && mkdir %s", getDirectory() ,folderName))
 		end
 		
-		local ffmpegPath = getDirectory() .. "/ffmpeg.exe"
-		local ffmpeg = io.open(ffmpegPath, "r")
-		if ffmpeg then
-			ffmpeg:close()
-		else
+		if not self:checkIfEncoderExist() then
 			love.window.showMessageBox("Error", "FFmpeg not found. Please download FFmpeg binary and place \"ffmpeg.exe\" under the MIDIFall folder.", "info")
 			return
 		end
