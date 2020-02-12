@@ -9,16 +9,15 @@ class "MeasuresComponent" {
 		self.measureAlpha = 0.8
 		self.measureConcentrationRate = 0.08
 		
-		self.fontSize = 0
 		self.usingDefaultFont = true
-		self.defaultFontPath = "Assets/MODERNE SANS.ttf"
+		self.defaultFontPath = "Assets/Roboto-Light.ttf"
 		self.fontPath = ""
-		self.font = nil
-		self.measureTextOffsets = {0.075, 0.025}
-		self.measureTextScale = 0.05
+		self.font = love.graphics.getFont()
+		self.measureTextOffsets = {0.05, 0.01}
+		self.measureTextScale = 0.045
 		self.measureTextColorHSVA = {1,0,1,0.8}
 		
-		self.needToUpdateFont = true
+		self:updateFont()
 	end,
 	
 	-- Implement
@@ -37,6 +36,8 @@ class "MeasuresComponent" {
 		local timeDivision = song:getTimeDivision()
 		local time = player:getTimeManager():getTime()
 		
+		-- self:loadFontIfNecessary(screenHeight)
+		
 		if self.orientation == 1 or self.orientation == 3 then
 			screenWidth, screenHeight = screenHeight, screenWidth
 		end
@@ -48,8 +49,6 @@ class "MeasuresComponent" {
 		local measures = song:getMeasures()
 		
 		local firstNonStartedMeasureID = player:getFirstNonStartedMeasureID()
-		
-		self:loadFontIfNecessary(screenHeight)
 		
 		local firstMeasureLength
 		local lastMeasureLength
@@ -162,33 +161,33 @@ class "MeasuresComponent" {
 		love.graphics.pop()
 	end,
 	
-	loadFontIfNecessary = function (self, screenHeight)
-		local newFontSize = math.round(self.measureTextScale * screenHeight)
-		if self.needToUpdateFont or self.fontSize ~= newFontSize or self.font:getHeight() ~= newFontSize then
-			self.fontSize = newFontSize
-		
-			if self.usingDefaultFont then
-				local fileData = love.filesystem.newFileData(self.defaultFontPath)
-				self.font = love.graphics.newFont(fileData, self.fontSize)
-			else
-				local file = io.open(self.fontPath, "rb")
-				local fileData = love.filesystem.newFileData(file:read("*a"), "")
-				self.font = love.graphics.newFont(fileData, self.fontSize)
-				file:close()
-			end
-			
-			self.needToUpdateFont = false
+	updateFont = function (self)
+		local newFontSize = math.round(self.measureTextScale * love.graphics.getHeight())
+		if self.usingDefaultFont then
+			local fileData = love.filesystem.newFileData(self.defaultFontPath)
+			self.font = love.graphics.newFont(fileData, newFontSize)
+		else
+			local file = io.open(self.fontPath, "rb")
+			local fileData = love.filesystem.newFileData(file:read("*a"), "")
+			self.font = love.graphics.newFont(fileData, newFontSize)
+			file:close()
 		end
 	end,
 	
 	setFontPath = function (self, fontPath)
 		self.fontPath = fontPath
 		self.usingDefaultFont = false
-		self.needToUpdateFont = true
+		
+		self:updateFont()
 	end,
 	
 	useDefaultFont = function (self)
 		self.usingDefaultFont = true
-		self.needToUpdateFont = true
+		
+		self:updateFont()
+	end,
+	
+	resize = function (self, w, h)
+		self:updateFont()
 	end,
 }

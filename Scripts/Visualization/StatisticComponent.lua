@@ -10,15 +10,14 @@ class "StatisticComponent" {
 		self.colorHSVA = {1,0,1,1}
 		
 		self.textScale = 0.03
-		self.textOffsets = {0.005,0.01}
+		self.textOffsets = {0.01,0.01}
 		
-		self.fontSize = 0
 		self.usingDefaultFont = true
-		self.defaultFontPath = "Assets/MODERNE SANS.ttf"
+		self.defaultFontPath = "Assets/NotoSansCJKtc-Medium_1.otf"
 		self.fontPath = ""
 		self.font = love.graphics.getFont()
 		
-		self.needToUpdateFont = true
+		self:updateFont()
 	end,
 	
 	-- Implement
@@ -48,41 +47,37 @@ class "StatisticComponent" {
 		if self.orientation == 1 or self.orientation == 3 then
 			screenWidth, screenHeight = screenHeight, screenWidth
 		end
-		self:loadFontIfNecessary(screenHeight)
 	end,
 	
-	-- setFont = function (self, font)
-		-- self.font = font
-	-- end,
-	
-	loadFontIfNecessary = function (self, screenHeight)
-		local newFontSize = math.round(self.textScale * screenHeight)
-		if self.needToUpdateFont or self.fontSize ~= newFontSize or self.font:getHeight() ~= newFontSize then
-			
-			self.fontSize = newFontSize
-		
-			if self.usingDefaultFont then
-				local fileData = love.filesystem.newFileData(self.defaultFontPath)
-				self.font = love.graphics.newFont(fileData, self.fontSize)
-			else
-				local file = io.open(self.fontPath, "rb")
-				local fileData = love.filesystem.newFileData(file:read("*a"), "")
-				self.font = love.graphics.newFont(fileData, self.fontSize)
-				file:close()
-			end
-			
-			self.needToUpdateFont = false
+	updateFont = function (self)
+		local newFontSize = math.round(self.textScale * love.graphics.getHeight())
+		if self.usingDefaultFont then
+			local fileData = love.filesystem.newFileData(self.defaultFontPath)
+			self.font = love.graphics.newFont(fileData, newFontSize)
+		else
+			local file = io.open(self.fontPath, "rb")
+			local fileData = love.filesystem.newFileData(file:read("*a"), "")
+			self.font = love.graphics.newFont(fileData, newFontSize)
+			file:close()
 		end
+		
+		self.font:setLineHeight(0.75)
 	end,
 	
-	setFontPath  = function (self, fontPath)
+	setFontPath = function (self, fontPath)
 		self.fontPath = fontPath
 		self.usingDefaultFont = false
-		self.needToUpdateFont = true
+		
+		self:updateFont()
 	end,
 	
 	useDefaultFont = function (self)
 		self.usingDefaultFont = true
-		self.needToUpdateFont = true
+		
+		self:updateFont()
+	end,
+	
+	resize = function (self, w, h)
+		self:updateFont()
 	end,
 }

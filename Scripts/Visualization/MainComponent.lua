@@ -134,7 +134,7 @@ class "MainComponent" {
 		-- self.keyboardComponent:resize(w, h)
 		-- self.fallsComponent:resize(w, h)
 		-- self.hitAnimationComponent:resize(w, h)
-		-- self.measuresComponent:resize(w, h)
-		-- self.statisticComponent:resize(w, h)
+		self.measuresComponent:resize(w, h)
+		self.statisticComponent:resize(w, h)
 	end,
 }
