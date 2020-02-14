@@ -592,11 +592,19 @@ class "SettingsMenu" {
 			
 			about = UIPanel(self.x,self.y, self.width,self.height,
 				{
-					UIText(0.0,0.0, 1.0,0.05, "MIDIFall 3.0 Alpha 2", 1, true,true),
-					UIText(0.0,0.05, 1.0,0.05, "Gawehold", 1, true,true),
-					UIButton(0.25,0.15, 0.5,0.05,"Website", nil, 
+					UIText(0.0,0.0, 1.0,0.05, "About", 1, true,true, nil, true),
+					
+					UIImage(0.0,0.09, 1.0,0.1, love.graphics.newImage("Assets/logo.png")),
+					UIText(0.0,0.20, 1.0,0.05, string.format("MIDIFall v%.1f", VERSION), 1, true,true),
+					UIText(0.0,0.24, 1.0,0.05, "Copyright (c) 2017-2020 Gawehold", 1, true,true),
+					UIButton(0.0,0.32, 0.45,0.05,"Website", nil, 
 						function (obj)
 							love.system.openURL("http://gawehold.weebly.com/midifall.html")
+						end
+					),
+					UIButton(0.55,0.32, 0.45,0.05,"Github", nil, 
+						function (obj)
+							love.system.openURL("https://github.com/Gawehold/MIDIFall")
 						end
 					),
 				}

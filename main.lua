@@ -110,6 +110,7 @@ require "Scripts/Visualization/ThemeManager"
 
 require "Scripts/UI/UIObject"
 require "Scripts/UI/UIPanel"
+require "Scripts/UI/UIImage"
 require "Scripts/UI/UIText"
 require "Scripts/UI/UIButton"
 require "Scripts/UI/UICheckbox"
