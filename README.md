@@ -1,6 +1,6 @@
 # MIDIFall
-![MIDIFall Logo](Assets/logo.png)
-Official Website: https://gawehold.weebly.com/midifall.html
+![MIDIFall Logo](Assets/github-logo.png)
+Official Website: https://gawehold.weebly.com/midifall.html\
 Discord Group: https://discordapp.com/invite/MuJyn5F
 
 ## Features
