@@ -1,5 +1,7 @@
 class "DisplayComponentsRenderer" {
 	new = function (self)
+		self.font = love.graphics.newFont("Assets/NotoSansCJKtc-Medium_1.otf", 48)
+	
 		self.isRenderingVideo = false
 		self.isEncodingVideo = false
 		self.canvas = nil
@@ -78,6 +80,8 @@ class "DisplayComponentsRenderer" {
 		for i = 1, select("#", ...) do
 			select(i, ...):draw(self:getWidth(), self:getHeight())
 		end
+		
+		love.graphics.setFont(self.font)
 		
 		if self.isRenderingVideo then
 			love.graphics.setCanvas()
