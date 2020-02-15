@@ -88,11 +88,9 @@ class "DisplayComponentsRenderer" {
 			
 			local imageData = self.canvas:newImageData(0,1, 0,0, self.exportingWidth,self.exportingHeight)
 			
-			-- if love.thread.getChannel("imageData"):getCount() >= 3 then
-				-- while love.thread.getChannel("imageData"):getCount() > 0 do end
-				love.thread.getChannel("imageData"):push(imageData)
-				imageData:release()
-			-- end
+			while love.thread.getChannel("imageData"):getCount() > 3 do end
+			love.thread.getChannel("imageData"):push(imageData)
+			imageData:release()
 			
 			local percentage = string.format("%3.2f", math.min(100*(player:getTimeManager():getTime()-player:getInitialTime())/(player:getEndTime()-player:getInitialTime()), 100))
 			local renderingProgressMessage = "Rendering: " .. percentage .. "%"
@@ -118,9 +116,12 @@ class "DisplayComponentsRenderer" {
 		self.exportingPresetID = id
 	end,
 	
+	getEncoderDirectory = function (self)
+		return getDirectory() .. "/ffmpeg.exe"
+	end,
+	
 	checkIfEncoderExist = function (self)
-		local ffmpegPath = getDirectory() .. "/ffmpeg.exe"
-		local ffmpeg = io.open(ffmpegPath, "r")
+		local ffmpeg = io.open(self:getEncoderDirectory(), "r")
 		local exist
 		
 		if ffmpeg then
@@ -144,6 +145,7 @@ class "DisplayComponentsRenderer" {
 			return
 		end
 		
+		local ffmpegPath = self:getEncoderDirectory()
 		local width = self.exportingWidth
 		local height = self.exportingHeight
 		local framerate = self.exportingFramerate
