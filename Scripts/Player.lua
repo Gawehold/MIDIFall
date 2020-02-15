@@ -44,14 +44,14 @@ class "Player" {
 		file:open("r")
 		
 		self:pause()
+		
 		local success, song = pcall( MIDIParser.parse, MIDIParser, file:read(file:getSize()) )
 		if success then
 			self.song = song
+			self:new(song)
 		else
 			love.window.showMessageBox("Error", "It is not a valid/supported MIDI file.", "error")
 		end
-		
-		self:new(song)
 		
 		file:close()
 	end,
@@ -60,14 +60,14 @@ class "Player" {
 		local file = io.open(path, "rb")
 		
 		self:pause()
+		
 		local success, song = pcall( MIDIParser.parse, MIDIParser, file:read("*a") )
 		if success then
 			self.song = song
+			self:new(song)
 		else
 			love.window.showMessageBox("Error", "It is not a valid/supported MIDI file.", "error")
 		end
-		
-		self:new(song)
 		
 		file:close()
 	end,

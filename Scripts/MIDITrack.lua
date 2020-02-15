@@ -101,8 +101,8 @@ class "MIDITrack" {
 			
 					local noteOffTypeFirstByte = math.floor(noteOffType/16)
 					local noteOffTypeSecondByte = noteOffType % 16
-				
-					if noteOffTypeFirstByte == 0x8 or (noteOffTypeFirstByte == 0x9 and msg2 == 0) then
+					
+					if noteOffTypeFirstByte == 0x8 or (noteOffTypeFirstByte == 0x9 and noteOffMsg2 == 0) then
 						-- it is a note off event
 						
 						if not consumedNoteOffEvent[k] and msg1 == noteOffMsg1 and typeSecondByte == noteOffTypeSecondByte then
