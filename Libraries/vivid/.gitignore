@@ -26,7 +26,7 @@ luac.out
 *.exp
 
 # Shared objects (inc. Windows DLLs)
-# *.dll
+*.dll
 *.so
 *.so.*
 *.dylib
@@ -39,15 +39,3 @@ luac.out
 *.x86_64
 *.hex
 
-# MIDI files
-*.mid
-
-# Folder for doing experiments
-Lab
-Docs
-*.mp4
-*.mov
-*.avi
-# *.jar
-Savefiles
-Test Assets

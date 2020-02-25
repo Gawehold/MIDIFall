@@ -1,0 +1,127 @@
+@MIDIFall Theme Configuration File
+	name = "Test"
+	author = "Gawehold"
+	version = 1.0
+@End
+
+@Regular Note
+	imagePath		= "note.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	offsets			= { 0.004,	0.0 }
+	sizeOffsets		= {-0.010,	0.0 }
+@End
+
+@Diamond Note
+	imagePath		= "Arrow left icon 4.png"
+@End
+
+@Key 1
+	imagePath		= "key1.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 2
+	imagePath		= "key2.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 3
+	imagePath		= "key3.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 4
+	imagePath		= "key4.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 5
+	imagePath		= "key5.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 6
+	imagePath		= "key6.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 7
+	imagePath		= "key7.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 8
+	imagePath		= "key8.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 9
+	imagePath		= "key9.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 10
+	imagePath		= "key10.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 11
+	imagePath		= "key11.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Key 12
+	imagePath		= "key12.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	sizeOffsets		= {-0.005,	0.0 }
+@End
+
+@Particle
+	imagePath		= "Arrow left icon 4.png"
+@End
+
+@Fallen Note
+	imagePath		= "note.png"
+	rect			= { 50.0,	50.0,	780.0,	220.0 }
+	edgeScales		= { 0.2,	0.2 }
+	scales			= { 1.0,	0.5 }
+	offsets			= { 0.004,	0.0 }
+	sizeOffsets		= {-0.010,	0.0 }
+@End

@@ -156,7 +156,7 @@ class "UIInputBox" {
 				
 			elseif key == "backspace" then
 				text = string.sub(text, 0, self.cursorPosition-1) .. string.sub(text, self.cursorPosition+1, string.len(text))
-				self.cursorPosition = self.cursorPosition - 1
+				self.cursorPosition = math.max(self.cursorPosition - 1, 0)
 				
 				self.text:setText(text)
 				
