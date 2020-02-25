@@ -24,3 +24,7 @@ MIDIFall is a free MIDI score (SMF files) visualizer with these features:
 1. Download LÖVE11 from https://love2d.org/
 2. Download the zip file of this repository.
 3. Drag and drop the zip file OR the unzipped folder to "love.exe".
+
+## License
+The GNU General Public License v3.0 (GPL 3)
+Please view the LICENSE.txt for more details.
