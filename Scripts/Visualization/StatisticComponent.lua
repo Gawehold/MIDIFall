@@ -49,8 +49,8 @@ class "StatisticComponent" {
 		end
 	end,
 	
-	updateFont = function (self)
-		local newFontSize = math.round(self.textScale * love.graphics.getHeight())
+	updateFont = function (self, screenHeight)
+		local newFontSize = math.round(self.textScale * (screenHeight or love.graphics.getHeight()))
 		if self.usingDefaultFont then
 			local fileData = love.filesystem.newFileData(self.defaultFontPath)
 			self.font = love.graphics.newFont(fileData, newFontSize)
@@ -78,6 +78,6 @@ class "StatisticComponent" {
 	end,
 	
 	resize = function (self, w, h)
-		self:updateFont()
+		self:updateFont(h)
 	end,
 }

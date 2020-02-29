@@ -148,6 +148,8 @@ updateManager = UpdateManager()
 uiManager = UIManager()
 propertiesManager = PropertiesManager()
 
+displayComponentsRenderer:addComponent(mainComponent)
+
 function love.load(args, unfilteredArgs)
 	-- for i,v in ipairs(args) do
 		-- print(i,v)
@@ -165,9 +167,7 @@ function love.update(dt)
 end
 
 function love.draw()
-	displayComponentsRenderer:draw(
-		mainComponent
-	)
+	displayComponentsRenderer:draw()
 	
 	uiManager:draw()
 	

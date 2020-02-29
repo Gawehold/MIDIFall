@@ -88,6 +88,11 @@ class "MainComponent" {
 		-- love.graphics.scale(-1,1)
 		
 		local previousCanvas = love.graphics.getCanvas()
+		
+		if self.canvas:getWidth() ~= screenWidth or self.canvas:getHeight() ~= screenHeight then
+			self:resize(screenWidth, screenHeight)
+		end
+		
 		love.graphics.setCanvas(self.canvas)
 		love.graphics.clear()
 		

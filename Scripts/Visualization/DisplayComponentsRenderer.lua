@@ -1,5 +1,7 @@
 class "DisplayComponentsRenderer" {
 	new = function (self)
+		self.components = {}
+	
 		self.font = love.graphics.newFont("Assets/NotoSansCJKtc-Medium_1.otf", 48)
 	
 		self.isRenderingVideo = false
@@ -71,14 +73,14 @@ class "DisplayComponentsRenderer" {
 		end
 	end,
 	
-	draw = function (self, ...)
+	draw = function (self)
 		if self.isRenderingVideo then
 			love.graphics.setCanvas(self.canvas)
 			love.graphics.clear()
 		end
 		
-		for i = 1, select("#", ...) do
-			select(i, ...):draw(self:getWidth(), self:getHeight())
+		for i = 1, #self.components do
+			self.components[i]:draw(self:getWidth(), self:getHeight())
 		end
 		
 		love.graphics.setFont(self.font)
@@ -222,5 +224,9 @@ class "DisplayComponentsRenderer" {
 		self:finishEncoding()
 		
 		love.window.showMessageBox("Video Export", "The video export process has been terminated.", "info")
+	end,
+	
+	addComponent = function (self, component)
+		self.components[#self.components + 1] = component
 	end,
 }

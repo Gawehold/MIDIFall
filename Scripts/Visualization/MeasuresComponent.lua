@@ -161,8 +161,8 @@ class "MeasuresComponent" {
 		love.graphics.pop()
 	end,
 	
-	updateFont = function (self)
-		local newFontSize = math.round(self.measureTextScale * love.graphics.getHeight())
+	updateFont = function (self, screenHeight)
+		local newFontSize = math.round(self.measureTextScale * (screenHeight or love.graphics.getHeight()))
 		if self.usingDefaultFont then
 			local fileData = love.filesystem.newFileData(self.defaultFontPath)
 			self.font = love.graphics.newFont(fileData, newFontSize)
@@ -188,6 +188,6 @@ class "MeasuresComponent" {
 	end,
 	
 	resize = function (self, w, h)
-		self:updateFont()
+		self:updateFont(h)
 	end,
 }
