@@ -5,7 +5,7 @@ class "StatisticComponent" {
 	new = function (self)
 		DisplayComponent.instanceMethods.new(self)
 		
-		-- self.enabled = false
+		self.enabled = false
 		
 		self.colorHSVA = {1,0,1,1}
 		
