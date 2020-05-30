@@ -25,6 +25,8 @@ MIDIFall is a free MIDI score (SMF files) visualizer with these features:
 2. Download the zip file of this repository.
 3. Drag and drop the zip file OR the unzipped folder to "love.exe".
 
+(You can open and edit the "MIDIFall_UpdateChecker" project with the NetBeans IDE.)
+
 ## License
 The GNU General Public License v3.0 (GPL 3)<br>
 Please view the LICENSE.txt for more details.
