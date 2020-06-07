@@ -32,8 +32,8 @@ class "Player" {
 		self.isPitchBendValueInTracksIncreasing = {}
 		self.firstNonStartedMeasureID = nil
 		
-		self.midiPort = nil
-		self:setMIDIPort(0)
+		self.midiPort = self.midiPort or 0
+		self:setMIDIPort(self.midiPort)
 		
 		self:moveToBeginning()
 		
