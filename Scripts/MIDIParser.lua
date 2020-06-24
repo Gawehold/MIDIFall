@@ -88,12 +88,27 @@ class "MIDIParser" {
 									else
 										u = j		-- Meta event: 0xFF ID SIZE CONTENT
 									end
-
-									local size = self:bytes2number(dataStr, u+2, u+2)
+									
+									local contentStartAddress = u + 2
+									local contentSize = 0
+									
+									while true do
+										local currentSizeByte = self:bytes2number(dataStr, contentStartAddress, contentStartAddress)
+										local msb = bit.band(currentSizeByte, 0x80)
+										local l7sb = bit.band(currentSizeByte, 0x7F)
+										
+										contentSize = bit.lshift(contentSize, 7) + l7sb
+										
+										contentStartAddress = contentStartAddress + 1
+										if msb == 0 then
+											break
+										end
+									end
 									
 									-- Find and save the message 2 if it has
-									if size > 0 then
-										message2 = string.sub(dataStr, u+3, u+3 + size - 1)
+									if contentSize > 0 then
+										message2 = string.sub(dataStr, contentStartAddress, contentStartAddress + contentSize - 1)
+										print(message2)
 									end
 									
 									-- Define the table which carry on the above data
@@ -105,15 +120,15 @@ class "MIDIParser" {
 									end
 									
 									local cmsg2 = nil
-									if size > 0 then
-										cmsg2 = ffi.C.malloc(size)
-										ffi.copy(cmsg2, message2, size)
+									if contentSize > 0 then
+										cmsg2 = ffi.C.malloc(contentSize)
+										ffi.copy(cmsg2, message2, contentSize)
 									end
-									local event = MIDIEvent(time, hex, message1, size, cmsg2)
+									local event = MIDIEvent(time, hex, message1, contentSize, cmsg2)
 									midiSong:getTrack(id):addRawEvent(event)
 									
 									-- Tell the program to jump to the next event but not next bytes
-									skipTo = u+3 + size
+									skipTo = contentStartAddress + contentSize
 									
 								elseif hex <= 0xEF then	-- MIDI event
 									local u
